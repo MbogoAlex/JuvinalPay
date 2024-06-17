@@ -10,3 +10,13 @@ data class DocumentTypeItem(
     val documentType: DocumentType
 )
 
+enum class HomeScreenSideBarMenuScreen {
+    HOME,
+    PROFILE
+}
+
+data class DashboardMenuItem(
+    val name: String,
+    val screen: HomeScreenSideBarMenuScreen
+)
+

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,14 +24,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -41,8 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.juvinal.pay.reusableComposables.AuthInputField
 import com.juvinal.pay.DocumentType
-import com.juvinal.pay.R
 import com.juvinal.pay.documentTypes
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 
@@ -150,10 +146,10 @@ fun RegistrationDetailsInputField(
                 color = Color(0xFFacaeb8)
             ),
             fontSize = 18.sp,
-            modifier = Modifier,
             textAlign = TextAlign.Center,
-
-            )
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+        )
         Spacer(modifier = Modifier.height(20.dp))
         AuthInputField(
             heading = "Surname",
@@ -312,65 +308,6 @@ fun RegistrationDetailsInputField(
     }
 }
 
-@Composable
-fun AuthInputField(
-    heading: String,
-    value: String,
-    trailingIcon: Int?,
-    placeHolder: String,
-    onValueChange: (newValue: String) -> Unit,
-    keyboardOptions: KeyboardOptions,
-    visibility: Boolean?,
-    onChangeVisibility: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column {
-        Row {
-            Text(
-                text = heading,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            )
-            Text(
-                text = "*",
-                color = Color.Red
-            )
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        OutlinedTextField(
-            value = value,
-            trailingIcon = {
-                if(trailingIcon != null) {
-                    IconButton(onClick = onChangeVisibility) {
-                        if(visibility != null && visibility) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.visibility_off),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(24.dp)
-                            )
-                        } else if(visibility != null) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.visibility_on),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(24.dp)
-                            )
-                        }
-                    }
-
-                }
-            },
-            placeholder = {
-                Text(text = placeHolder)
-            },
-            onValueChange = onValueChange,
-            keyboardOptions = keyboardOptions,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-    }
-}
 
 @Composable
 fun DocumentTypeSelection(
