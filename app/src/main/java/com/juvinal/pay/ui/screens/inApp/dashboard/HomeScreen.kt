@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -40,6 +45,7 @@ import com.juvinal.pay.dateFormatter
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 import java.time.LocalDate
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreenComposable(
     modifier: Modifier = Modifier
@@ -74,6 +80,59 @@ fun HomeScreen(
         )
         Spacer(modifier = Modifier.height(10.dp))
         DateRangePicker()
+        Spacer(modifier = Modifier.height(30.dp))
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+        ) {
+            AmountCard(
+                title = "Total Deposits",
+                amount = "0.00 %",
+                amountColor = Color(0xFF21baa5),
+                balance = "0",
+                icon = R.drawable.loan,
+                amountIcon = R.drawable.up_right_arrow,
+                amountIconColor = Color(0xFF5cccbd),
+                iconColor = Color(0xFF0ab39c),
+                iconBackgroundColor = Color(0xFFd2f1ed)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            AmountCard(
+                title = "Total Share Capital",
+                amount = "0.00 %",
+                amountColor = Color(0xFFf28069),
+                balance = "0",
+                icon = R.drawable.card_travel,
+                amountIcon = R.drawable.down_right_arrow,
+                amountIconColor = Color(0xFFf28069),
+                iconColor = Color(0XFF299cdb),
+                iconBackgroundColor = Color(0xFFd8edf9)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            AmountCard(
+                title = "Outstanding Loans",
+                amount = "0.00 %",
+                amountColor = Color(0xFF22baa6),
+                balance = "0",
+                icon = R.drawable.person,
+                amountIcon = R.drawable.up_right_arrow,
+                amountIconColor = Color(0xFF22baa6),
+                iconColor = Color(0xFFf7b84b),
+                iconBackgroundColor = Color(0xFFfef2de)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            AmountCard(
+                title = "Net Savings",
+                amount = "0.00 %",
+                amountColor = Color(0xFF9395a3),
+                balance = "0",
+                icon = R.drawable.card,
+                amountIcon = R.drawable.plus,
+                amountIconColor = Color(0xFF9395a3),
+                iconColor = Color(0xFF48588d),
+                iconBackgroundColor = Color(0xFFdcdfea)
+            )
+        }
     }
 }
 
@@ -150,12 +209,80 @@ fun DateRangePicker() {
             }
         }
     }
+}
 
+@Composable
+fun AmountCard(
+    title: String,
+    amount: String,
+    amountColor: Color,
+    balance: String,
+    icon: Int,
+    amountIcon: Int,
+    amountIconColor: Color,
+    iconColor: Color,
+    iconBackgroundColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(30.dp)
+        ) {
+            Column {
+                Text(
+                    text = title.uppercase(),
+                    color = Color(0xFFaaacb7),
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = balance,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        tint = amountIconColor,
+                        painter = painterResource(id = amountIcon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(20.dp)
+                    )
+                    Text(
+                        text = amount,
+                        color = amountColor
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Icon(
+                    tint = iconColor,
+                    painter = painterResource(id = icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .background(iconBackgroundColor)
+                        .padding(20.dp)
+                )
 
-
+            }
+        }
+    }
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
