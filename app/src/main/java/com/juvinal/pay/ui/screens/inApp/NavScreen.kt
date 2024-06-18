@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.juvinal.pay.DashboardMenuItem
 import com.juvinal.pay.HomeScreenSideBarMenuScreen
 import com.juvinal.pay.R
+import com.juvinal.pay.ui.screens.inApp.dashboard.HomeScreenComposable
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 import kotlinx.coroutines.launch
 
@@ -173,7 +174,9 @@ fun NavScreen(
                 }
             }
             when(currentScreen) {
-                HomeScreenSideBarMenuScreen.HOME -> {}
+                HomeScreenSideBarMenuScreen.HOME -> {
+                    HomeScreenComposable()
+                }
                 HomeScreenSideBarMenuScreen.PROFILE -> {}
             }
         }
