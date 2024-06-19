@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.juvinal.pay.ui.screens.authentication.LoginScreenComposable
+import com.juvinal.pay.ui.screens.authentication.MembershipFeeScreenComposable
 import com.juvinal.pay.ui.screens.authentication.RegistrationScreenComposable
 import com.juvinal.pay.ui.screens.inApp.NavScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ChangePasswordScreenComposable
@@ -32,7 +33,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    PrivacyPolicyScreenComposable()
+                    MembershipFeeScreenComposable()
                 }
             }
         }
