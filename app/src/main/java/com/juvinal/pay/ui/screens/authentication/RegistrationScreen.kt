@@ -72,7 +72,19 @@ fun RegistrationScreen(
                     .height(300.dp)
                     .fillMaxWidth()
             ) {
-
+//                Column(
+//                    verticalArrangement = Arrangement.Center,
+//                    horizontalAlignment = Alignment.CenterHorizontally,
+//                    modifier = Modifier
+//                        .height(160.dp)
+//                        .fillMaxWidth()
+//                ) {
+//                    Text(
+//                        text = "JuvinalPay",
+//                        fontSize = 20.sp,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                }
             }
             Spacer(modifier = Modifier.weight(1f))
             Row(

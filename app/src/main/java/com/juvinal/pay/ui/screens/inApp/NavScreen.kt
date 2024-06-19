@@ -1,12 +1,14 @@
 package com.juvinal.pay.ui.screens.inApp
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,12 +27,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.juvinal.pay.DashboardMenuItem
 import com.juvinal.pay.HomeScreenSideBarMenuScreen
 import com.juvinal.pay.R
 import com.juvinal.pay.ui.screens.inApp.dashboard.HomeScreenComposable
+import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenComposable
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 import kotlinx.coroutines.launch
 
@@ -62,6 +67,7 @@ fun NavScreenComposable(
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavScreen(
     dashboardMenuItems: List<DashboardMenuItem>,
@@ -87,6 +93,19 @@ fun NavScreen(
                         .padding(10.dp)
                 ) {
                     Row(
+                        modifier = Modifier
+                            .padding(20.dp)
+                    ) {
+                        Text(
+                            text = "JuvinalPay",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 22.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Divider()
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                     ) {
@@ -95,7 +114,11 @@ fun NavScreen(
                             contentDescription = "Dashboard"
                         )
                         Spacer(modifier = Modifier.width(5.dp))
-                        Text(text = "Dashboard")
+                        Text(
+                            text = "Dashboard",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     for(menuItem in dashboardMenuItems) {
@@ -122,11 +145,15 @@ fun NavScreen(
                         modifier = Modifier
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.money),
-                            contentDescription = "Transactions"
+                            painter = painterResource(id = R.drawable.receipt),
+                            contentDescription = "Transactions",
                         )
                         Spacer(modifier = Modifier.width(5.dp))
-                        Text(text = "Transactions")
+                        Text(
+                            text = "Transactions",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(
@@ -138,7 +165,11 @@ fun NavScreen(
                             contentDescription = "Loans"
                         )
                         Spacer(modifier = Modifier.width(5.dp))
-                        Text(text = "Loans")
+                        Text(
+                            text = "Loans",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
                     }
                 }
 
@@ -147,7 +178,7 @@ fun NavScreen(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+//                .fillMaxSize()
         ) {
             Spacer(modifier = Modifier.height(30.dp))
             Row(
@@ -177,7 +208,9 @@ fun NavScreen(
                 HomeScreenSideBarMenuScreen.HOME -> {
                     HomeScreenComposable()
                 }
-                HomeScreenSideBarMenuScreen.PROFILE -> {}
+                HomeScreenSideBarMenuScreen.PROFILE -> {
+                    ProfileScreenComposable()
+                }
             }
         }
     }
