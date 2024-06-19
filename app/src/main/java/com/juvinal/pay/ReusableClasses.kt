@@ -20,3 +20,10 @@ data class DashboardMenuItem(
     val screen: HomeScreenSideBarMenuScreen
 )
 
+enum class LoadingStatus {
+    INITIAL,
+    LOADING,
+    SUCCESS,
+    FAIL
+}
+
