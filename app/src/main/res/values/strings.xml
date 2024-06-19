@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">JuvinalPay</string>
+    <string name="two_factor_auth">Two-factor authentication is an enhanced security measure. Once enabled, you\'ll be required to give two types of identification when you log into Google Authentication and SMS are Supported.</string>
+    <string name="delete_account">Go to the Data &amp; Privacy section of your profile Account. Scroll to "Your data &amp; privacy options." Delete your Profile Account. Follow the instructions to delete your account</string>
 </resources>

@@ -18,6 +18,7 @@ import com.juvinal.pay.ui.screens.authentication.RegistrationScreenComposable
 import com.juvinal.pay.ui.screens.inApp.NavScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ChangePasswordScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PersonalDetailsScreenComposable
+import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PrivacyPolicyScreenComposable
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 
 class MainActivity : ComponentActivity() {
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ChangePasswordScreenComposable()
+                    PrivacyPolicyScreenComposable()
                 }
             }
         }
