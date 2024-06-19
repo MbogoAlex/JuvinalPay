@@ -2,6 +2,7 @@ package com.juvinal.pay.ui.screens.inApp
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,6 +40,7 @@ import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenComposabl
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavScreenComposable(
     modifier: Modifier = Modifier
@@ -96,10 +98,10 @@ fun NavScreen(
                         modifier = Modifier
                             .padding(20.dp)
                     ) {
-                        Text(
-                            text = "JuvinalPay",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 22.sp
+                        Image(
+                            painter = painterResource(id = R.drawable.juvinal_pay_logo_light),
+                            contentDescription = null,
+                            modifier = Modifier
                         )
                     }
                     Spacer(modifier = Modifier.height(15.dp))
@@ -216,6 +218,7 @@ fun NavScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun NavScreenPreview() {
