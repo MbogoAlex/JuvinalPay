@@ -1,5 +1,7 @@
 package com.juvinal.pay.network
 
+import com.juvinal.pay.model.MembershipFeeRequestBody
+import com.juvinal.pay.model.MembershipFeeResponseBody
 import com.juvinal.pay.model.UserLoginRequestBody
 import com.juvinal.pay.model.UserLoginResponseBody
 import com.juvinal.pay.model.UserRegistrationRequestBody
@@ -18,4 +20,9 @@ interface ApiService {
     suspend fun loginUser(
         @Body userLoginRequestBody: UserLoginRequestBody
     ): Response<UserLoginResponseBody>
+
+    @POST("member/paymembershipfee")
+    suspend fun membershipFeePayment(
+        @Body membershipFeeRequestBody: MembershipFeeRequestBody
+    ): Response<MembershipFeeResponseBody>
 }

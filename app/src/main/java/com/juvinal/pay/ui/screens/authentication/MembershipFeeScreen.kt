@@ -9,12 +9,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +34,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.juvinal.pay.AppViewModelFactory
+import com.juvinal.pay.LoadingStatus
 import com.juvinal.pay.R
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 
@@ -35,11 +44,39 @@ import com.juvinal.pay.ui.theme.JuvinalPayTheme
 fun MembershipFeeScreenComposable(
     modifier: Modifier = Modifier
 ) {
-    MembershipFeeScreen()
+
+    val viewModel: MembershipFeeScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+    var checkIfRequiredFieldsAreFilled by remember {
+        mutableStateOf(false)
+    }
+
+    if(!checkIfRequiredFieldsAreFilled) {
+        viewModel.checkIfRequiredFieldsAreFilled()
+        checkIfRequiredFieldsAreFilled = true
+    }
+
+    MembershipFeeScreen(
+        phoneNumber = uiState.msisdn,
+        buttonEnabled = uiState.paymentButtonEnabled,
+        loadingStatus = uiState.loadingStatus,
+        onPhoneNumberChange = {
+            viewModel.updatePhoneNo(it)
+        },
+        onPay = {
+            viewModel.payMembershipFee()
+        }
+    )
 }
 
 @Composable
 fun MembershipFeeScreen(
+    phoneNumber: String,
+    buttonEnabled: Boolean,
+    loadingStatus: LoadingStatus,
+    onPhoneNumberChange: (String) -> Unit,
+    onPay: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -156,8 +193,8 @@ fun MembershipFeeScreen(
             label = {
                     Text(text = "Phone number")
             },
-            value = "0794649026",
-            onValueChange = {},
+            value = phoneNumber,
+            onValueChange = onPhoneNumberChange,
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
@@ -175,7 +212,8 @@ fun MembershipFeeScreen(
         )
 //        Spacer(modifier = Modifier.weight(1f))
         Button(
-            onClick = { /*TODO*/ },
+            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
+            onClick = onPay,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -183,7 +221,11 @@ fun MembershipFeeScreen(
                     vertical = 12.dp
                 )
         ) {
-            Text(text = "Pay")
+            if(loadingStatus == LoadingStatus.LOADING) {
+                CircularProgressIndicator()
+            } else {
+                Text(text = "Pay")
+            }
         }
 
     }
@@ -193,6 +235,12 @@ fun MembershipFeeScreen(
 @Composable
 fun MembershipFeeScreenPreview() {
     JuvinalPayTheme {
-        MembershipFeeScreen()
+        MembershipFeeScreen(
+            phoneNumber = "",
+            buttonEnabled = false,
+            loadingStatus = LoadingStatus.INITIAL,
+            onPhoneNumberChange = {},
+            onPay = { /*TODO*/ }
+        )
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.juvinal.pay.ui.screens.authentication.LoginScreenViewModel
+import com.juvinal.pay.ui.screens.authentication.MembershipFeeScreenViewModel
 import com.juvinal.pay.ui.screens.authentication.RegistrationScreenViewModel
 
 object AppViewModelFactory {
@@ -27,6 +28,17 @@ object AppViewModelFactory {
             val apiRepository = juvinalPayApplication().container.apiRepository
             val dsRepository = juvinalPayApplication().dsRepository
             LoginScreenViewModel(
+                apiRepository = apiRepository,
+                dsRepository = dsRepository
+            )
+        }
+
+        // initialize MembershipFeeScreenViewModel
+
+        initializer {
+            val apiRepository = juvinalPayApplication().container.apiRepository
+            val dsRepository = juvinalPayApplication().dsRepository
+            MembershipFeeScreenViewModel(
                 apiRepository = apiRepository,
                 dsRepository = dsRepository
             )
