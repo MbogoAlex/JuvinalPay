@@ -51,7 +51,20 @@ data class UserLoginRequestBody(
 @Serializable
 data class UserLoginResponseBody(
     val status: String,
-    val user: UserLoginDT
+    val user: UserLoginDT,
+    val member: MemberDT?
+)
+
+@Serializable
+data class MemberDT(
+    val id: Int,
+    val user_id: Int,
+    val mem_no: String,
+    val mem_joined_date: String,
+    val mem_end_date: String?,
+    val mem_status: Int,
+    val created_at: String,
+    val updated_at: String,
 )
 
 @Serializable

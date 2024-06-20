@@ -1,5 +1,7 @@
 package com.juvinal.pay.ui.screens.authentication
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,13 +25,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -43,15 +51,50 @@ import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.LoadingStatus
 import com.juvinal.pay.R
 import com.juvinal.pay.reusableComposables.AuthInputField
+import com.juvinal.pay.reusableComposables.PasswordInputField
+import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 
+object LoginScreenDestination: AppNavigation {
+    override val title: String = "Login screen"
+    override val route: String = "login-screen"
+    val documentNo: String = "documentNo"
+    val password: String = "password"
+    val routeWithArgs: String = "$route/{$documentNo}/{$password}"
+}
 @Composable
 fun LoginScreenComposable(
+    navigateToRegistrationScreen: () -> Unit,
+    navigateToMembershipFeePaymentScreen: () -> Unit,
+    navigateToHomeScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
+    val context = LocalContext.current
+    BackHandler(onBack = navigateToRegistrationScreen)
     val viewModel: LoginScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
+
+    var checkIfRequiredFieldsAreFilled by remember {
+        mutableStateOf(false)
+    }
+
+    if(!checkIfRequiredFieldsAreFilled) {
+        viewModel.checkIfAllFieldsAreFilled()
+        checkIfRequiredFieldsAreFilled = true
+    }
+
+    if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
+        Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
+        if(uiState.userRegistered) {
+            navigateToHomeScreen()
+        } else {
+            navigateToMembershipFeePaymentScreen()
+        }
+        viewModel.resetLoadingStatus()
+    } else if(uiState.loadingStatus == LoadingStatus.FAIL) {
+        Toast.makeText(context, uiState.loginMessage, Toast.LENGTH_SHORT).show()
+        viewModel.resetLoadingStatus()
+    }
 
     Box {
         LoginScreen(
@@ -69,7 +112,8 @@ fun LoginScreenComposable(
                 viewModel.login()
             },
             buttonEnabled = uiState.loginButtonEnabled,
-            loadingStatus = uiState.loadingStatus
+            loadingStatus = uiState.loadingStatus,
+            navigateToRegistrationScreen = navigateToRegistrationScreen
         )
     }
 }
@@ -83,6 +127,7 @@ fun LoginScreen(
     onLogin: () -> Unit,
     buttonEnabled: Boolean,
     loadingStatus: LoadingStatus,
+    navigateToRegistrationScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -94,6 +139,9 @@ fun LoginScreen(
                 .fillMaxSize()
         ) {
             Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                ),
                 shape = RoundedCornerShape(
                     bottomStart = 20.dp,
                     bottomEnd = 20.dp
@@ -102,7 +150,20 @@ fun LoginScreen(
                     .height(300.dp)
                     .fillMaxWidth()
             ) {
-
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .height(160.dp)
+                        .fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.juvinal_pay_logo_light),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(140.dp)
+                    )
+                }
             }
             Spacer(modifier = Modifier.weight(1f))
             Row(
@@ -112,7 +173,7 @@ fun LoginScreen(
                     .fillMaxWidth()
             ) {
                 Text(text = "Dont't have an account?")
-                TextButton(onClick = { /*TODO*/ }) {
+                TextButton(onClick = navigateToRegistrationScreen) {
                     Text(
                         text = "Signup",
                         color = Color(0xFF405189)
@@ -134,7 +195,7 @@ fun LoginScreen(
         ) {
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -169,6 +230,9 @@ fun LoginDetailsInputField(
     loadingStatus: LoadingStatus,
     modifier: Modifier = Modifier
 ) {
+    var passwordVisibility by remember {
+        mutableStateOf(false)
+    }
     Column(
         modifier = Modifier
             .padding(20.dp)
@@ -200,29 +264,28 @@ fun LoginDetailsInputField(
         AuthInputField(
             heading = "Username (Document No)",
             value = documentNo,
-            trailingIcon = null,
             placeHolder = "Document No - ID/Passport",
             onValueChange = onDocumentNoChange,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Text
             ),
-            visibility = null,
-            onChangeVisibility = { /*TODO*/ }
         )
         Spacer(modifier = Modifier.height(10.dp))
-        AuthInputField(
+        PasswordInputField(
             heading = "Password",
             value = password,
-            trailingIcon = null,
+            trailingIcon = R.drawable.visibility_on,
             placeHolder = "Enter password",
             onValueChange = onPasswordChange,
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
+                imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Password
             ),
-            visibility = null,
-            onChangeVisibility = { /*TODO*/ }
+            visibility = passwordVisibility,
+            onChangeVisibility = {
+                passwordVisibility = !passwordVisibility
+            }
         )
         Spacer(modifier = Modifier.height(40.dp))
         Button(
@@ -237,7 +300,7 @@ fun LoginDetailsInputField(
             onClick = onLogin
         ) {
             if(loadingStatus == LoadingStatus.LOADING) {
-                CircularProgressIndicator()
+                Text(text = "Loading...")
             } else {
                 Text(
                     text = "Sign in",
@@ -293,7 +356,8 @@ fun LoginScreenPreview() {
             onPasswordChange = {},
             onLogin = { /*TODO*/ },
             buttonEnabled = false,
-            loadingStatus = LoadingStatus.INITIAL
+            loadingStatus = LoadingStatus.INITIAL,
+            navigateToRegistrationScreen = {}
         )
     }
 }

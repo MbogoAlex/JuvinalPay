@@ -24,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,8 +43,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.juvinal.pay.R
 import com.juvinal.pay.dateFormatter
+import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 import java.time.LocalDate
+
+object HomeScreenDestination: AppNavigation {
+    override val route = "Home-screen"
+    override val title = "Home screen"
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -177,7 +184,7 @@ fun DateRangePicker() {
 
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.onPrimary
         ),
         elevation = CardDefaults.elevatedCardElevation(10.dp),
         modifier = Modifier
@@ -226,7 +233,7 @@ fun AmountCard(
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.onPrimary
         ),
         modifier = Modifier
             .fillMaxWidth()

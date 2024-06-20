@@ -37,12 +37,17 @@ import com.juvinal.pay.HomeScreenSideBarMenuScreen
 import com.juvinal.pay.R
 import com.juvinal.pay.ui.screens.inApp.dashboard.HomeScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenComposable
+import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 import kotlinx.coroutines.launch
 
+object InAppNavScreenDestination: AppNavigation {
+    override val title: String = "InAppNavScreen screen"
+    override val route = "in-app-nav-screen"
+}
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NavScreenComposable(
+fun InAppNavScreenComposable(
     modifier: Modifier = Modifier
 ) {
     val dashboardMenuItems = listOf(
@@ -60,7 +65,7 @@ fun NavScreenComposable(
         mutableStateOf(HomeScreenSideBarMenuScreen.HOME)
     }
 
-    NavScreen(
+    InAppNavScreen(
         dashboardMenuItems = dashboardMenuItems,
         currentScreen = currentScreen,
         onChangeScreen = {
@@ -71,7 +76,7 @@ fun NavScreenComposable(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NavScreen(
+fun InAppNavScreen(
     dashboardMenuItems: List<DashboardMenuItem>,
     currentScreen: HomeScreenSideBarMenuScreen,
     onChangeScreen: (screen: HomeScreenSideBarMenuScreen) -> Unit,
@@ -233,7 +238,7 @@ fun NavScreenPreview() {
         ),
     )
     JuvinalPayTheme {
-        NavScreen(
+        InAppNavScreen(
             dashboardMenuItems = dashboardMenuItems,
             currentScreen = HomeScreenSideBarMenuScreen.HOME,
             onChangeScreen = {}

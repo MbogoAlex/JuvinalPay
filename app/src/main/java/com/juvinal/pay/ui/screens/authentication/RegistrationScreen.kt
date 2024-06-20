@@ -1,8 +1,9 @@
 package com.juvinal.pay.ui.screens.authentication
 
+import android.app.Activity
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,14 +20,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -37,9 +37,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -48,22 +48,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.juvinal.pay.AppViewModelFactory
-import com.juvinal.pay.reusableComposables.AuthInputField
 import com.juvinal.pay.DocumentType
 import com.juvinal.pay.LoadingStatus
 import com.juvinal.pay.R
-import com.juvinal.pay.documentTypes
+import com.juvinal.pay.reusableComposables.AuthInputField
 import com.juvinal.pay.reusableComposables.DocumentTypeSelection
+import com.juvinal.pay.reusableComposables.PasswordInputField
+import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 
+object RegistrationScreenDestination: AppNavigation {
+    override val title: String = "Registration screen"
+    override val route: String = "registration-screen"
+}
 @Composable
 fun RegistrationScreenComposable(
+    navigateToLoginScreen: () -> Unit,
+    navigateToLoginScreenWithArgs: (documentNo: String, password: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val activity = (LocalContext.current as? Activity)
+    val context = LocalContext.current
+    BackHandler(onBack = {activity?.finish()})
+
     val viewModel: RegistrationScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
 
     var showDocumentTypeSelection by remember { mutableStateOf(false) }
+
+    if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
+        Toast.makeText(context, "Registration successful. Pay Ksh 100 to be a full member of JuvinalPay", Toast.LENGTH_SHORT).show()
+        navigateToLoginScreenWithArgs(uiState.documentNo, uiState.password)
+        viewModel.resetLoadingStatus()
+    } else if(uiState.loadingStatus == LoadingStatus.FAIL) {
+        Toast.makeText(context, "Registration failed", Toast.LENGTH_SHORT).show()
+        viewModel.resetLoadingStatus()
+    }
 
     Box {
         RegistrationScreen(
@@ -116,10 +136,16 @@ fun RegistrationScreenComposable(
             },
             expanded = showDocumentTypeSelection,
             onRegister = {
-                viewModel.registerUser()
+                if(uiState.password == uiState.passwordConfirmation) {
+                    viewModel.registerUser()
+                } else {
+                    Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                }
+
             },
             loadingStatus = uiState.loadingStatus,
-            buttonEnabled = uiState.saveButtonEnabled
+            buttonEnabled = uiState.saveButtonEnabled,
+            navigateToLoginScreen = navigateToLoginScreen
         )
     }
 }
@@ -149,6 +175,7 @@ fun RegistrationScreen(
     onRegister: () -> Unit,
     loadingStatus: LoadingStatus,
     buttonEnabled: Boolean,
+    navigateToLoginScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -160,6 +187,9 @@ fun RegistrationScreen(
                 .fillMaxSize()
         ) {
             Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                ),
                 shape = RoundedCornerShape(
                     bottomStart = 20.dp,
                     bottomEnd = 20.dp
@@ -190,8 +220,11 @@ fun RegistrationScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text(text = "Already have an account?")
-                TextButton(onClick = { /*TODO*/ }) {
+                Text(
+                    text = "Already have an account?",
+                    color = MaterialTheme.colorScheme.scrim
+                )
+                TextButton(onClick = navigateToLoginScreen) {
                     Text(
                         text = "Signin",
                         color = Color(0xFF405189)
@@ -213,7 +246,7 @@ fun RegistrationScreen(
         ) {
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -280,6 +313,9 @@ fun RegistrationDetailsInputField(
     buttonEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
+    var passwordVisibility by remember {
+        mutableStateOf(false)
+    }
     Column(
         modifier = Modifier
             .padding(20.dp)
@@ -310,43 +346,34 @@ fun RegistrationDetailsInputField(
         AuthInputField(
             heading = "Surname",
             value = surname,
-            trailingIcon = null,
             placeHolder = "Enter surname",
             onValueChange = onChangeSurname,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Text
             ),
-            visibility = null,
-            onChangeVisibility = { /*TODO*/ }
         )
         Spacer(modifier = Modifier.height(10.dp))
         AuthInputField(
             heading = "First Name",
             value = firstName,
-            trailingIcon = null,
             placeHolder = "Enter First name",
             onValueChange = onChangeFirstName,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Text
             ),
-            visibility = null,
-            onChangeVisibility = { /*TODO*/ }
         )
         Spacer(modifier = Modifier.height(10.dp))
         AuthInputField(
             heading = "Last Name",
             value = lastName,
-            trailingIcon = null,
             placeHolder = "Enter last name",
             onValueChange = onChangeLastName,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Text
             ),
-            visibility = null,
-            onChangeVisibility = { /*TODO*/ }
         )
         Spacer(modifier = Modifier.height(10.dp))
         DocumentTypeSelection(
@@ -359,71 +386,66 @@ fun RegistrationDetailsInputField(
         AuthInputField(
             heading = "Document No",
             value = documentNo,
-            trailingIcon = null,
             placeHolder = "Enter Document No",
             onValueChange = onChangeDocumentNo,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Text
             ),
-            visibility = null,
-            onChangeVisibility = { /*TODO*/ }
         )
         Spacer(modifier = Modifier.height(10.dp))
         AuthInputField(
             heading = "Email",
             value = email,
-            trailingIcon = null,
             placeHolder = "Enter email address",
             onValueChange = onChangeEmail,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Email
             ),
-            visibility = null,
-            onChangeVisibility = { /*TODO*/ }
         )
         Spacer(modifier = Modifier.height(10.dp))
         AuthInputField(
             heading = "Phone No",
             value = phoneNo,
-            trailingIcon = null,
             placeHolder = "Enter phone no",
             onValueChange = onChangePhoneNo,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Phone
             ),
-            visibility = null,
-            onChangeVisibility = { /*TODO*/ }
         )
         Spacer(modifier = Modifier.height(10.dp))
-        AuthInputField(
+        PasswordInputField(
             heading = "Password",
             value = password,
-            trailingIcon = null,
+            trailingIcon = R.drawable.visibility_on,
             placeHolder = "Enter password",
             onValueChange = onChangePassword,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Password
             ),
-            visibility = null,
-            onChangeVisibility = { /*TODO*/ }
+            visibility = passwordVisibility,
+            onChangeVisibility = {
+                passwordVisibility = !passwordVisibility
+            }
         )
         Spacer(modifier = Modifier.height(10.dp))
-        AuthInputField(
+        PasswordInputField(
             heading = "Confirm Password",
             value = passwordConfirm,
-            trailingIcon = null,
+            trailingIcon = R.drawable.visibility_on,
             placeHolder = "Confirm password",
             onValueChange = onChangePasswordConfirm,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Password
             ),
-            visibility = null,
-            onChangeVisibility = { /*TODO*/ }
+            visibility = passwordVisibility,
+            onChangeVisibility = {
+                passwordVisibility = !passwordVisibility
+            }
         )
         Spacer(modifier = Modifier.height(40.dp))
         Text(
@@ -459,7 +481,7 @@ fun RegistrationDetailsInputField(
             onClick = onRegister
         ) {
             if(loadingStatus == LoadingStatus.LOADING) {
-                CircularProgressIndicator()
+                Text(text = "Loading...")
             } else {
                 Text(
                     text = "Sign Up",
@@ -500,7 +522,8 @@ fun RegistrationScreenPreview() {
             expanded = false,
             onRegister = { /*TODO*/ },
             loadingStatus = LoadingStatus.INITIAL,
-            buttonEnabled = false
+            buttonEnabled = false,
+            navigateToLoginScreen = {}
         )
     }
 }

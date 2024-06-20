@@ -2,6 +2,7 @@ package com.juvinal.pay.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -16,6 +17,10 @@ class DSRepository(
 ) {
     private companion object {
         private val ID = intPreferencesKey("id")
+        private val MEMBER_NO = stringPreferencesKey("member_no")
+        private val MEMBER_JOINED_DATE = stringPreferencesKey("member_joined_date")
+        private val MEMBER_STATUS = intPreferencesKey("member_status")
+        private val MEMBER_REGISTERED = booleanPreferencesKey("member_registered")
         private val SURNAME = stringPreferencesKey("surname")
         private val FNAME = stringPreferencesKey("fname")
         private val LNAME = stringPreferencesKey("lname")
@@ -35,6 +40,10 @@ class DSRepository(
     ) {
         dataStore.edit { preferences ->
             preferences[ID] = userDSModel.id!!
+            preferences[MEMBER_NO] = userDSModel.mem_no ?: ""
+            preferences[MEMBER_JOINED_DATE] = userDSModel.mem_joined_date ?: ""
+            preferences[MEMBER_STATUS] = userDSModel.mem_status ?: 0
+            preferences[MEMBER_REGISTERED] = userDSModel.mem_registered
             preferences[SURNAME] = userDSModel.surname
             preferences[FNAME] = userDSModel.fname
             preferences[LNAME] = userDSModel.lname
@@ -64,6 +73,10 @@ class DSRepository(
 
     private fun Preferences.toUserDSModel(): UserDSModel = UserDSModel(
         id = this[ID],
+        mem_no = this[MEMBER_NO] ?: "",
+        mem_joined_date = this[MEMBER_JOINED_DATE] ?: "",
+        mem_status = this[MEMBER_STATUS],
+        mem_registered = this[MEMBER_REGISTERED] ?: false,
         surname = this[SURNAME] ?: "",
         fname = this[FNAME] ?: "",
         lname = this[LNAME] ?: "",

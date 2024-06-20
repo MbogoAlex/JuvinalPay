@@ -13,6 +13,10 @@ val documentTypes = listOf(
         name = "Passport",
         documentType = DocumentType.PASSPORT
     ),
+    DocumentTypeItem(
+        name = "Alien ID",
+        documentType = DocumentType.ALIEN_ID
+    ),
 )
 
 @RequiresApi(Build.VERSION_CODES.O)

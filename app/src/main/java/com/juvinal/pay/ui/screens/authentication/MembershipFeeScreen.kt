@@ -1,5 +1,7 @@
 package com.juvinal.pay.ui.screens.authentication
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,13 +20,16 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,14 +42,25 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.LoadingStatus
+import com.juvinal.pay.MainActivity
 import com.juvinal.pay.R
+import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+object MembershipFeeScreenDestination: AppNavigation {
+    override val route = "membership-fee"
+    override val title = "Membership Fee"
+}
 @Composable
 fun MembershipFeeScreenComposable(
+    navigateToHomeScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
+    val context = LocalContext.current
+    val activity = (LocalContext.current as? MainActivity)
+    BackHandler(onBack = {activity?.finish()})
     val viewModel: MembershipFeeScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
 
@@ -57,7 +73,24 @@ fun MembershipFeeScreenComposable(
         checkIfRequiredFieldsAreFilled = true
     }
 
+    var paymentCountdown by remember {
+        mutableIntStateOf(30)
+    }
+
+    val scope = rememberCoroutineScope()
+
+    if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
+        Toast.makeText(context, "Payment successful. You are now a full member of JuvinalPay.", Toast.LENGTH_LONG).show()
+        navigateToHomeScreen()
+        viewModel.resetLoadingStatus()
+    } else if(uiState.loadingStatus == LoadingStatus.FAIL) {
+        Toast.makeText(context, "Failed. Check your internet connection and ensure that you have adequate funds in your M-PESA wallet", Toast.LENGTH_LONG).show()
+        viewModel.resetLoadingStatus()
+        paymentCountdown = 30
+    }
+
     MembershipFeeScreen(
+        paymentCountdown = paymentCountdown,
         phoneNumber = uiState.msisdn,
         buttonEnabled = uiState.paymentButtonEnabled,
         loadingStatus = uiState.loadingStatus,
@@ -65,13 +98,21 @@ fun MembershipFeeScreenComposable(
             viewModel.updatePhoneNo(it)
         },
         onPay = {
-            viewModel.payMembershipFee()
+            scope.launch {
+                viewModel.payMembershipFee()
+                while (paymentCountdown > 0) {
+                    delay(1000)
+                    paymentCountdown--
+                }
+                viewModel.checkPaymentStatus()
+            }
         }
     )
 }
 
 @Composable
 fun MembershipFeeScreen(
+    paymentCountdown: Int,
     phoneNumber: String,
     buttonEnabled: Boolean,
     loadingStatus: LoadingStatus,
@@ -222,7 +263,7 @@ fun MembershipFeeScreen(
                 )
         ) {
             if(loadingStatus == LoadingStatus.LOADING) {
-                CircularProgressIndicator()
+                Text(text = "Processing in $paymentCountdown seconds")
             } else {
                 Text(text = "Pay")
             }
@@ -236,6 +277,7 @@ fun MembershipFeeScreen(
 fun MembershipFeeScreenPreview() {
     JuvinalPayTheme {
         MembershipFeeScreen(
+            paymentCountdown = 30,
             phoneNumber = "",
             buttonEnabled = false,
             loadingStatus = LoadingStatus.INITIAL,

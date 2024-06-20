@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.juvinal.pay.R
 import com.juvinal.pay.reusableComposables.AuthInputField
+import com.juvinal.pay.reusableComposables.PasswordInputField
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 
 @Composable
@@ -128,7 +129,7 @@ fun PrivacyPolicyScreen(
                     color = Color(0xFF495057)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                AuthInputField(
+                PasswordInputField(
                     heading = "Password",
                     value = "",
                     trailingIcon = null,

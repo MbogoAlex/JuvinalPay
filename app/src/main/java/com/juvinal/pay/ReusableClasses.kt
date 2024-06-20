@@ -2,7 +2,8 @@ package com.juvinal.pay
 
 enum class DocumentType {
     NATIONAL_ID,
-    PASSPORT
+    PASSPORT,
+    ALIEN_ID
 }
 
 data class DocumentTypeItem(

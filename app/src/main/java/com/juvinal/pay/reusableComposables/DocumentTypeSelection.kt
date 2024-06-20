@@ -35,7 +35,7 @@ fun DocumentTypeSelection(
     modifier: Modifier = Modifier
 ) {
 
-    var selectedType = if(documentType == DocumentType.NATIONAL_ID) "National Identification" else "Passport"
+    var selectedType = if(documentType == DocumentType.NATIONAL_ID) "National Identification" else if(documentType == DocumentType.PASSPORT) "Passport" else "Alien ID"
 
     Column {
         Row {
@@ -94,6 +94,7 @@ fun DocumentTypeSelection(
                             .fillMaxWidth()
                             .clickable {
                                 onChangeDocumentType(s.documentType)
+                                onExpand()
                             }
                     ) {
                         Text(

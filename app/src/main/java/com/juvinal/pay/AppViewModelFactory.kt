@@ -1,9 +1,11 @@
 package com.juvinal.pay
 
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.juvinal.pay.ui.screens.SplashScreenViewModel
 import com.juvinal.pay.ui.screens.authentication.LoginScreenViewModel
 import com.juvinal.pay.ui.screens.authentication.MembershipFeeScreenViewModel
 import com.juvinal.pay.ui.screens.authentication.RegistrationScreenViewModel
@@ -29,7 +31,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             LoginScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                savedStateHandle = this.createSavedStateHandle()
             )
         }
 
@@ -44,6 +47,13 @@ object AppViewModelFactory {
             )
         }
 
+        // initialize SplashScreenViewModel
+        initializer {
+            val dsRepository = juvinalPayApplication().dsRepository
+            SplashScreenViewModel(
+                dsRepository = dsRepository
+            )
+        }
     }
 }
 

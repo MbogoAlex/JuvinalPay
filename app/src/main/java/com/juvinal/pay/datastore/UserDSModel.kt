@@ -2,6 +2,10 @@ package com.juvinal.pay.datastore
 
 data class UserDSModel(
     val id: Int?,
+    val mem_no: String?,
+    val mem_joined_date: String?,
+    val mem_status: Int?,
+    val mem_registered: Boolean,
     val name: String,
     val uid: String,
     val surname: String,

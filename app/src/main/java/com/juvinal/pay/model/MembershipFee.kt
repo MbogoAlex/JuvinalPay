@@ -15,3 +15,10 @@ data class MembershipFeeResponseBody(
     val paymentInstructions: String,
     val statusCode: String
 )
+
+@Serializable
+data class MembershipFeePaymentStatusResponseBody(
+    val status: String,
+    val message: String,
+    val member: MemberDT
+)

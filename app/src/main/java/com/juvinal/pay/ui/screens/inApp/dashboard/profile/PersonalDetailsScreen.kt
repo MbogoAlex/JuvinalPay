@@ -101,43 +101,34 @@ fun FilledPersonalDetailsTextFields(
             AuthInputField(
                 heading = "Surname",
                 value = "Mbogo",
-                trailingIcon = null,
                 placeHolder = "Enter your surname",
                 onValueChange = {},
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Text
                 ),
-                visibility = null,
-                onChangeVisibility = { /*TODO*/ }
             )
             Spacer(modifier = Modifier.height(10.dp))
             AuthInputField(
                 heading = "First Name",
                 value = "Alex",
-                trailingIcon = null,
                 placeHolder = "Enter your first name",
                 onValueChange = {},
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Text
                 ),
-                visibility = null,
-                onChangeVisibility = { /*TODO*/ }
             )
             Spacer(modifier = Modifier.height(10.dp))
             AuthInputField(
                 heading = "Last Name",
                 value = "Gitau",
-                trailingIcon = null,
                 placeHolder = "Enter your last name",
                 onValueChange = {},
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Text
                 ),
-                visibility = null,
-                onChangeVisibility = { /*TODO*/ }
             )
             Spacer(modifier = Modifier.height(10.dp))
             DocumentTypeSelection(
@@ -150,57 +141,45 @@ fun FilledPersonalDetailsTextFields(
             AuthInputField(
                 heading = "Joining Date",
                 value = "20 Jan, 2024",
-                trailingIcon = null,
                 placeHolder = "Enter your joining data",
                 onValueChange = {},
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Text
                 ),
-                visibility = null,
-                onChangeVisibility = { /*TODO*/ }
             )
             Spacer(modifier = Modifier.height(10.dp))
             AuthInputField(
                 heading = "Email",
                 value = "mbogo3@gmail.com",
-                trailingIcon = null,
                 placeHolder = "Enter your password",
                 onValueChange = {},
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Email
                 ),
-                visibility = null,
-                onChangeVisibility = { /*TODO*/ }
             )
             Spacer(modifier = Modifier.height(10.dp))
             AuthInputField(
                 heading = "Phone No",
                 value = "254794649026",
-                trailingIcon = null,
                 placeHolder = "Enter your phone number",
                 onValueChange = {},
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Number
                 ),
-                visibility = null,
-                onChangeVisibility = { /*TODO*/ }
             )
             Spacer(modifier = Modifier.height(10.dp))
             AuthInputField(
                 heading = "City",
                 value = "Nairobi",
-                trailingIcon = null,
                 placeHolder = "Enter your city",
                 onValueChange = {},
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Text
                 ),
-                visibility = null,
-                onChangeVisibility = { /*TODO*/ }
             )
             Spacer(modifier = Modifier.height(10.dp))
             CountrySelection(

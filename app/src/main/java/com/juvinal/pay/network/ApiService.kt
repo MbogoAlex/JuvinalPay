@@ -1,5 +1,6 @@
 package com.juvinal.pay.network
 
+import com.juvinal.pay.model.MembershipFeePaymentStatusResponseBody
 import com.juvinal.pay.model.MembershipFeeRequestBody
 import com.juvinal.pay.model.MembershipFeeResponseBody
 import com.juvinal.pay.model.UserLoginRequestBody
@@ -8,7 +9,9 @@ import com.juvinal.pay.model.UserRegistrationRequestBody
 import com.juvinal.pay.model.UserRegistrationResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiService {
     @POST("createuser")
@@ -25,4 +28,9 @@ interface ApiService {
     suspend fun membershipFeePayment(
         @Body membershipFeeRequestBody: MembershipFeeRequestBody
     ): Response<MembershipFeeResponseBody>
+
+    @GET("payments/{paymentReference}/findstatus")
+    suspend fun checkMembershipFeePaymentStatus(
+        @Path("paymentReference") paymentReference: String
+    ): Response<MembershipFeePaymentStatusResponseBody>
 }

@@ -16,12 +16,49 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.juvinal.pay.R
 
 @Composable
 fun AuthInputField(
+    heading: String,
+    value: String,
+    placeHolder: String,
+    onValueChange: (newValue: String) -> Unit,
+    keyboardOptions: KeyboardOptions,
+    modifier: Modifier = Modifier
+) {
+    Column {
+        Row {
+            Text(
+                text = heading,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+            Text(
+                text = "*",
+                color = Color.Red
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        OutlinedTextField(
+            value = value,
+            placeholder = {
+                Text(text = placeHolder)
+            },
+            onValueChange = onValueChange,
+            keyboardOptions = keyboardOptions,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+fun PasswordInputField(
     heading: String,
     value: String,
     trailingIcon: Int?,
@@ -72,6 +109,7 @@ fun AuthInputField(
             placeholder = {
                 Text(text = placeHolder)
             },
+            visualTransformation = if(visibility != null && visibility) VisualTransformation.None else PasswordVisualTransformation(),
             onValueChange = onValueChange,
             keyboardOptions = keyboardOptions,
             modifier = Modifier

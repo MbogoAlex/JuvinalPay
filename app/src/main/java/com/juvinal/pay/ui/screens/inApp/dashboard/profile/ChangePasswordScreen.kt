@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.juvinal.pay.DocumentType
 import com.juvinal.pay.reusableComposables.AuthInputField
 import com.juvinal.pay.reusableComposables.DocumentTypeSelection
+import com.juvinal.pay.reusableComposables.PasswordInputField
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 
 @Composable
@@ -94,7 +95,7 @@ fun FilledPasswordTextFields(
                 .padding(20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            AuthInputField(
+            PasswordInputField(
                 heading = "Current password",
                 value = "",
                 trailingIcon = null,
@@ -108,7 +109,7 @@ fun FilledPasswordTextFields(
                 onChangeVisibility = { /*TODO*/ }
             )
             Spacer(modifier = Modifier.height(10.dp))
-            AuthInputField(
+            PasswordInputField(
                 heading = "New Password",
                 value = "",
                 trailingIcon = null,
@@ -122,7 +123,7 @@ fun FilledPasswordTextFields(
                 onChangeVisibility = { /*TODO*/ }
             )
             Spacer(modifier = Modifier.height(10.dp))
-            AuthInputField(
+            PasswordInputField(
                 heading = "Confirm Password",
                 value = "",
                 trailingIcon = null,

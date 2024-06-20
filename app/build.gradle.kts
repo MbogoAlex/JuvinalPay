@@ -80,8 +80,8 @@ dependencies {
     //Viewmodel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
-    // https://mvnrepository.com/artifact/androidx.compose.material3/material3
-    implementation("androidx.compose.material3:material3:1.0.0-alpha02")
+//    // https://mvnrepository.com/artifact/androidx.compose.material3/material3
+//    implementation("androidx.compose.material3:material3:1.0.0-alpha02")
 
 
     implementation(libs.androidx.core.ktx)
