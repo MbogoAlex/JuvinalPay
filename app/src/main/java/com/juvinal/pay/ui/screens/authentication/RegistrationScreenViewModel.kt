@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juvinal.pay.DocumentType
 import com.juvinal.pay.LoadingStatus
+import com.juvinal.pay.datastore.DSRepository
+import com.juvinal.pay.datastore.UserDSModel
 import com.juvinal.pay.model.UserRegistrationRequestBody
 import com.juvinal.pay.network.ApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,10 +29,12 @@ data class RegistrationScreenUiState (
     val loadingStatus: LoadingStatus = LoadingStatus.INITIAL
 )
 class RegistrationScreenViewModel(
-    private val apiRepository: ApiRepository
+    private val apiRepository: ApiRepository,
+    private val dsRepository: DSRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(value = RegistrationScreenUiState())
     val uiState: StateFlow<RegistrationScreenUiState> = _uiState.asStateFlow()
+
     fun registerUser() {
         _uiState.update {
             it.copy(
@@ -52,6 +56,22 @@ class RegistrationScreenViewModel(
             try {
                 val response = apiRepository.registerUser(user)
                 if(response.isSuccessful) {
+                    val dsUserDSModel = UserDSModel(
+                        id = response.body()?.user?.id!!,
+                        name = response.body()?.user?.name!!,
+                        uid = response.body()?.user?.uid!!,
+                        surname = response.body()?.user?.surname!!,
+                        fname = response.body()?.user?.fname!!,
+                        lname = response.body()?.user?.lname!!,
+                        document_type = response.body()?.user?.document_type!!,
+                        document_no = response.body()?.user?.document_no!!,
+                        email = response.body()?.user?.email!!,
+                        phone_no = response.body()?.user?.phone_no!!,
+                        password = uiState.value.password,
+                        created_at = response.body()?.user?.created_at!!,
+                        updated_at = response.body()?.user?.updated_at!!
+                    )
+                    dsRepository.saveUserDetails(dsUserDSModel)
                     _uiState.update {
                         it.copy(
                             loadingStatus = LoadingStatus.SUCCESS

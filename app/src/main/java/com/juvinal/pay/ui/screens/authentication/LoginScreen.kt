@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,6 +25,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +38,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.juvinal.pay.AppViewModelFactory
+import com.juvinal.pay.LoadingStatus
 import com.juvinal.pay.R
 import com.juvinal.pay.reusableComposables.AuthInputField
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
@@ -43,13 +49,40 @@ import com.juvinal.pay.ui.theme.JuvinalPayTheme
 fun LoginScreenComposable(
     modifier: Modifier = Modifier
 ) {
+
+    val viewModel: LoginScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
     Box {
-        LoginScreen()
+        LoginScreen(
+            documentNo = uiState.document_no,
+            onDocumentNoChange = {
+                viewModel.updateDocumentNo(it)
+                viewModel.checkIfAllFieldsAreFilled()
+            },
+            password = uiState.password,
+            onPasswordChange = {
+                viewModel.updatePassword(it)
+                viewModel.checkIfAllFieldsAreFilled()
+            },
+            onLogin = {
+                viewModel.login()
+            },
+            buttonEnabled = uiState.loginButtonEnabled,
+            loadingStatus = uiState.loadingStatus
+        )
     }
 }
 
 @Composable
 fun LoginScreen(
+    documentNo: String,
+    password: String,
+    onDocumentNoChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLogin: () -> Unit,
+    buttonEnabled: Boolean,
+    loadingStatus: LoadingStatus,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -78,10 +111,10 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text(text = "Already have an account?")
+                Text(text = "Dont't have an account?")
                 TextButton(onClick = { /*TODO*/ }) {
                     Text(
-                        text = "Signin",
+                        text = "Signup",
                         color = Color(0xFF405189)
                     )
                 }
@@ -109,7 +142,15 @@ fun LoginScreen(
                 Column(
                     modifier = Modifier
                 ) {
-                    LoginDetailsInputField()
+                    LoginDetailsInputField(
+                        documentNo = documentNo,
+                        onDocumentNoChange = onDocumentNoChange,
+                        onPasswordChange = onPasswordChange,
+                        password = password,
+                        buttonEnabled = buttonEnabled,
+                        loadingStatus = loadingStatus,
+                        onLogin = onLogin
+                    )
                 }
             }
         }
@@ -119,6 +160,13 @@ fun LoginScreen(
 
 @Composable
 fun LoginDetailsInputField(
+    documentNo: String,
+    password: String,
+    onDocumentNoChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLogin: () -> Unit,
+    buttonEnabled: Boolean,
+    loadingStatus: LoadingStatus,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -151,10 +199,10 @@ fun LoginDetailsInputField(
 
         AuthInputField(
             heading = "Username (Document No)",
-            value = "",
+            value = documentNo,
             trailingIcon = null,
             placeHolder = "Document No - ID/Passport",
-            onValueChange = {},
+            onValueChange = onDocumentNoChange,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Text
@@ -165,10 +213,10 @@ fun LoginDetailsInputField(
         Spacer(modifier = Modifier.height(10.dp))
         AuthInputField(
             heading = "Password",
-            value = "",
+            value = password,
             trailingIcon = null,
             placeHolder = "Enter password",
-            onValueChange = {},
+            onValueChange = onPasswordChange,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Password
@@ -178,6 +226,7 @@ fun LoginDetailsInputField(
         )
         Spacer(modifier = Modifier.height(40.dp))
         Button(
+            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
             shape = RoundedCornerShape(5.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF0ab39c),
@@ -185,12 +234,16 @@ fun LoginDetailsInputField(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .widthIn(250.dp),
-            onClick = { /*TODO*/ }
+            onClick = onLogin
         ) {
-            Text(
-                text = "Sign in",
-                color = Color.White
-            )
+            if(loadingStatus == LoadingStatus.LOADING) {
+                CircularProgressIndicator()
+            } else {
+                Text(
+                    text = "Sign in",
+                    color = Color.White
+                )
+            }
         }
         Spacer(modifier = Modifier.height(20.dp))
         Text(
@@ -233,6 +286,14 @@ fun LoginDetailsInputField(
 @Composable
 fun LoginScreenPreview() {
     JuvinalPayTheme {
-        LoginScreen()
+        LoginScreen(
+            documentNo = "",
+            password = "",
+            onDocumentNoChange = {},
+            onPasswordChange = {},
+            onLogin = { /*TODO*/ },
+            buttonEnabled = false,
+            loadingStatus = LoadingStatus.INITIAL
+        )
     }
 }
