@@ -85,10 +85,11 @@ fun LoginScreenComposable(
     }
 
     if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
-        Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
         if(uiState.userRegistered) {
+            Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
             navigateToInAppNavigationScreen()
         } else {
+            Toast.makeText(context, "Login successful. Pay Ksh 100 to be a full member of JuvinalPay", Toast.LENGTH_SHORT).show()
             navigateToMembershipFeePaymentScreen()
         }
         viewModel.resetLoadingStatus()
