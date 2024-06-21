@@ -52,6 +52,7 @@ import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.DocumentType
 import com.juvinal.pay.LoadingStatus
 import com.juvinal.pay.R
+import com.juvinal.pay.resusableFunctions.isValidEmail
 import com.juvinal.pay.reusableComposables.AuthInputField
 import com.juvinal.pay.reusableComposables.DocumentTypeSelection
 import com.juvinal.pay.reusableComposables.PasswordInputField
@@ -141,19 +142,24 @@ fun RegistrationScreenComposable(
             },
             expanded = showDocumentTypeSelection,
             onRegister = {
-                if(uiState.phoneNo.length > 10 || uiState.phoneNo.length < 10) {
-                    Toast.makeText(context, "Phone number must be 10 digits", Toast.LENGTH_SHORT).show()
-                } else {
-                    if(uiState.password == uiState.passwordConfirmation) {
-                        if(uiState.password.length < 8) {
-                            Toast.makeText(context, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show()
-                        } else {
-                            viewModel.registerUser()
-                        }
+                if(isValidEmail(uiState.email)) {
+                    if(uiState.phoneNo.length > 10 || uiState.phoneNo.length < 10) {
+                        Toast.makeText(context, "Phone number must be 10 digits", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                        if(uiState.password == uiState.passwordConfirmation) {
+                            if(uiState.password.length < 8) {
+                                Toast.makeText(context, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show()
+                            } else {
+                                viewModel.registerUser()
+                            }
+                        } else {
+                            Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                        }
                     }
+                } else {
+                    Toast.makeText(context, "Enter a valid email", Toast.LENGTH_SHORT).show()
                 }
+
             },
             loadingStatus = uiState.loadingStatus,
             buttonEnabled = uiState.saveButtonEnabled,
