@@ -21,6 +21,12 @@ import com.juvinal.pay.ui.screens.inApp.InAppNavScreenComposable
 import com.juvinal.pay.ui.screens.inApp.InAppNavScreenDestination
 import com.juvinal.pay.ui.screens.inApp.dashboard.HomeScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.HomeScreenDestination
+import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ChangePasswordScreenComposable
+import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ChangePasswordScreenDestination
+import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PersonalDetailsScreenComposable
+import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PersonalDetailsScreenDestination
+import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PrivacyPolicyScreenComposable
+import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PrivacyPolicyScreenDestination
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -48,7 +54,23 @@ fun NavigationGraph(
         }
         // HomeScreen
         composable(InAppNavScreenDestination.route) {
-            InAppNavScreenComposable()
+            InAppNavScreenComposable(
+                navigateToPersonalDetailsScreen = {
+                    navController.navigate(PersonalDetailsScreenDestination.route)
+                },
+                navigateToChangePasswordScreen = {
+                    navController.navigate(ChangePasswordScreenDestination.route)
+                },
+                navigateToPrivacyPolicyScreen = {
+                    navController.navigate(PrivacyPolicyScreenDestination.route)
+                },
+                navigateToInAppNavigationScreen = {
+                    navController.navigate(InAppNavScreenDestination.route)
+                },
+                navigateToLoginScreenWithArgs = {documentNo, password ->
+                    navController.navigate("${LoginScreenDestination.route}/${documentNo}/${password}")
+                }
+            )
         }
         // RegistrationScreen
         composable(RegistrationScreenDestination.route) {
@@ -58,14 +80,17 @@ fun NavigationGraph(
                 },
                 navigateToLoginScreenWithArgs = {documentNo, password ->
                     navController.navigate("${LoginScreenDestination.route}/${documentNo}/${password}")
+                },
+                navigateToMembershipFeeScreen = {
+                    navController.navigate(MembershipFeeScreenDestination.route)
                 }
             )
         }
         // MembershipFeeScreen
         composable(MembershipFeeScreenDestination.route) {
             MembershipFeeScreenComposable(
-                navigateToHomeScreen = {
-                    navController.navigate(HomeScreenDestination.route)
+                navigateToInAppNavigationScreen = {
+                    navController.navigate(InAppNavScreenDestination.route)
                 }
             )
         }
@@ -78,8 +103,8 @@ fun NavigationGraph(
                 navigateToMembershipFeePaymentScreen = {
                     navController.navigate(MembershipFeeScreenDestination.route)
                 },
-                navigateToHomeScreen = {
-                    navController.navigate(HomeScreenDestination.route)
+                navigateToInAppNavigationScreen = {
+                    navController.navigate(InAppNavScreenDestination.route)
                 }
             )
         }
@@ -102,8 +127,32 @@ fun NavigationGraph(
                 navigateToMembershipFeePaymentScreen = {
                     navController.navigate(MembershipFeeScreenDestination.route)
                 },
-                navigateToHomeScreen = {
-                    navController.navigate(HomeScreenDestination.route)
+                navigateToInAppNavigationScreen = {
+                    navController.navigate(InAppNavScreenDestination.route)
+                }
+            )
+        }
+        // PersonalDetailsScreen
+        composable(PersonalDetailsScreenDestination.route) {
+            PersonalDetailsScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        // ChangePasswordScreen
+        composable(ChangePasswordScreenDestination.route) {
+            ChangePasswordScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        // PrivacyPolicyScreen
+        composable(PrivacyPolicyScreenDestination.route) {
+            PrivacyPolicyScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
                 }
             )
         }

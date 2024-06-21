@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -65,6 +66,7 @@ object RegistrationScreenDestination: AppNavigation {
 fun RegistrationScreenComposable(
     navigateToLoginScreen: () -> Unit,
     navigateToLoginScreenWithArgs: (documentNo: String, password: String) -> Unit,
+    navigateToMembershipFeeScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val activity = (LocalContext.current as? Activity)
@@ -78,14 +80,17 @@ fun RegistrationScreenComposable(
 
     if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
         Toast.makeText(context, "Registration successful. Pay Ksh 100 to be a full member of JuvinalPay", Toast.LENGTH_SHORT).show()
-        navigateToLoginScreenWithArgs(uiState.documentNo, uiState.password)
+        navigateToMembershipFeeScreen()
         viewModel.resetLoadingStatus()
     } else if(uiState.loadingStatus == LoadingStatus.FAIL) {
         Toast.makeText(context, "Registration failed", Toast.LENGTH_SHORT).show()
         viewModel.resetLoadingStatus()
     }
 
-    Box {
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
         RegistrationScreen(
             surname = uiState.surname,
             onChangeSurname = {
@@ -136,12 +141,19 @@ fun RegistrationScreenComposable(
             },
             expanded = showDocumentTypeSelection,
             onRegister = {
-                if(uiState.password == uiState.passwordConfirmation) {
-                    viewModel.registerUser()
+                if(uiState.phoneNo.length > 10 || uiState.phoneNo.length < 10) {
+                    Toast.makeText(context, "Phone number must be 10 digits", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                    if(uiState.password == uiState.passwordConfirmation) {
+                        if(uiState.password.length < 8) {
+                            Toast.makeText(context, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show()
+                        } else {
+                            viewModel.registerUser()
+                        }
+                    } else {
+                        Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                    }
                 }
-
             },
             loadingStatus = uiState.loadingStatus,
             buttonEnabled = uiState.saveButtonEnabled,
@@ -333,7 +345,7 @@ fun RegistrationDetailsInputField(
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = "Get your free JuvinalPay account now and start saving",
+            text = "Get your JuvinalPay account now and start saving",
             style = TextStyle(
                 color = Color(0xFFacaeb8)
             ),

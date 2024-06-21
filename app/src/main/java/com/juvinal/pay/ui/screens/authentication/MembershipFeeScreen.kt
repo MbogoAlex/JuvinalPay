@@ -3,6 +3,8 @@ package com.juvinal.pay.ui.screens.authentication
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,11 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -55,7 +61,7 @@ object MembershipFeeScreenDestination: AppNavigation {
 }
 @Composable
 fun MembershipFeeScreenComposable(
-    navigateToHomeScreen: () -> Unit,
+    navigateToInAppNavigationScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -74,40 +80,57 @@ fun MembershipFeeScreenComposable(
     }
 
     var paymentCountdown by remember {
-        mutableIntStateOf(30)
+        mutableIntStateOf(40)
+    }
+
+    var countdownOn by remember {
+        mutableStateOf(false)
     }
 
     val scope = rememberCoroutineScope()
 
     if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
         Toast.makeText(context, "Payment successful. You are now a full member of JuvinalPay.", Toast.LENGTH_LONG).show()
-        navigateToHomeScreen()
+        navigateToInAppNavigationScreen()
         viewModel.resetLoadingStatus()
     } else if(uiState.loadingStatus == LoadingStatus.FAIL) {
         Toast.makeText(context, "Failed. Check your internet connection and ensure that you have adequate funds in your M-PESA wallet", Toast.LENGTH_LONG).show()
+        countdownOn = false
+        paymentCountdown = 40
         viewModel.resetLoadingStatus()
-        paymentCountdown = 30
+
     }
 
-    MembershipFeeScreen(
-        paymentCountdown = paymentCountdown,
-        phoneNumber = uiState.msisdn,
-        buttonEnabled = uiState.paymentButtonEnabled,
-        loadingStatus = uiState.loadingStatus,
-        onPhoneNumberChange = {
-            viewModel.updatePhoneNo(it)
-        },
-        onPay = {
-            scope.launch {
-                viewModel.payMembershipFee()
-                while (paymentCountdown > 0) {
-                    delay(1000)
-                    paymentCountdown--
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        MembershipFeeScreen(
+            paymentCountdown = paymentCountdown,
+            phoneNumber = uiState.msisdn,
+            buttonEnabled = uiState.paymentButtonEnabled,
+            loadingStatus = uiState.loadingStatus,
+            onPhoneNumberChange = {
+                viewModel.updatePhoneNo(it)
+            },
+            onPay = {
+                scope.launch {
+                    viewModel.payMembershipFee()
+                    countdownOn = true
+                    while (paymentCountdown > 0 && countdownOn) {
+                        delay(1000)
+                        paymentCountdown--
+                    }
+                    viewModel.checkPaymentStatus()
                 }
+            },
+            showCheckPaymentOption = uiState.paymentReference != null && !countdownOn,
+            onCheckPayment = {
+                countdownOn = true
                 viewModel.checkPaymentStatus()
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable
@@ -116,21 +139,24 @@ fun MembershipFeeScreen(
     phoneNumber: String,
     buttonEnabled: Boolean,
     loadingStatus: LoadingStatus,
+    showCheckPaymentOption: Boolean,
     onPhoneNumberChange: (String) -> Unit,
     onPay: () -> Unit,
+    onCheckPayment: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = Modifier
             .padding(
-                top = 30.dp,
+//                top = 30.dp,
 //                bottom = 40.dp
             )
+            .verticalScroll(rememberScrollState())
             .fillMaxSize()
     ) {
         Text(
             text = "Membership Fee",
-            color = Color(0xFF0D141C),
+//            color = Color(0xFF0D141C),
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -268,7 +294,23 @@ fun MembershipFeeScreen(
                 Text(text = "Pay")
             }
         }
-
+        if(showCheckPaymentOption) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp
+                    )
+            ) {
+                Text(text = "I have already paid")
+                TextButton(onClick = onCheckPayment) {
+                    Text(text = "Confirm")
+                }
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+        }
     }
 }
 
@@ -277,12 +319,14 @@ fun MembershipFeeScreen(
 fun MembershipFeeScreenPreview() {
     JuvinalPayTheme {
         MembershipFeeScreen(
-            paymentCountdown = 30,
+            paymentCountdown = 40,
             phoneNumber = "",
             buttonEnabled = false,
+            showCheckPaymentOption = false,
             loadingStatus = LoadingStatus.INITIAL,
             onPhoneNumberChange = {},
-            onPay = { /*TODO*/ }
+            onPay = { /*TODO*/ },
+            onCheckPayment = {}
         )
     }
 }

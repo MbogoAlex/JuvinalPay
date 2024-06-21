@@ -20,5 +20,5 @@ data class MembershipFeeResponseBody(
 data class MembershipFeePaymentStatusResponseBody(
     val status: String,
     val message: String,
-    val member: MemberDT
+    val member: MemberDT?
 )

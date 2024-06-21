@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -23,6 +24,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,29 +35,47 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.DocumentType
 import com.juvinal.pay.reusableComposables.AuthInputField
 import com.juvinal.pay.reusableComposables.DocumentTypeSelection
 import com.juvinal.pay.reusableComposables.PasswordInputField
+import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 
+object ChangePasswordScreenDestination: AppNavigation {
+    override val title: String = "Change password string"
+    override val route: String = "change-password-screen"
+
+}
 @Composable
 fun ChangePasswordScreenComposable(
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box {
-        ChangePasswordScreen()
+    val viewModel: ChangePasswordScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        ChangePasswordScreen(
+            navigateToPreviousScreen = navigateToPreviousScreen
+        )
     }
 }
 
 @Composable
 fun ChangePasswordScreen(
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
    Column(
        modifier = Modifier
            .padding(
-               top = 30.dp,
+//               top = 30.dp,
                start = 10.dp,
                end = 10.dp,
                bottom = 40.dp
@@ -64,7 +85,7 @@ fun ChangePasswordScreen(
        Row(
            verticalAlignment = Alignment.CenterVertically
        ) {
-           IconButton(onClick = { /*TODO*/ }) {
+           IconButton(onClick = navigateToPreviousScreen) {
                Icon(
                    imageVector = Icons.Default.ArrowBack,
                    contentDescription = "Previous screen"
@@ -100,6 +121,7 @@ fun FilledPasswordTextFields(
                 value = "",
                 trailingIcon = null,
                 placeHolder = "Enter current password",
+                readOnly = true,
                 onValueChange = {},
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
@@ -114,6 +136,7 @@ fun FilledPasswordTextFields(
                 value = "",
                 trailingIcon = null,
                 placeHolder = "Enter password",
+                readOnly = true,
                 onValueChange = {},
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
@@ -128,6 +151,7 @@ fun FilledPasswordTextFields(
                 value = "",
                 trailingIcon = null,
                 placeHolder = "Confirm password",
+                readOnly = true,
                 onValueChange = {},
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done,
@@ -161,6 +185,8 @@ fun FilledPasswordTextFields(
 @Composable
 fun ChangePasswordScreenPreview() {
     JuvinalPayTheme {
-        ChangePasswordScreen()
+        ChangePasswordScreen(
+            navigateToPreviousScreen = {}
+        )
     }
 }

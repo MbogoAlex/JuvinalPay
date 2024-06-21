@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 data class MembershipFeeScreenUiState(
     val msisdn: String = "",
-    val paymentReference: String = "",
+    val paymentReference: String? = null,
     val userDetails: UserDetails = UserDetails(),
     val paymentButtonEnabled: Boolean = false,
     val loadingStatus: LoadingStatus = LoadingStatus.INITIAL
@@ -30,12 +30,25 @@ class MembershipFeeScreenViewModel(
     private val _uiState = MutableStateFlow(MembershipFeeScreenUiState())
     val uiState: StateFlow<MembershipFeeScreenUiState> = _uiState.asStateFlow()
 
-    fun loadStartupData() {
+    fun loadUserData() {
         viewModelScope.launch {
             dsRepository.userDSDetails.collect(){dsUserDetails->
                 _uiState.update {
                     it.copy(
-                        userDetails = dsUserDetails.toUserDetails()
+                        userDetails = dsUserDetails.toUserDetails(),
+                        msisdn = dsUserDetails.phone_no
+                    )
+                }
+            }
+        }
+    }
+
+    fun loadPaymentData() {
+        viewModelScope.launch {
+            dsRepository.paymentDSDetails.collect() {paymentDSDetails->
+                _uiState.update {
+                    it.copy(
+                        paymentReference = paymentDSDetails.memberFeePaymentReference
                     )
                 }
             }
@@ -58,7 +71,7 @@ class MembershipFeeScreenViewModel(
         }
         val membershipFeeRequestBody = MembershipFeeRequestBody(
             uid = uiState.value.userDetails.uid,
-            msisdn = uiState.value.msisdn,
+            msisdn = if(uiState.value.msisdn.startsWith("254")) uiState.value.msisdn.replace("254", "0") else uiState.value.msisdn,
             payment_purpose = "MEMBER_REGISTRATION_FEE"
         )
         viewModelScope.launch {
@@ -90,9 +103,11 @@ class MembershipFeeScreenViewModel(
     }
 
     fun checkPaymentStatus() {
+        Log.i("REFERENCE_ID:", uiState.value.paymentReference!!)
         viewModelScope.launch {
             try {
-               val response = apiRepository.checkMembershipFeePaymentStatus(uiState.value.paymentReference)
+               val response = apiRepository.checkMembershipFeePaymentStatus(uiState.value.paymentReference!!)
+                Log.i("RESPONSE:", response.toString())
                if(response.isSuccessful) {
                    if(response.body()?.status?.lowercase() == "successful") {
                        val dsUserDSModel = UserDSModel(
@@ -164,7 +179,8 @@ class MembershipFeeScreenViewModel(
     }
 
     init {
-        loadStartupData()
+        loadUserData()
+        loadPaymentData()
     }
 
 }

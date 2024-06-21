@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -66,7 +67,7 @@ object LoginScreenDestination: AppNavigation {
 fun LoginScreenComposable(
     navigateToRegistrationScreen: () -> Unit,
     navigateToMembershipFeePaymentScreen: () -> Unit,
-    navigateToHomeScreen: () -> Unit,
+    navigateToInAppNavigationScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -86,7 +87,7 @@ fun LoginScreenComposable(
     if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
         Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
         if(uiState.userRegistered) {
-            navigateToHomeScreen()
+            navigateToInAppNavigationScreen()
         } else {
             navigateToMembershipFeePaymentScreen()
         }
@@ -96,7 +97,10 @@ fun LoginScreenComposable(
         viewModel.resetLoadingStatus()
     }
 
-    Box {
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
         LoginScreen(
             documentNo = uiState.document_no,
             onDocumentNoChange = {
@@ -113,7 +117,7 @@ fun LoginScreenComposable(
             },
             buttonEnabled = uiState.loginButtonEnabled,
             loadingStatus = uiState.loadingStatus,
-            navigateToRegistrationScreen = navigateToRegistrationScreen
+            navigateToRegistrationScreen = navigateToRegistrationScreen,
         )
     }
 }

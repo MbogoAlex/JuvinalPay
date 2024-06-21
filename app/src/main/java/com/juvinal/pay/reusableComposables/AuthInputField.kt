@@ -27,6 +27,7 @@ fun AuthInputField(
     heading: String,
     value: String,
     placeHolder: String,
+    readOnly: Boolean = false,
     onValueChange: (newValue: String) -> Unit,
     keyboardOptions: KeyboardOptions,
     modifier: Modifier = Modifier
@@ -51,6 +52,7 @@ fun AuthInputField(
             },
             onValueChange = onValueChange,
             keyboardOptions = keyboardOptions,
+            readOnly = readOnly,
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -63,6 +65,7 @@ fun PasswordInputField(
     value: String,
     trailingIcon: Int?,
     placeHolder: String,
+    readOnly: Boolean = false,
     onValueChange: (newValue: String) -> Unit,
     keyboardOptions: KeyboardOptions,
     visibility: Boolean?,
@@ -109,6 +112,7 @@ fun PasswordInputField(
             placeholder = {
                 Text(text = placeHolder)
             },
+            readOnly = readOnly,
             visualTransformation = if(visibility != null && visibility) VisualTransformation.None else PasswordVisualTransformation(),
             onValueChange = onValueChange,
             keyboardOptions = keyboardOptions,

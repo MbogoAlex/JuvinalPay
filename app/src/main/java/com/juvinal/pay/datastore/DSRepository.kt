@@ -33,10 +33,11 @@ class DSRepository(
         private val PASSWORD = stringPreferencesKey("password")
         private val NAME = stringPreferencesKey("name")
         private val UID = stringPreferencesKey("uid")
+        private val MEMBER_FEE_PAYMENT_REFERENCE = stringPreferencesKey("member_fee_payment_reference")
     }
 
     suspend fun saveUserDetails(
-        userDSModel: UserDSModel
+        userDSModel: UserDSModel,
     ) {
         dataStore.edit { preferences ->
             preferences[ID] = userDSModel.id!!
@@ -56,6 +57,13 @@ class DSRepository(
             preferences[PASSWORD] = userDSModel.password
             preferences[NAME] = userDSModel.name
             preferences[UID] = userDSModel.uid
+
+        }
+    }
+
+    suspend fun savePaymentData(paymentReferenceDSModel: PaymentReferenceDSModel) {
+        dataStore.edit { preferences ->
+            preferences[MEMBER_FEE_PAYMENT_REFERENCE] = paymentReferenceDSModel.memberFeePaymentReference!!
         }
     }
 
@@ -91,9 +99,26 @@ class DSRepository(
         uid = this[UID] ?: ""
     )
 
+    val paymentDSDetails: Flow<PaymentReferenceDSModel> = dataStore.data
+        .catch {
+            if(it is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw it
+            }
+        }
+        .map {
+            it.toPaymentReferenceDSModel()
+        }
+
+    private fun Preferences.toPaymentReferenceDSModel(): PaymentReferenceDSModel = PaymentReferenceDSModel(
+        memberFeePaymentReference = this[MEMBER_FEE_PAYMENT_REFERENCE]
+    )
+
     suspend fun clear() {
         dataStore.edit { preferences ->
             preferences.clear()
         }
     }
+
 }

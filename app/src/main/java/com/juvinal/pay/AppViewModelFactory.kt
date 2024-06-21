@@ -9,6 +9,10 @@ import com.juvinal.pay.ui.screens.SplashScreenViewModel
 import com.juvinal.pay.ui.screens.authentication.LoginScreenViewModel
 import com.juvinal.pay.ui.screens.authentication.MembershipFeeScreenViewModel
 import com.juvinal.pay.ui.screens.authentication.RegistrationScreenViewModel
+import com.juvinal.pay.ui.screens.inApp.dashboard.HomeScreenViewModel
+import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ChangePasswordScreenViewModel
+import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PersonalDetailsScreenViewModel
+import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenViewModel
 
 object AppViewModelFactory {
     val Factory = viewModelFactory {
@@ -51,6 +55,46 @@ object AppViewModelFactory {
         initializer {
             val dsRepository = juvinalPayApplication().dsRepository
             SplashScreenViewModel(
+                dsRepository = dsRepository
+            )
+        }
+
+        // initialize HomeScreenViewModel
+        initializer {
+            val apiRepository = juvinalPayApplication().container.apiRepository
+            val dsRepository = juvinalPayApplication().dsRepository
+            HomeScreenViewModel(
+                apiRepository = apiRepository,
+                dsRepository = dsRepository
+            )
+        }
+
+        // initialize ProfileScreenViewModel
+        initializer {
+            val apiRepository = juvinalPayApplication().container.apiRepository
+            val dsRepository = juvinalPayApplication().dsRepository
+            ProfileScreenViewModel(
+                apiRepository = apiRepository,
+                dsRepository = dsRepository
+            )
+        }
+
+        // initialize PersonalDetailsScreenViewModel
+        initializer {
+            val apiRepository = juvinalPayApplication().container.apiRepository
+            val dsRepository = juvinalPayApplication().dsRepository
+            PersonalDetailsScreenViewModel(
+                apiRepository = apiRepository,
+                dsRepository = dsRepository
+            )
+        }
+
+        // initialize ChangePasswordScreenViewModel
+        initializer {
+            val apiRepository = juvinalPayApplication().container.apiRepository
+            val dsRepository = juvinalPayApplication().dsRepository
+            ChangePasswordScreenViewModel(
+                apiRepository = apiRepository,
                 dsRepository = dsRepository
             )
         }

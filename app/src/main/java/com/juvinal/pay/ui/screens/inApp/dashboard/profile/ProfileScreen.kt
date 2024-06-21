@@ -1,7 +1,11 @@
 package com.juvinal.pay.ui.screens.inApp.dashboard.profile
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,36 +22,106 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.R
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreenComposable(
+    navigateToPersonalDetailsScreen: () -> Unit,
+    navigateToChangePasswordScreen: () -> Unit,
+    navigateToPrivacyPolicyScreen: () -> Unit,
+    navigateToInAppNavigationScreen: () -> Unit,
+    navigateToLoginScreenWithArgs: (documentNo: String, password: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    BackHandler(onBack = navigateToInAppNavigationScreen)
+    val viewModel: ProfileScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+    val scope = rememberCoroutineScope()
+
+    var loggingOut by rememberSaveable {
+        mutableStateOf(false)
+    }
+    
+    var showLogoutDialog by remember {
+        mutableStateOf(false)
+    }
+    
+    if(showLogoutDialog) {
+        LogoutDialog(
+            onConfirm = {
+                showLogoutDialog = !showLogoutDialog
+                scope.launch {
+                    loggingOut = true
+                    delay(2000)
+                    viewModel.logout()
+                    navigateToLoginScreenWithArgs(uiState.userDetails.document_no, uiState.userDetails.password)
+                    loggingOut = false
+                    Toast.makeText(context, "You are logged out", Toast.LENGTH_SHORT).show()
+                }      
+            }, 
+            onDismiss = {
+                showLogoutDialog = !showLogoutDialog
+            }
+        )
+    }
+
     Box {
-        ProfileScreen()
+        ProfileScreen(
+            loggingOut = loggingOut,
+            username = uiState.userDetails.name,
+            navigateToPersonalDetailsScreen = navigateToPersonalDetailsScreen,
+            navigateToChangePasswordScreen = navigateToChangePasswordScreen,
+            navigateToPrivacyPolicyScreen = navigateToPrivacyPolicyScreen,
+            onLogout = {
+                showLogoutDialog = !showLogoutDialog
+            }
+        )
     }
 }
 
 
 @Composable
 fun ProfileScreen(
+    username: String,
+    loggingOut: Boolean,
+    navigateToPersonalDetailsScreen: () -> Unit,
+    navigateToChangePasswordScreen: () -> Unit,
+    navigateToPrivacyPolicyScreen: () -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -58,13 +132,13 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .background(Color(0xFF313d60))
+                .background(MaterialTheme.colorScheme.secondaryContainer)
         )
 
         Column(
             modifier = Modifier
                 .padding(
-                    top = 30.dp
+//                    top = 30.dp
                 )
         ) {
             Box(
@@ -81,7 +155,7 @@ fun ProfileScreen(
             ) {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -133,7 +207,7 @@ fun ProfileScreen(
                         }
                         Spacer(modifier = Modifier.height(20.dp))
                         Text(
-                            text = "Mbogo Alex Gitau".uppercase(),
+                            text = username.uppercase(),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF4b5259)
@@ -163,7 +237,12 @@ fun ProfileScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(20.dp)
                 ) {
-                    Card {
+                    Card(
+                        modifier = Modifier
+                            .clickable {
+                                navigateToPersonalDetailsScreen()
+                            }
+                    ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -181,7 +260,10 @@ fun ProfileScreen(
 
                     }
                     Spacer(modifier = Modifier.height(20.dp))
-                    Card {
+                    Card(
+                        modifier = Modifier
+                            .clickable { navigateToChangePasswordScreen() }
+                    ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -217,7 +299,12 @@ fun ProfileScreen(
 
                     }
                     Spacer(modifier = Modifier.height(20.dp))
-                    Card {
+                    Card(
+                        modifier = Modifier
+                            .clickable {
+                                navigateToPrivacyPolicyScreen()
+                            }
+                    ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -234,6 +321,20 @@ fun ProfileScreen(
                         }
 
                     }
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Button(
+                        enabled = !loggingOut,
+                        onClick = onLogout,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        if(loggingOut) {
+                            Text(text = "Logging out...")
+                        } else {
+                            Text(text = "Log out")
+                        }
+                    }
+
                 }
             }
         }
@@ -255,10 +356,41 @@ fun ProfileSectionMenu(
     }
 }
 
+@Composable
+fun LogoutDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        title = {
+                Text(text = "Logout confirmation")
+        },
+        onDismissRequest = onDismiss, 
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = "Cancel")
+            }
+        },
+        confirmButton = { 
+            Button(onClick = onConfirm) {
+                Text("Logout")
+            }
+        },
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
     JuvinalPayTheme {
-        ProfileScreen()
+        ProfileScreen(
+            username = "David Njuguna",
+            loggingOut = false,
+            navigateToPersonalDetailsScreen = {},
+            navigateToChangePasswordScreen = {},
+            navigateToPrivacyPolicyScreen = {},
+            onLogout = {}
+        )
     }
 }

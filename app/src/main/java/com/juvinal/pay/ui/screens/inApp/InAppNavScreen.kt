@@ -1,14 +1,20 @@
 package com.juvinal.pay.ui.screens.inApp
 
+import android.app.Activity
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -23,10 +29,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,8 +56,16 @@ object InAppNavScreenDestination: AppNavigation {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InAppNavScreenComposable(
+    navigateToPersonalDetailsScreen: () -> Unit,
+    navigateToChangePasswordScreen: () -> Unit,
+    navigateToPrivacyPolicyScreen: () -> Unit,
+    navigateToInAppNavigationScreen: () -> Unit,
+    navigateToLoginScreenWithArgs: (documentNo: String, password: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val activity = (LocalContext.current as? Activity)
+    BackHandler(onBack = {activity?.finish()})
+
     val dashboardMenuItems = listOf(
         DashboardMenuItem(
             name = "Home",
@@ -61,17 +77,26 @@ fun InAppNavScreenComposable(
         ),
     )
 
-    var currentScreen by remember {
+    var currentScreen by rememberSaveable {
         mutableStateOf(HomeScreenSideBarMenuScreen.HOME)
     }
 
-    InAppNavScreen(
-        dashboardMenuItems = dashboardMenuItems,
-        currentScreen = currentScreen,
-        onChangeScreen = {
-            currentScreen = it
-        }
-    )
+    Box(modifier = Modifier
+        .safeDrawingPadding()
+    ) {
+        InAppNavScreen(
+            dashboardMenuItems = dashboardMenuItems,
+            currentScreen = currentScreen,
+            onChangeScreen = {
+                currentScreen = it
+            },
+            navigateToPersonalDetailsScreen = navigateToPersonalDetailsScreen,
+            navigateToChangePasswordScreen = navigateToChangePasswordScreen,
+            navigateToInAppNavigationScreen = navigateToInAppNavigationScreen,
+            navigateToPrivacyPolicyScreen = navigateToPrivacyPolicyScreen,
+            navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs
+        )
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -80,6 +105,11 @@ fun InAppNavScreen(
     dashboardMenuItems: List<DashboardMenuItem>,
     currentScreen: HomeScreenSideBarMenuScreen,
     onChangeScreen: (screen: HomeScreenSideBarMenuScreen) -> Unit,
+    navigateToPersonalDetailsScreen: () -> Unit,
+    navigateToChangePasswordScreen: () -> Unit,
+    navigateToPrivacyPolicyScreen: () -> Unit,
+    navigateToInAppNavigationScreen: () -> Unit,
+    navigateToLoginScreenWithArgs: (documentNo: String, password: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -185,9 +215,13 @@ fun InAppNavScreen(
     ) {
         Column(
             modifier = Modifier
+//                .safeDrawingPadding()
+//                .padding(
+//                    top = 16.dp
+//                )
 //                .fillMaxSize()
         ) {
-            Spacer(modifier = Modifier.height(30.dp))
+//            Spacer(modifier = Modifier.height(30.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -216,7 +250,13 @@ fun InAppNavScreen(
                     HomeScreenComposable()
                 }
                 HomeScreenSideBarMenuScreen.PROFILE -> {
-                    ProfileScreenComposable()
+                    ProfileScreenComposable(
+                        navigateToPersonalDetailsScreen = navigateToPersonalDetailsScreen,
+                        navigateToChangePasswordScreen = navigateToChangePasswordScreen,
+                        navigateToPrivacyPolicyScreen = navigateToPrivacyPolicyScreen,
+                        navigateToInAppNavigationScreen = navigateToInAppNavigationScreen,
+                        navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs
+                    )
                 }
             }
         }
@@ -241,7 +281,12 @@ fun NavScreenPreview() {
         InAppNavScreen(
             dashboardMenuItems = dashboardMenuItems,
             currentScreen = HomeScreenSideBarMenuScreen.HOME,
-            onChangeScreen = {}
+            onChangeScreen = {},
+            navigateToInAppNavigationScreen = {},
+            navigateToPersonalDetailsScreen = {},
+            navigateToChangePasswordScreen = {},
+            navigateToPrivacyPolicyScreen = {},
+            navigateToLoginScreenWithArgs = {documentNo, password ->  }
         )
     }
 }

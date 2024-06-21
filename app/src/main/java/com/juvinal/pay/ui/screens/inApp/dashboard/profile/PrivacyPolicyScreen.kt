@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,25 +39,37 @@ import androidx.compose.ui.unit.sp
 import com.juvinal.pay.R
 import com.juvinal.pay.reusableComposables.AuthInputField
 import com.juvinal.pay.reusableComposables.PasswordInputField
+import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 
+object PrivacyPolicyScreenDestination: AppNavigation {
+    override val title: String = "Privacy policy screen"
+    override val route: String = "privacy-policy-screen"
+}
 @Composable
 fun PrivacyPolicyScreenComposable(
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box {
-        PrivacyPolicyScreen()
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        PrivacyPolicyScreen(
+            navigateToPreviousScreen = navigateToPreviousScreen
+        )
     }
 }
 
 @Composable
 fun PrivacyPolicyScreen(
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = Modifier
             .padding(
-                top = 30.dp,
+//                top = 30.dp,
                 start = 10.dp,
                 end = 10.dp,
                 bottom = 40.dp
@@ -66,7 +79,7 @@ fun PrivacyPolicyScreen(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = navigateToPreviousScreen) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Previous screen"
@@ -134,6 +147,7 @@ fun PrivacyPolicyScreen(
                     value = "",
                     trailingIcon = null,
                     placeHolder = "Enter your password",
+                    readOnly = true,
                     onValueChange = {},
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done,
@@ -184,6 +198,8 @@ fun PrivacyPolicyScreen(
 @Composable
 fun PrivacyPolicyScreenPreview() {
     JuvinalPayTheme {
-        PrivacyPolicyScreen()
+        PrivacyPolicyScreen(
+            navigateToPreviousScreen = {}
+        )
     }
 }

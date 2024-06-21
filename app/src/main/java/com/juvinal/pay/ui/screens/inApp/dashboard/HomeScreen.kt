@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.R
 import com.juvinal.pay.dateFormatter
 import com.juvinal.pay.ui.screens.nav.AppNavigation
@@ -57,14 +60,20 @@ object HomeScreenDestination: AppNavigation {
 fun HomeScreenComposable(
     modifier: Modifier = Modifier
 ) {
+    val viewModel: HomeScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
     Box {
-        HomeScreen()
+        HomeScreen(
+            userName = uiState.userDetails.fname
+        )
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
+    userName: String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -73,7 +82,7 @@ fun HomeScreen(
             .fillMaxSize()
     ) {
         Text(
-            text = "Hello Alex!",
+            text = "Hello $userName!",
             fontWeight = FontWeight.Bold,
             fontSize = 22.sp
         )
@@ -294,6 +303,8 @@ fun AmountCard(
 @Composable
 fun HomeScreenPreview() {
     JuvinalPayTheme {
-        HomeScreen()
+        HomeScreen(
+            userName = "David"
+        )
     }
 }

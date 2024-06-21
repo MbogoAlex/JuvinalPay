@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,29 +40,48 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.DocumentType
 import com.juvinal.pay.documentTypes
 import com.juvinal.pay.reusableComposables.AuthInputField
 import com.juvinal.pay.reusableComposables.DocumentTypeSelection
+import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
-
+object PersonalDetailsScreenDestination: AppNavigation {
+    override val title: String = "Personal details screen"
+    override val route: String = "personal-details-screen"
+}
 @Composable
 fun PersonalDetailsScreenComposable(
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box {
-        PersonalDetailsScreen()
+    val viewModel: PersonalDetailsScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        PersonalDetailsScreen(
+            navigateToPreviousScreen = navigateToPreviousScreen
+        )
     }
 }
 
 @Composable
 fun PersonalDetailsScreen(
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: PersonalDetailsScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
     Column(
         modifier = Modifier
             .padding(
-                top = 30.dp,
+//                top = 30.dp,
                 start = 10.dp,
                 end = 10.dp,
                 bottom = 40.dp
@@ -69,7 +91,7 @@ fun PersonalDetailsScreen(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = navigateToPreviousScreen) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Previous screen"
@@ -81,12 +103,49 @@ fun PersonalDetailsScreen(
                 fontSize = 20.sp
             )
         }
-        FilledPersonalDetailsTextFields()
+        FilledPersonalDetailsTextFields(
+            surname = uiState.userDetails.surname,
+            onChangeSurname = {},
+            fname = uiState.userDetails.fname,
+            onChangeFName = {},
+            lname = uiState.userDetails.lname,
+            onChangeLName = {},
+            documentType = if(uiState.userDetails.document_type == "NATIONAL_ID") DocumentType.NATIONAL_ID else if(uiState.userDetails.document_type == "PASSPORT") DocumentType.PASSPORT else DocumentType.ALIEN_ID,
+            onChangeDocumentType = {},
+            onExpand = { /*TODO*/ },
+            joiningDate = uiState.userDetails.mem_joined_date ?: "",
+            email = uiState.userDetails.email,
+            onChangeEmail = {},
+            phoneNo = uiState.userDetails.phone_no,
+            onChangePhoneNo = {},
+            city = "",
+            onChangeCity = {},
+            country = "Kenya",
+            onChangeCountry = {}
+        )
     }
 }
 
 @Composable
 fun FilledPersonalDetailsTextFields(
+    surname: String,
+    onChangeSurname: (String) -> Unit,
+    fname: String,
+    onChangeFName: (String) -> Unit,
+    lname: String,
+    onChangeLName: (String) -> Unit,
+    documentType: DocumentType,
+    onChangeDocumentType: (DocumentType) -> Unit,
+    onExpand: () -> Unit,
+    joiningDate: String,
+    email: String,
+    onChangeEmail: (String) -> Unit,
+    phoneNo: String,
+    onChangePhoneNo: (String) -> Unit,
+    city: String,
+    onChangeCity: (String) -> Unit,
+    country: String,
+    onChangeCountry: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -100,9 +159,10 @@ fun FilledPersonalDetailsTextFields(
         ) {
             AuthInputField(
                 heading = "Surname",
-                value = "Mbogo",
+                value = surname,
                 placeHolder = "Enter your surname",
-                onValueChange = {},
+                onValueChange = onChangeSurname,
+                readOnly = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Text
@@ -111,9 +171,10 @@ fun FilledPersonalDetailsTextFields(
             Spacer(modifier = Modifier.height(10.dp))
             AuthInputField(
                 heading = "First Name",
-                value = "Alex",
+                value = fname,
                 placeHolder = "Enter your first name",
-                onValueChange = {},
+                onValueChange = onChangeFName,
+                readOnly = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Text
@@ -122,9 +183,10 @@ fun FilledPersonalDetailsTextFields(
             Spacer(modifier = Modifier.height(10.dp))
             AuthInputField(
                 heading = "Last Name",
-                value = "Gitau",
+                value = lname,
                 placeHolder = "Enter your last name",
-                onValueChange = {},
+                onValueChange = onChangeLName,
+                readOnly = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Text
@@ -132,17 +194,18 @@ fun FilledPersonalDetailsTextFields(
             )
             Spacer(modifier = Modifier.height(10.dp))
             DocumentTypeSelection(
-                documentType = DocumentType.NATIONAL_ID,
-                onChangeDocumentType = {},
-                expanded = true,
-                onExpand = { /*TODO*/ }
+                documentType = documentType,
+                onChangeDocumentType = onChangeDocumentType,
+                expanded = false,
+                onExpand = onExpand
             )
             Spacer(modifier = Modifier.height(10.dp))
             AuthInputField(
                 heading = "Joining Date",
-                value = "20 Jan, 2024",
+                value = joiningDate,
                 placeHolder = "Enter your joining data",
                 onValueChange = {},
+                readOnly = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Text
@@ -151,9 +214,10 @@ fun FilledPersonalDetailsTextFields(
             Spacer(modifier = Modifier.height(10.dp))
             AuthInputField(
                 heading = "Email",
-                value = "mbogo3@gmail.com",
-                placeHolder = "Enter your password",
-                onValueChange = {},
+                value = email,
+                placeHolder = "Enter your email",
+                onValueChange = onChangeEmail,
+                readOnly = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Email
@@ -162,9 +226,10 @@ fun FilledPersonalDetailsTextFields(
             Spacer(modifier = Modifier.height(10.dp))
             AuthInputField(
                 heading = "Phone No",
-                value = "254794649026",
+                value = phoneNo,
                 placeHolder = "Enter your phone number",
-                onValueChange = {},
+                onValueChange = onChangePhoneNo,
+                readOnly = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Number
@@ -173,9 +238,10 @@ fun FilledPersonalDetailsTextFields(
             Spacer(modifier = Modifier.height(10.dp))
             AuthInputField(
                 heading = "City",
-                value = "Nairobi",
+                value = city,
                 placeHolder = "Enter your city",
-                onValueChange = {},
+                onValueChange = onChangeCity,
+                readOnly = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Text
@@ -183,10 +249,10 @@ fun FilledPersonalDetailsTextFields(
             )
             Spacer(modifier = Modifier.height(10.dp))
             CountrySelection(
-                onChangeCountry = {},
-                selectedCountry = "Kenya",
+                onChangeCountry = onChangeCountry,
+                selectedCountry = country,
                 onExpand = { /*TODO*/ },
-                expanded = true
+                expanded = false
             )
             Spacer(modifier = Modifier.height(10.dp))
             Row(
@@ -196,6 +262,7 @@ fun FilledPersonalDetailsTextFields(
                     .fillMaxWidth()
             ) {
                 Button(
+                    enabled = false,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF405189)
                     ),
@@ -205,6 +272,7 @@ fun FilledPersonalDetailsTextFields(
                 }
                 Spacer(modifier = Modifier.width(3.dp))
                 Button(
+                    enabled = false,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFe6f7f5)
                     ),
@@ -314,6 +382,8 @@ fun CountrySelection(
 @Composable
 fun PersonalDetailsScreenPreview() {
     JuvinalPayTheme {
-        PersonalDetailsScreen()
+        PersonalDetailsScreen(
+            navigateToPreviousScreen = {}
+        )
     }
 }
