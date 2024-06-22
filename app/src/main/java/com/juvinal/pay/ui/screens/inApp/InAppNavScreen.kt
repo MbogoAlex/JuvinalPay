@@ -334,16 +334,18 @@ fun NavScreenPreview() {
         ),
     )
     JuvinalPayTheme {
-        InAppNavScreen(
-            dashboardMenuItems = dashboardMenuItems,
-            transactionsMenuItems = transactionsMenuItems,
-            currentScreen = HomeScreenSideBarMenuScreen.HOME,
-            onChangeScreen = {},
-            navigateToInAppNavigationScreen = {},
-            navigateToPersonalDetailsScreen = {},
-            navigateToChangePasswordScreen = {},
-            navigateToPrivacyPolicyScreen = {},
-            navigateToLoginScreenWithArgs = {documentNo, password ->  }
-        )
+        JuvinalPayTheme {
+            InAppNavScreen(
+                dashboardMenuItems = dashboardMenuItems,
+                transactionsMenuItems = transactionsMenuItems,
+                currentScreen = HomeScreenSideBarMenuScreen.HOME,
+                onChangeScreen = {},
+                navigateToInAppNavigationScreen = {},
+                navigateToPersonalDetailsScreen = {},
+                navigateToChangePasswordScreen = {},
+                navigateToPrivacyPolicyScreen = {},
+                navigateToLoginScreenWithArgs = { documentNo, password -> }
+            )
+        }
     }
 }

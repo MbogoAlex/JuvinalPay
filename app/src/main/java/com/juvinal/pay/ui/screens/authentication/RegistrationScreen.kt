@@ -468,8 +468,8 @@ fun RegistrationDetailsInputField(
         Spacer(modifier = Modifier.height(40.dp))
         Text(
             text = "By registering you agree to the",
-            textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.scrim,
+            textAlign = TextAlign.Center,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
         )

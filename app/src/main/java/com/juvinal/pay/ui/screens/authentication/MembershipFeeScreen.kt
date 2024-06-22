@@ -277,7 +277,9 @@ fun MembershipFeeScreen(
                 )
                 .fillMaxWidth()
         )
+
         Spacer(modifier = Modifier.weight(1f))
+
         Button(
             enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
             onClick = onPay,

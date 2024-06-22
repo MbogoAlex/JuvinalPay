@@ -16,7 +16,7 @@ enum class HomeScreenSideBarMenuScreen {
     PROFILE,
     LOAN,
     DEPOSIT,
-    TRANSACTIONS_HISTORY
+    TRANSACTIONS_HISTORY,
 }
 
 data class DashboardMenuItem(
