@@ -34,6 +34,7 @@ class DSRepository(
         private val NAME = stringPreferencesKey("name")
         private val UID = stringPreferencesKey("uid")
         private val MEMBER_FEE_PAYMENT_REFERENCE = stringPreferencesKey("member_fee_payment_reference")
+        private val DEPOSIT_PAYMENT_REFERENCE = stringPreferencesKey("deposit_payment_reference")
     }
 
     suspend fun saveUserDetails(
@@ -57,13 +58,13 @@ class DSRepository(
             preferences[PASSWORD] = userDSModel.password
             preferences[NAME] = userDSModel.name
             preferences[UID] = userDSModel.uid
-
         }
     }
 
     suspend fun savePaymentData(paymentReferenceDSModel: PaymentReferenceDSModel) {
         dataStore.edit { preferences ->
-            preferences[MEMBER_FEE_PAYMENT_REFERENCE] = paymentReferenceDSModel.memberFeePaymentReference!!
+            preferences[MEMBER_FEE_PAYMENT_REFERENCE] = paymentReferenceDSModel.memberFeePaymentReference ?: ""
+            preferences[DEPOSIT_PAYMENT_REFERENCE] = paymentReferenceDSModel.depositPaymentReference ?: ""
         }
     }
 
@@ -112,7 +113,8 @@ class DSRepository(
         }
 
     private fun Preferences.toPaymentReferenceDSModel(): PaymentReferenceDSModel = PaymentReferenceDSModel(
-        memberFeePaymentReference = this[MEMBER_FEE_PAYMENT_REFERENCE]
+        memberFeePaymentReference = this[MEMBER_FEE_PAYMENT_REFERENCE],
+        depositPaymentReference = this[DEPOSIT_PAYMENT_REFERENCE]
     )
 
     suspend fun clear() {

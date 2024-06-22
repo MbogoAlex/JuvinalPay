@@ -1,5 +1,7 @@
 package com.juvinal.pay.network
 
+import com.juvinal.pay.model.DepositRequestBody
+import com.juvinal.pay.model.DepositResponseBody
 import com.juvinal.pay.model.MembershipFeePaymentStatusResponseBody
 import com.juvinal.pay.model.MembershipFeeRequestBody
 import com.juvinal.pay.model.MembershipFeeResponseBody
@@ -14,7 +16,9 @@ interface ApiRepository {
     suspend fun loginUser(userLoginRequestBody: UserLoginRequestBody): Response<UserLoginResponseBody>
     suspend fun membershipFeePayment(membershipFeeRequestBody: MembershipFeeRequestBody): Response<MembershipFeeResponseBody>
 
-    suspend fun checkMembershipFeePaymentStatus(paymentReference: String): Response<MembershipFeePaymentStatusResponseBody>
+    suspend fun checkPaymentStatus(paymentReference: String): Response<MembershipFeePaymentStatusResponseBody>
+
+    suspend fun initiateDeposit(depositRequestBody: DepositRequestBody): Response<DepositResponseBody>
 }
 
 class ApiRepositoryImpl(private val apiService: ApiService) : ApiRepository {
@@ -30,7 +34,11 @@ class ApiRepositoryImpl(private val apiService: ApiService) : ApiRepository {
         membershipFeeRequestBody = membershipFeeRequestBody
     )
 
-    override suspend fun checkMembershipFeePaymentStatus(paymentReference: String): Response<MembershipFeePaymentStatusResponseBody> = apiService.checkMembershipFeePaymentStatus(
+    override suspend fun checkPaymentStatus(paymentReference: String): Response<MembershipFeePaymentStatusResponseBody> = apiService.checkPaymentStatus(
         paymentReference = paymentReference
+    )
+
+    override suspend fun initiateDeposit(depositRequestBody: DepositRequestBody): Response<DepositResponseBody> = apiService.initiateDeposit(
+        depositRequestBody = depositRequestBody
     )
 }

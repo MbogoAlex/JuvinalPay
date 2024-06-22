@@ -1,5 +1,7 @@
 package com.juvinal.pay.network
 
+import com.juvinal.pay.model.DepositRequestBody
+import com.juvinal.pay.model.DepositResponseBody
 import com.juvinal.pay.model.MembershipFeePaymentStatusResponseBody
 import com.juvinal.pay.model.MembershipFeeRequestBody
 import com.juvinal.pay.model.MembershipFeeResponseBody
@@ -30,7 +32,12 @@ interface ApiService {
     ): Response<MembershipFeeResponseBody>
 
     @GET("payments/{paymentReference}/findstatus")
-    suspend fun checkMembershipFeePaymentStatus(
+    suspend fun checkPaymentStatus(
         @Path("paymentReference") paymentReference: String
     ): Response<MembershipFeePaymentStatusResponseBody>
+
+    @POST("member/initiatememberdeposit")
+    suspend fun initiateDeposit(
+        @Body depositRequestBody: DepositRequestBody
+    ): Response<DepositResponseBody>
 }

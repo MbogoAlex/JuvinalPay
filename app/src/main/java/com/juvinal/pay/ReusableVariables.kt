@@ -21,3 +21,4 @@ val documentTypes = listOf(
 
 @RequiresApi(Build.VERSION_CODES.O)
 val dateFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy")
+

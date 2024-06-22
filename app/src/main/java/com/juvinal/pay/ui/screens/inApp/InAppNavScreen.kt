@@ -25,6 +25,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.DashboardMenuItem
 import com.juvinal.pay.HomeScreenSideBarMenuScreen
 import com.juvinal.pay.R
@@ -53,6 +56,8 @@ import kotlinx.coroutines.launch
 object InAppNavScreenDestination: AppNavigation {
     override val title: String = "InAppNavScreen screen"
     override val route = "in-app-nav-screen"
+    val childScreen: String = "child-screen"
+    val routeWithArgs = "$route/{$childScreen}"
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -62,10 +67,14 @@ fun InAppNavScreenComposable(
     navigateToPrivacyPolicyScreen: () -> Unit,
     navigateToInAppNavigationScreen: () -> Unit,
     navigateToLoginScreenWithArgs: (documentNo: String, password: String) -> Unit,
+    navigateToInAppNavigationScreenWithArgs: (childScreen: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val activity = (LocalContext.current as? Activity)
     BackHandler(onBack = {activity?.finish()})
+
+    val viewModel: InAppNavScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
 
     val dashboardMenuItems = listOf(
         DashboardMenuItem(
@@ -97,6 +106,11 @@ fun InAppNavScreenComposable(
         mutableStateOf(HomeScreenSideBarMenuScreen.HOME)
     }
 
+    if(uiState.childScreen == "deposit-screen") {
+        currentScreen = HomeScreenSideBarMenuScreen.DEPOSIT
+        viewModel.resetChildScreen()
+    }
+
     Box(modifier = Modifier
         .safeDrawingPadding()
     ) {
@@ -111,7 +125,8 @@ fun InAppNavScreenComposable(
             navigateToChangePasswordScreen = navigateToChangePasswordScreen,
             navigateToInAppNavigationScreen = navigateToInAppNavigationScreen,
             navigateToPrivacyPolicyScreen = navigateToPrivacyPolicyScreen,
-            navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs
+            navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+            navigateToInAppNavigationScreenWithArgs = navigateToInAppNavigationScreenWithArgs
         )
     }
 }
@@ -128,6 +143,7 @@ fun InAppNavScreen(
     navigateToPrivacyPolicyScreen: () -> Unit,
     navigateToInAppNavigationScreen: () -> Unit,
     navigateToLoginScreenWithArgs: (documentNo: String, password: String) -> Unit,
+    navigateToInAppNavigationScreenWithArgs: (childScreen: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -296,7 +312,10 @@ fun InAppNavScreen(
                     )
                 }
                 HomeScreenSideBarMenuScreen.DEPOSIT -> {
-                    DepositMoneyScreenComposable()
+                    DepositMoneyScreenComposable(
+                        navigateToInAppNavigationScreenWithArgs = navigateToInAppNavigationScreenWithArgs,
+                        navigateToInAppNavigationScreen = navigateToInAppNavigationScreen
+                    )
                 }
                 HomeScreenSideBarMenuScreen.LOAN -> {}
                 HomeScreenSideBarMenuScreen.TRANSACTIONS_HISTORY -> {}
@@ -344,7 +363,8 @@ fun NavScreenPreview() {
                 navigateToPersonalDetailsScreen = {},
                 navigateToChangePasswordScreen = {},
                 navigateToPrivacyPolicyScreen = {},
-                navigateToLoginScreenWithArgs = { documentNo, password -> }
+                navigateToLoginScreenWithArgs = { documentNo, password -> },
+                navigateToInAppNavigationScreenWithArgs = {}
             )
         }
     }

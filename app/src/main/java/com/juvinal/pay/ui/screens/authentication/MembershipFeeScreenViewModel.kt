@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.juvinal.pay.LoadingStatus
 import com.juvinal.pay.UserDetails
 import com.juvinal.pay.datastore.DSRepository
+import com.juvinal.pay.datastore.PaymentReferenceDSModel
 import com.juvinal.pay.datastore.UserDSModel
 import com.juvinal.pay.model.MembershipFeeRequestBody
 import com.juvinal.pay.network.ApiRepository
@@ -78,6 +79,11 @@ class MembershipFeeScreenViewModel(
             try {
                 val response = apiRepository.membershipFeePayment(membershipFeeRequestBody)
                 if(response.isSuccessful) {
+                    val paymentDSModel = PaymentReferenceDSModel(
+                        memberFeePaymentReference = response.body()?.paymentReference!!,
+                        depositPaymentReference = null
+                    )
+                    dsRepository.savePaymentData(paymentDSModel)
                     _uiState.update {
                         it.copy(
                             paymentReference = response.body()?.paymentReference!!
@@ -106,7 +112,7 @@ class MembershipFeeScreenViewModel(
         Log.i("REFERENCE_ID:", uiState.value.paymentReference!!)
         viewModelScope.launch {
             try {
-               val response = apiRepository.checkMembershipFeePaymentStatus(uiState.value.paymentReference!!)
+               val response = apiRepository.checkPaymentStatus(uiState.value.paymentReference!!)
                 Log.i("RESPONSE:", response.toString())
                if(response.isSuccessful) {
                    if(response.body()?.status?.lowercase() == "successful") {

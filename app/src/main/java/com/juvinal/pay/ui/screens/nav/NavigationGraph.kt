@@ -52,7 +52,7 @@ fun NavigationGraph(
                 }
             )
         }
-        // HomeScreen
+        // InAppNavScreen with args
         composable(InAppNavScreenDestination.route) {
             InAppNavScreenComposable(
                 navigateToPersonalDetailsScreen = {
@@ -69,6 +69,39 @@ fun NavigationGraph(
                 },
                 navigateToLoginScreenWithArgs = {documentNo, password ->
                     navController.navigate("${LoginScreenDestination.route}/${documentNo}/${password}")
+                },
+                navigateToInAppNavigationScreenWithArgs = {
+                    navController.navigate("${InAppNavScreenDestination.route}/${it}")
+                }
+            )
+        }
+        // InAppNavScreen with args
+        composable(
+            InAppNavScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(InAppNavScreenDestination.childScreen) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            InAppNavScreenComposable(
+                navigateToPersonalDetailsScreen = {
+                    navController.navigate(PersonalDetailsScreenDestination.route)
+                },
+                navigateToChangePasswordScreen = {
+                    navController.navigate(ChangePasswordScreenDestination.route)
+                },
+                navigateToPrivacyPolicyScreen = {
+                    navController.navigate(PrivacyPolicyScreenDestination.route)
+                },
+                navigateToInAppNavigationScreen = {
+                    navController.navigate(InAppNavScreenDestination.route)
+                },
+                navigateToLoginScreenWithArgs = {documentNo, password ->
+                    navController.navigate("${LoginScreenDestination.route}/${documentNo}/${password}")
+                },
+                navigateToInAppNavigationScreenWithArgs = {
+                    navController.navigate("${InAppNavScreenDestination.route}/${it}")
                 }
             )
         }

@@ -91,6 +91,7 @@ fun MembershipFeeScreenComposable(
 
     if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
         Toast.makeText(context, "Payment successful. You are now a full member of JuvinalPay.", Toast.LENGTH_LONG).show()
+        paymentCountdown = 40
         navigateToInAppNavigationScreen()
         viewModel.resetLoadingStatus()
     } else if(uiState.loadingStatus == LoadingStatus.FAIL) {
@@ -99,6 +100,10 @@ fun MembershipFeeScreenComposable(
         paymentCountdown = 40
         viewModel.resetLoadingStatus()
 
+    }
+
+    if(paymentCountdown == 0) {
+        viewModel.checkPaymentStatus()
     }
 
     Box(
@@ -121,7 +126,7 @@ fun MembershipFeeScreenComposable(
                         delay(1000)
                         paymentCountdown--
                     }
-                    viewModel.checkPaymentStatus()
+
                 }
             },
             showCheckPaymentOption = uiState.paymentReference != null && !countdownOn,
@@ -183,11 +188,10 @@ fun MembershipFeeScreen(
             fontSize = 24.sp,
             modifier = Modifier
                 .padding(
-                    start = 16.dp,
                     top = 8.dp,
-                    end = 16.dp,
                     bottom = 8.dp
                 )
+                .align(Alignment.CenterHorizontally)
         )
         Text(
             text = stringResource(id = R.string.membership_fee_text),
