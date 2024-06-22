@@ -10,10 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-<<<<<<< HEAD
 import androidx.compose.material3.MaterialTheme
-=======
->>>>>>> origin/master
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -41,10 +38,7 @@ fun AuthInputField(
             Text(
                 text = heading,
                 fontWeight = FontWeight.Bold,
-<<<<<<< HEAD
                 color = MaterialTheme.colorScheme.scrim,
-=======
->>>>>>> origin/master
                 fontSize = 18.sp
             )
             Text(
@@ -56,14 +50,11 @@ fun AuthInputField(
         OutlinedTextField(
             value = value,
             placeholder = {
-<<<<<<< HEAD
                 Text(
                     text = placeHolder,
                     color = MaterialTheme.colorScheme.scrim
                 )
-=======
                 Text(text = placeHolder)
->>>>>>> origin/master
             },
             onValueChange = onValueChange,
             keyboardOptions = keyboardOptions,
@@ -92,10 +83,7 @@ fun PasswordInputField(
             Text(
                 text = heading,
                 fontWeight = FontWeight.Bold,
-<<<<<<< HEAD
                 color = MaterialTheme.colorScheme.scrim,
-=======
->>>>>>> origin/master
                 fontSize = 18.sp
             )
             Text(
@@ -129,14 +117,11 @@ fun PasswordInputField(
                 }
             },
             placeholder = {
-<<<<<<< HEAD
                 Text(
                     text = placeHolder,
                     color = MaterialTheme.colorScheme.scrim
                 )
-=======
                 Text(text = placeHolder)
->>>>>>> origin/master
             },
             readOnly = readOnly,
             visualTransformation = if(visibility != null && visibility) VisualTransformation.None else PasswordVisualTransformation(),

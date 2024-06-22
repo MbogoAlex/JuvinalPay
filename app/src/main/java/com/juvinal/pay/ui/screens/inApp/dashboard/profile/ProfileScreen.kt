@@ -137,10 +137,7 @@ fun ProfileScreen(
 
         Column(
             modifier = Modifier
-<<<<<<< HEAD
                 .fillMaxSize()
-=======
->>>>>>> origin/master
                 .padding(
 //                    top = 30.dp
                 )
@@ -239,10 +236,7 @@ fun ProfileScreen(
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-<<<<<<< HEAD
                         .fillMaxSize()
-=======
->>>>>>> origin/master
                         .padding(20.dp)
                 ) {
                     Card(
@@ -329,9 +323,6 @@ fun ProfileScreen(
                         }
 
                     }
-<<<<<<< HEAD
-
-
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -349,7 +340,6 @@ fun ProfileScreen(
                     Text(text = "Logging out...")
                 } else {
                     Text(text = "Log out")
-=======
                     Spacer(modifier = Modifier.height(20.dp))
                     Button(
                         enabled = !loggingOut,
@@ -364,7 +354,6 @@ fun ProfileScreen(
                         }
                     }
 
->>>>>>> origin/master
                 }
             }
         }
