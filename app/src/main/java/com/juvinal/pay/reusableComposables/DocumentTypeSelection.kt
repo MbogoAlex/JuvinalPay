@@ -37,7 +37,9 @@ fun DocumentTypeSelection(
 
     var selectedType = if(documentType == DocumentType.NATIONAL_ID) "National Identification" else if(documentType == DocumentType.PASSPORT) "Passport" else "Alien ID"
 
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         Row {
             Text(
                 text = "Document Type",

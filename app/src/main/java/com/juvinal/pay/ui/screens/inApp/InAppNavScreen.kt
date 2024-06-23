@@ -277,6 +277,7 @@ fun InAppNavScreen(
 //            Spacer(modifier = Modifier.height(30.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
             ) {
                 IconButton(onClick = {
                     scope.launch {

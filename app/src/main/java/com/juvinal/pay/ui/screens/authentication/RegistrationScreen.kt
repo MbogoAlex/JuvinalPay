@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -220,46 +221,27 @@ fun RegistrationScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .height(160.dp)
+                        .height(80.dp)
                         .fillMaxWidth()
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.juvinal_pay_logo_light),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(140.dp)
+                            .size(100.dp)
                     )
                 }
             }
-            Spacer(modifier = Modifier.weight(1f))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = "Already have an account?",
-                    color = MaterialTheme.colorScheme.scrim
-                )
-                TextButton(onClick = navigateToLoginScreen) {
-                    Text(
-                        text = "Signin",
-                        color = Color(0xFF405189)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(70.dp))
         }
 
         Box(
             modifier = Modifier
 //                .align(Alignment.CenterStart)
                 .padding(
-                    top = 140.dp,
-                    bottom = 140.dp,
-                    start = 20.dp,
-                    end = 20.dp
+                    top = 80.dp,
+                    bottom = 10.dp,
+                    start = 8.dp,
+                    end = 8.dp
                 )
         ) {
             Card(
@@ -295,7 +277,8 @@ fun RegistrationScreen(
                         expanded = expanded,
                         onRegister = onRegister,
                         loadingStatus = loadingStatus,
-                        buttonEnabled = buttonEnabled
+                        buttonEnabled = buttonEnabled,
+                        navigateToLoginScreen = navigateToLoginScreen
                     )
                 }
             }
@@ -329,6 +312,7 @@ fun RegistrationDetailsInputField(
     onRegister: () -> Unit,
     loadingStatus: LoadingStatus,
     buttonEnabled: Boolean,
+    navigateToLoginScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var passwordVisibility by remember {
@@ -336,9 +320,9 @@ fun RegistrationDetailsInputField(
     }
     Column(
         modifier = Modifier
-            .padding(20.dp)
+            .padding(10.dp)
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+//            .verticalScroll(rememberScrollState())
     ) {
         Text(
             text = "Create New Account",
@@ -349,163 +333,196 @@ fun RegistrationDetailsInputField(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
         )
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Get your JuvinalPay account now and start saving",
-            style = TextStyle(
-                color = Color(0xFFacaeb8)
-            ),
-            fontSize = 18.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        AuthInputField(
-            heading = "Surname",
-            value = surname,
-            placeHolder = "Enter surname",
-            onValueChange = onChangeSurname,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Text
-            ),
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        AuthInputField(
-            heading = "First Name",
-            value = firstName,
-            placeHolder = "Enter First name",
-            onValueChange = onChangeFirstName,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Text
-            ),
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        AuthInputField(
-            heading = "Last Name",
-            value = lastName,
-            placeHolder = "Enter last name",
-            onValueChange = onChangeLastName,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Text
-            ),
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        DocumentTypeSelection(
-            documentType = documentType,
-            onChangeDocumentType = onChangeDocumentType,
-            expanded = expanded,
-            onExpand = onExpand
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        AuthInputField(
-            heading = "Document No",
-            value = documentNo,
-            placeHolder = "Enter Document No",
-            onValueChange = onChangeDocumentNo,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Text
-            ),
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        AuthInputField(
-            heading = "Email",
-            value = email,
-            placeHolder = "Enter email address",
-            onValueChange = onChangeEmail,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Email
-            ),
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        AuthInputField(
-            heading = "Phone No",
-            value = phoneNo,
-            placeHolder = "Enter phone no",
-            onValueChange = onChangePhoneNo,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Phone
-            ),
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        PasswordInputField(
-            heading = "Password",
-            value = password,
-            trailingIcon = R.drawable.visibility_on,
-            placeHolder = "Enter password",
-            onValueChange = onChangePassword,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Password
-            ),
-            visibility = passwordVisibility,
-            onChangeVisibility = {
-                passwordVisibility = !passwordVisibility
-            }
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        PasswordInputField(
-            heading = "Confirm Password",
-            value = passwordConfirm,
-            trailingIcon = R.drawable.visibility_on,
-            placeHolder = "Confirm password",
-            onValueChange = onChangePasswordConfirm,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Password
-            ),
-            visibility = passwordVisibility,
-            onChangeVisibility = {
-                passwordVisibility = !passwordVisibility
-            }
-        )
-        Spacer(modifier = Modifier.height(40.dp))
-        Text(
-            text = "By registering you agree to the",
-            color = MaterialTheme.colorScheme.scrim,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Text("JuvinalPay")
-            TextButton(onClick = { /*TODO*/ }) {
+            Text(
+                text = "Already have an account?",
+                color = MaterialTheme.colorScheme.scrim
+            )
+            TextButton(onClick = navigateToLoginScreen) {
                 Text(
-                    text = "Terms of use",
+                    text = "Signin",
                     color = Color(0xFF405189)
                 )
             }
         }
-        Spacer(modifier = Modifier.height(40.dp))
-        Button(
-            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
-            shape = RoundedCornerShape(5.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF0ab39c),
-            ),
+        Spacer(modifier = Modifier.height(10.dp))
+        Column(
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .widthIn(250.dp),
-            onClick = onRegister
+                .verticalScroll(rememberScrollState())
         ) {
-            if(loadingStatus == LoadingStatus.LOADING) {
-                Text(text = "Loading...")
-            } else {
-                Text(
-                    text = "Sign Up",
-                    color = Color.White
+            Text(
+                text = "Get your JuvinalPay account now and start saving",
+                style = TextStyle(
+                    color = Color(0xFFacaeb8)
+                ),
+                fontSize = 18.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(
+
+            ) {
+                AuthInputField(
+                    heading = "Surname",
+                    value = surname,
+                    placeHolder = "Enter surname",
+                    onValueChange = onChangeSurname,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Next,
+                        keyboardType = KeyboardType.Text
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
                 )
+                Spacer(modifier = Modifier.width(3.dp))
+                AuthInputField(
+                    heading = "First Name",
+                    value = firstName,
+                    placeHolder = "Enter First name",
+                    onValueChange = onChangeFirstName,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Next,
+                        keyboardType = KeyboardType.Text
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
+
+
+            Spacer(modifier = Modifier.height(10.dp))
+            AuthInputField(
+                heading = "Last Name",
+                value = lastName,
+                placeHolder = "Enter last name",
+                onValueChange = onChangeLastName,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text
+                ),
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            DocumentTypeSelection(
+                documentType = documentType,
+                onChangeDocumentType = onChangeDocumentType,
+                expanded = expanded,
+                onExpand = onExpand
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            AuthInputField(
+                heading = "Document No",
+                value = documentNo,
+                placeHolder = "Enter Document No",
+                onValueChange = onChangeDocumentNo,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text
+                ),
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            AuthInputField(
+                heading = "Email",
+                value = email,
+                placeHolder = "Enter email address",
+                onValueChange = onChangeEmail,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Email
+                ),
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            AuthInputField(
+                heading = "Phone No",
+                value = phoneNo,
+                placeHolder = "Enter phone no",
+                onValueChange = onChangePhoneNo,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Phone
+                ),
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            PasswordInputField(
+                heading = "Password",
+                value = password,
+                trailingIcon = R.drawable.visibility_on,
+                placeHolder = "Enter password",
+                onValueChange = onChangePassword,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Password
+                ),
+                visibility = passwordVisibility,
+                onChangeVisibility = {
+                    passwordVisibility = !passwordVisibility
+                }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            PasswordInputField(
+                heading = "Confirm Password",
+                value = passwordConfirm,
+                trailingIcon = R.drawable.visibility_on,
+                placeHolder = "Confirm password",
+                onValueChange = onChangePasswordConfirm,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Password
+                ),
+                visibility = passwordVisibility,
+                onChangeVisibility = {
+                    passwordVisibility = !passwordVisibility
+                }
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "By registering you agree to the",
+                color = MaterialTheme.colorScheme.scrim,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text("JuvinalPay")
+                TextButton(onClick = { /*TODO*/ }) {
+                    Text(
+                        text = "Terms of use",
+                        color = Color(0xFF405189)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
+                shape = RoundedCornerShape(5.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF0ab39c),
+                ),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .widthIn(250.dp),
+                onClick = onRegister
+            ) {
+                if(loadingStatus == LoadingStatus.LOADING) {
+                    Text(text = "Loading...")
+                } else {
+                    Text(
+                        text = "Sign Up",
+                        color = Color.White
+                    )
+                }
             }
         }
     }
@@ -574,7 +591,8 @@ fun RegistrationDetailsInputFieldPreview() {
             expanded = false,
             onRegister = { /*TODO*/ },
             loadingStatus = LoadingStatus.INITIAL,
-            buttonEnabled = false
+            buttonEnabled = false,
+            navigateToLoginScreen = {}
         )
     }
 }

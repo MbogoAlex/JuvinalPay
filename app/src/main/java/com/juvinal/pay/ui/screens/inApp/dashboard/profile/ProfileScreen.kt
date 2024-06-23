@@ -130,6 +130,7 @@ fun ProfileScreen(
     ) {
         Box(
             modifier = Modifier
+                .align(Alignment.TopCenter)
                 .fillMaxWidth()
                 .height(200.dp)
                 .background(MaterialTheme.colorScheme.secondaryContainer)
@@ -140,10 +141,11 @@ fun ProfileScreen(
                 .fillMaxSize()
                 .padding(
 //                    top = 30.dp
+//                    bottom = 20.dp
                 )
         ) {
             Box(
-                contentAlignment = Alignment.Center,
+//                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxWidth()
 //                .height(200.dp)
@@ -332,33 +334,17 @@ fun ProfileScreen(
                 modifier = Modifier
                     .padding(
                         horizontal = 40.dp,
-                        vertical = 10.dp
+//                        vertical = 30.dp
                     )
                     .fillMaxWidth()
             ) {
                 if(loggingOut) {
                     Text(text = "Logging out...")
                 } else {
-                    Text(text = "Log out")
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Button(
-                        enabled = !loggingOut,
-                        onClick = onLogout,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        if(loggingOut) {
-                            Text(text = "Logging out...")
-                        } else {
-                            Text(text = "Log out")
-                        }
-                    }
-
+                    Text(text = "Logout")
                 }
             }
         }
-
-
     }
 }
 

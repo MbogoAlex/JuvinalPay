@@ -78,7 +78,11 @@ fun HomeScreen(
 ) {
     Column(
         modifier = Modifier
-            .padding(10.dp)
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp
+            )
             .fillMaxSize()
     ) {
         Text(

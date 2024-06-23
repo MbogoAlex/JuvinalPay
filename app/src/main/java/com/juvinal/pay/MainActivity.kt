@@ -9,6 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.juvinal.pay.ui.screens.StartScreen
+import com.juvinal.pay.ui.screens.authentication.MembershipFeeScreenComposable
+import com.juvinal.pay.ui.screens.authentication.RegistrationScreenComposable
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,7 +24,10 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    StartScreen()
+                    RegistrationScreenComposable(
+                        navigateToLoginScreen = { /*TODO*/ },
+                        navigateToLoginScreenWithArgs = {documentNo, password ->  },
+                        navigateToMembershipFeeScreen = { /*TODO*/ })
                 }
             }
         }
