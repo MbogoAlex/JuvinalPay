@@ -53,10 +53,17 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.R
+import com.juvinal.pay.reusableComposables.LogoutDialog
+import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+object ProfileScreenDestination: AppNavigation {
+    override val title: String = "Profile screen"
+    override val route: String = "profile-screen"
+
+}
 @Composable
 fun ProfileScreenComposable(
     navigateToPersonalDetailsScreen: () -> Unit,
@@ -353,30 +360,6 @@ fun ProfileSectionMenu(
     ) {
 
     }
-}
-
-@Composable
-fun LogoutDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    AlertDialog(
-        title = {
-                Text(text = "Logout confirmation")
-        },
-        onDismissRequest = onDismiss, 
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = "Cancel")
-            }
-        },
-        confirmButton = { 
-            Button(onClick = onConfirm) {
-                Text("Logout")
-            }
-        },
-    )
 }
 
 @Preview(showBackground = true)

@@ -39,6 +39,12 @@ class InAppNavScreenViewModel(
         }
     }
 
+    fun logout() {
+        viewModelScope.launch {
+            dsRepository.clear()
+        }
+    }
+
     fun resetChildScreen() {
         _uiState.update {
             it.copy(

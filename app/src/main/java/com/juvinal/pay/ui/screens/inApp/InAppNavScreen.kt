@@ -2,19 +2,23 @@ package com.juvinal.pay.ui.screens.inApp
 
 import android.app.Activity
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -41,16 +45,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.DashboardMenuItem
 import com.juvinal.pay.HomeScreenSideBarMenuScreen
 import com.juvinal.pay.R
+import com.juvinal.pay.reusableComposables.LogoutDialog
 import com.juvinal.pay.ui.screens.inApp.dashboard.HomeScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.DepositMoneyScreenComposable
+import com.juvinal.pay.ui.screens.inApp.transactions.RequestLoanScreenComposable
+import com.juvinal.pay.ui.screens.inApp.transactions.TransactionsHistoryScreenComposable
 import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 object InAppNavScreenDestination: AppNavigation {
@@ -70,6 +80,7 @@ fun InAppNavScreenComposable(
     navigateToInAppNavigationScreenWithArgs: (childScreen: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val activity = (LocalContext.current as? Activity)
     BackHandler(onBack = {activity?.finish()})
 
@@ -102,8 +113,41 @@ fun InAppNavScreenComposable(
         ),
     )
 
+    var showTopPopup by remember {
+        mutableStateOf(false)
+    }
+
     var currentScreen by rememberSaveable {
         mutableStateOf(HomeScreenSideBarMenuScreen.HOME)
+    }
+
+    val scope = rememberCoroutineScope()
+
+    var loggingOut by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var showLogoutDialog by remember {
+        mutableStateOf(false)
+    }
+
+    if(showLogoutDialog) {
+        LogoutDialog(
+            onConfirm = {
+                showLogoutDialog = !showLogoutDialog
+                scope.launch {
+                    loggingOut = true
+                    delay(2000)
+                    viewModel.logout()
+                    navigateToLoginScreenWithArgs(uiState.userDetails.document_no, uiState.userDetails.password)
+                    loggingOut = false
+                    Toast.makeText(context, "You are logged out", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onDismiss = {
+                showLogoutDialog = !showLogoutDialog
+            }
+        )
     }
 
     if(uiState.childScreen == "deposit-screen") {
@@ -115,18 +159,34 @@ fun InAppNavScreenComposable(
         .safeDrawingPadding()
     ) {
         InAppNavScreen(
+            username = uiState.userDetails.fname,
+            showTopPopup = showTopPopup,
             dashboardMenuItems = dashboardMenuItems,
             transactionsMenuItems = transactionsMenuItems,
             currentScreen = currentScreen,
             onChangeScreen = {
                 currentScreen = it
             },
+            onDismissRequest = {
+                showTopPopup = !showTopPopup
+            },
+            onShowProfilePopup = {
+                showTopPopup = !showTopPopup
+            },
             navigateToPersonalDetailsScreen = navigateToPersonalDetailsScreen,
             navigateToChangePasswordScreen = navigateToChangePasswordScreen,
             navigateToInAppNavigationScreen = navigateToInAppNavigationScreen,
             navigateToPrivacyPolicyScreen = navigateToPrivacyPolicyScreen,
             navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
-            navigateToInAppNavigationScreenWithArgs = navigateToInAppNavigationScreenWithArgs
+            navigateToInAppNavigationScreenWithArgs = navigateToInAppNavigationScreenWithArgs,
+            navigateToProfileScreen = {
+                currentScreen = HomeScreenSideBarMenuScreen.PROFILE
+                showTopPopup = !showTopPopup
+            },
+            onLogout = {
+                showLogoutDialog = !showLogoutDialog
+                showTopPopup = !showTopPopup
+            }
         )
     }
 }
@@ -134,16 +194,22 @@ fun InAppNavScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InAppNavScreen(
+    username: String,
+    showTopPopup: Boolean,
     dashboardMenuItems: List<DashboardMenuItem>,
     transactionsMenuItems: List<DashboardMenuItem>,
     currentScreen: HomeScreenSideBarMenuScreen,
     onChangeScreen: (screen: HomeScreenSideBarMenuScreen) -> Unit,
+    onDismissRequest: () -> Unit,
+    onShowProfilePopup: () -> Unit,
     navigateToPersonalDetailsScreen: () -> Unit,
     navigateToChangePasswordScreen: () -> Unit,
     navigateToPrivacyPolicyScreen: () -> Unit,
     navigateToInAppNavigationScreen: () -> Unit,
     navigateToLoginScreenWithArgs: (documentNo: String, password: String) -> Unit,
     navigateToInAppNavigationScreenWithArgs: (childScreen: String) -> Unit,
+    navigateToProfileScreen: () -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -245,22 +311,6 @@ fun InAppNavScreen(
                             }
                         )
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.loan),
-                            contentDescription = "Loans"
-                        )
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Text(
-                            text = "Loans",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                    }
                 }
 
             }
@@ -291,7 +341,7 @@ fun InAppNavScreen(
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = onShowProfilePopup) {
                     Icon(
                         tint = Color.Gray,
                         painter = painterResource(id = R.drawable.user_account),
@@ -299,6 +349,102 @@ fun InAppNavScreen(
                     )
                 }
             }
+            if(showTopPopup) {
+                Card {
+                    Popup(
+                        alignment = Alignment.TopEnd,
+                        properties = PopupProperties(
+                            excludeFromSystemGesture = true
+                        ),
+                        onDismissRequest = onDismissRequest
+                    ) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
+                            ),
+                            shape = RoundedCornerShape(0.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(20.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Welcome $username",
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            navigateToProfileScreen()
+                                        }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.person),
+                                        contentDescription = null,
+                                    )
+                                    Spacer(modifier = Modifier.width(5.dp))
+                                    Text(
+                                        text = "Profile",
+                                        modifier = Modifier
+                                            .padding(10.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Divider()
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+//                                        .clickable { }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.wallet),
+                                        contentDescription = null
+                                    )
+                                    Spacer(modifier = Modifier.width(5.dp))
+                                    Text(
+                                        text = "Balance:",
+                                    )
+                                    Text(
+                                        text = "KES 0",
+                                        modifier = Modifier
+                                            .padding(10.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            onLogout()
+                                        }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.logout),
+                                        contentDescription = null
+                                    )
+                                    Spacer(modifier = Modifier.width(5.dp))
+                                    Text(
+                                        text = "Logout",
+                                        modifier = Modifier
+                                            .padding(10.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
             when(currentScreen) {
                 HomeScreenSideBarMenuScreen.HOME -> {
                     HomeScreenComposable()
@@ -318,8 +464,16 @@ fun InAppNavScreen(
                         navigateToInAppNavigationScreen = navigateToInAppNavigationScreen
                     )
                 }
-                HomeScreenSideBarMenuScreen.LOAN -> {}
-                HomeScreenSideBarMenuScreen.TRANSACTIONS_HISTORY -> {}
+                HomeScreenSideBarMenuScreen.LOAN -> {
+                    RequestLoanScreenComposable(
+                        navigateToInAppNavigationScreen = navigateToInAppNavigationScreen
+                    )
+                }
+                HomeScreenSideBarMenuScreen.TRANSACTIONS_HISTORY -> {
+                    TransactionsHistoryScreenComposable(
+                        navigateToInAppNavigationScreen = navigateToInAppNavigationScreen
+                    )
+                }
             }
         }
     }
@@ -356,16 +510,22 @@ fun NavScreenPreview() {
     JuvinalPayTheme {
         JuvinalPayTheme {
             InAppNavScreen(
+                username = "Alex",
+                showTopPopup = false,
                 dashboardMenuItems = dashboardMenuItems,
                 transactionsMenuItems = transactionsMenuItems,
                 currentScreen = HomeScreenSideBarMenuScreen.HOME,
                 onChangeScreen = {},
+                onDismissRequest = {},
+                onShowProfilePopup = {},
                 navigateToInAppNavigationScreen = {},
                 navigateToPersonalDetailsScreen = {},
                 navigateToChangePasswordScreen = {},
                 navigateToPrivacyPolicyScreen = {},
                 navigateToLoginScreenWithArgs = { documentNo, password -> },
-                navigateToInAppNavigationScreenWithArgs = {}
+                navigateToInAppNavigationScreenWithArgs = {},
+                navigateToProfileScreen = {},
+                onLogout = {}
             )
         }
     }
