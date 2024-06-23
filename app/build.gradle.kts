@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
 }
 
 android {
@@ -79,6 +80,14 @@ dependencies {
 
     //Viewmodel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+
+    //Room
+    implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
+    ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
+    implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+
+    //LiveData
+    implementation ("androidx.compose.runtime:runtime-livedata")
 
 //    // https://mvnrepository.com/artifact/androidx.compose.material3/material3
 //    implementation("androidx.compose.material3:material3:1.0.0-alpha02")

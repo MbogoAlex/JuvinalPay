@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -99,7 +100,10 @@ fun ProfileScreenComposable(
         )
     }
 
-    Box {
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
         ProfileScreen(
             loggingOut = loggingOut,
             username = uiState.userDetails.name,
@@ -140,19 +144,18 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-//                    top = 30.dp
-//                    bottom = 20.dp
+                    top = 30.dp,
+                    bottom = 20.dp
                 )
         ) {
             Box(
 //                contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .fillMaxWidth()
+//                    .fillMaxSize()
 //                .height(200.dp)
                     .padding(
-                        top = 30.dp,
-                        start = 30.dp,
-                        end = 30.dp
+                        start = 20.dp,
+                        end = 20.dp
                     )
 //                    .background(Color(0xFF313d60))
             ) {
@@ -168,7 +171,7 @@ fun ProfileScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(10.dp)
+                            .padding(20.dp)
                     ) {
                         Box(
                             modifier = Modifier
@@ -208,135 +211,126 @@ fun ProfileScreen(
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             text = username.uppercase(),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF4b5259)
                         )
+
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(10.dp))
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent
-                ),
-//                elevation = CardDefaults.cardElevation(
-//                    defaultElevation = 10.dp
-//                ),
+//            Spacer(modifier = Modifier.height(10.dp))
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
                     .padding(
-//                        top = 20.dp,
-                        start = 20.dp,
-                        end = 20.dp,
-                        bottom = 80.dp
+                        top = 10.dp,
+                        start = 30.dp,
+                        end = 30.dp
                     )
             ) {
-                Column(
+                Card(
                     modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .fillMaxSize()
-                        .padding(20.dp)
+                        .clickable {
+                            navigateToPersonalDetailsScreen()
+                        }
                 ) {
-                    Card(
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .clickable {
-                                navigateToPersonalDetailsScreen()
-                            }
+                            .padding(20.dp)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(20.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.person_filled),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text(text = "Personal details")
-                            Spacer(modifier = Modifier.weight(1f))
-                            Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Persona details")
-                        }
-
+                        Icon(
+                            painter = painterResource(id = R.drawable.person_filled),
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(text = "Personal details")
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Persona details")
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Card(
-                        modifier = Modifier
-                            .clickable { navigateToChangePasswordScreen() }
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(20.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.password),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text(text = "Change password")
-                            Spacer(modifier = Modifier.weight(1f))
-                            Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Change password")
-                        }
 
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Card {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(20.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.documents),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text(text = "Personal documents")
-                            Spacer(modifier = Modifier.weight(1f))
-                            Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Change password")
-                        }
-
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Card(
-                        modifier = Modifier
-                            .clickable {
-                                navigateToPrivacyPolicyScreen()
-                            }
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(20.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.policy),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text(text = "Privacy policy")
-                            Spacer(modifier = Modifier.weight(1f))
-                            Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Privacy policy")
-                        }
-
-                    }
                 }
+                Spacer(modifier = Modifier.height(20.dp))
+                Card(
+                    modifier = Modifier
+                        .clickable { navigateToChangePasswordScreen() }
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(20.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.password),
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(text = "Change password")
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Change password")
+                    }
+
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Card {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(20.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.documents),
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(text = "Personal documents")
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Change password")
+                    }
+
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Card(
+                    modifier = Modifier
+                        .clickable {
+                            navigateToPrivacyPolicyScreen()
+                        }
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(20.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.policy),
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(text = "Privacy policy")
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Privacy policy")
+                    }
+
+                }
+
             }
+
             Spacer(modifier = Modifier.weight(1f))
+//                    Spacer(modifier = Modifier.height(40.dp))
             Button(
                 enabled = !loggingOut,
                 onClick = onLogout,
                 modifier = Modifier
-                    .padding(
-                        horizontal = 40.dp,
-//                        vertical = 30.dp
-                    )
                     .fillMaxWidth()
+                    .padding(
+                        top = 10.dp,
+                        start = 30.dp,
+                        end = 30.dp
+                    )
             ) {
                 if(loggingOut) {
                     Text(text = "Logging out...")

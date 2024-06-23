@@ -159,41 +159,25 @@ fun LoginScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .height(160.dp)
+                        .height(80.dp)
                         .fillMaxWidth()
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.juvinal_pay_logo_light),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(140.dp)
+                            .size(100.dp)
                     )
                 }
             }
-            Spacer(modifier = Modifier.weight(1f))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(text = "Dont't have an account?")
-                TextButton(onClick = navigateToRegistrationScreen) {
-                    Text(
-                        text = "Signup",
-                        color = Color(0xFF405189)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(70.dp))
         }
 
         Box(
             modifier = Modifier
 //                .align(Alignment.CenterStart)
                 .padding(
-                    top = 140.dp,
-                    bottom = 140.dp,
+                    top = 80.dp,
+                    bottom = 10.dp,
                     start = 20.dp,
                     end = 20.dp
                 )
@@ -215,7 +199,8 @@ fun LoginScreen(
                         password = password,
                         buttonEnabled = buttonEnabled,
                         loadingStatus = loadingStatus,
-                        onLogin = onLogin
+                        onLogin = onLogin,
+                        navigateToRegistrationScreen = navigateToRegistrationScreen
                     )
                 }
             }
@@ -233,6 +218,7 @@ fun LoginDetailsInputField(
     onLogin: () -> Unit,
     buttonEnabled: Boolean,
     loadingStatus: LoadingStatus,
+    navigateToRegistrationScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var passwordVisibility by remember {
@@ -241,8 +227,8 @@ fun LoginDetailsInputField(
     Column(
         modifier = Modifier
             .padding(20.dp)
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+//            .fillMaxSize()
+//            .verticalScroll(rememberScrollState())
     ) {
         Text(
             text = "Welcome Back!",
@@ -253,98 +239,117 @@ fun LoginDetailsInputField(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
         )
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Sign in to continue to JuvinalPay",
-            style = TextStyle(
-                color = Color(0xFFacaeb8)
-            ),
-            fontSize = 18.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-            )
-        Spacer(modifier = Modifier.height(20.dp))
-
-        AuthInputField(
-            heading = "Username (Document No)",
-            value = documentNo,
-            placeHolder = "Document No - ID/Passport",
-            onValueChange = onDocumentNoChange,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Text
-            ),
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        PasswordInputField(
-            heading = "Password",
-            value = password,
-            trailingIcon = R.drawable.visibility_on,
-            placeHolder = "Enter password",
-            onValueChange = onPasswordChange,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Password
-            ),
-            visibility = passwordVisibility,
-            onChangeVisibility = {
-                passwordVisibility = !passwordVisibility
-            }
-        )
-        Spacer(modifier = Modifier.height(40.dp))
-        Button(
-            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
-            shape = RoundedCornerShape(5.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF0ab39c),
-            ),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .widthIn(250.dp),
-            onClick = onLogin
-        ) {
-            if(loadingStatus == LoadingStatus.LOADING) {
-                Text(text = "Loading...")
-            } else {
-                Text(
-                    text = "Sign in",
-                    color = Color.White
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Sign in with",
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.fb),
-                contentDescription = "Sign in with facebook",
+            Text(text = "Don't have an account?")
+            TextButton(onClick = navigateToRegistrationScreen) {
+                Text(
+                    text = "Signup",
+                    color = Color(0xFF405189)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                text = "Sign in to continue to JuvinalPay",
+                style = TextStyle(
+                    color = Color(0xFFacaeb8)
+                ),
+                fontSize = 18.sp,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .size(40.dp)
+                    .align(Alignment.CenterHorizontally)
             )
-            Spacer(modifier = Modifier.width(3.dp))
-            Image(
-                painter = painterResource(id = R.drawable.googl_2),
-                contentDescription = "Sign in with google",
+            Spacer(modifier = Modifier.height(20.dp))
+
+            AuthInputField(
+                heading = "Username (Document No)",
+                value = documentNo,
+                placeHolder = "Document No - ID/Passport",
+                onValueChange = onDocumentNoChange,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text
+                ),
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            PasswordInputField(
+                heading = "Password",
+                value = password,
+                trailingIcon = R.drawable.visibility_on,
+                placeHolder = "Enter password",
+                onValueChange = onPasswordChange,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Password
+                ),
+                visibility = passwordVisibility,
+                onChangeVisibility = {
+                    passwordVisibility = !passwordVisibility
+                }
+            )
+            Spacer(modifier = Modifier.height(40.dp))
+            Button(
+                enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
+                shape = RoundedCornerShape(5.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF0ab39c),
+                ),
                 modifier = Modifier
-                    .size(40.dp)
-            )
-            Spacer(modifier = Modifier.width(3.dp))
-            Image(
-                painter = painterResource(id = R.drawable.x),
-                contentDescription = "Sign in with twitter",
+                    .align(Alignment.CenterHorizontally)
+                    .widthIn(250.dp),
+                onClick = onLogin
+            ) {
+                if(loadingStatus == LoadingStatus.LOADING) {
+                    Text(text = "Loading...")
+                } else {
+                    Text(
+                        text = "Sign in",
+                        color = Color.White
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Sign in with",
                 modifier = Modifier
-                    .size(40.dp)
+                    .align(Alignment.CenterHorizontally)
             )
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.fb),
+                    contentDescription = "Sign in with facebook",
+                    modifier = Modifier
+                        .size(40.dp)
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.googl_2),
+                    contentDescription = "Sign in with google",
+                    modifier = Modifier
+                        .size(40.dp)
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.x),
+                    contentDescription = "Sign in with twitter",
+                    modifier = Modifier
+                        .size(40.dp)
+                )
+            }
         }
 
     }

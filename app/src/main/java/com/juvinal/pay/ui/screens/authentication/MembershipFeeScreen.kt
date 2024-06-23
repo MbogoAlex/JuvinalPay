@@ -26,6 +26,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,6 +71,14 @@ fun MembershipFeeScreenComposable(
     val viewModel: MembershipFeeScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
 
+    val isConnected by viewModel.isConnected.observeAsState(false)
+
+    viewModel.checkConnectivity(context)
+
+    viewModel.checkIfRequiredFieldsAreFilled()
+
+
+
     var checkIfRequiredFieldsAreFilled by remember {
         mutableStateOf(false)
     }
@@ -111,6 +120,7 @@ fun MembershipFeeScreenComposable(
             .safeDrawingPadding()
     ) {
         MembershipFeeScreen(
+            isConnected = isConnected,
             paymentCountdown = paymentCountdown,
             phoneNumber = uiState.msisdn,
             buttonEnabled = uiState.paymentButtonEnabled,
@@ -140,6 +150,7 @@ fun MembershipFeeScreenComposable(
 
 @Composable
 fun MembershipFeeScreen(
+    isConnected: Boolean,
     paymentCountdown: Int,
     phoneNumber: String,
     buttonEnabled: Boolean,
@@ -152,12 +163,13 @@ fun MembershipFeeScreen(
 ) {
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .padding(
 //                top = 30.dp,
 //                bottom = 40.dp
             )
             .verticalScroll(rememberScrollState())
-            .fillMaxSize()
+
     ) {
         Text(
             text = "Membership Fee",
@@ -283,9 +295,16 @@ fun MembershipFeeScreen(
         )
 
         Spacer(modifier = Modifier.weight(1f))
-
+        if(!isConnected) {
+            Text(
+                text = "Connect to the internet",
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
         Button(
-            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
+            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING && isConnected,
             onClick = onPay,
             modifier = Modifier
                 .fillMaxWidth()
@@ -300,7 +319,7 @@ fun MembershipFeeScreen(
                 Text(text = "Pay")
             }
         }
-        if(showCheckPaymentOption) {
+        if(showCheckPaymentOption && isConnected) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -325,6 +344,7 @@ fun MembershipFeeScreen(
 fun MembershipFeeScreenPreview() {
     JuvinalPayTheme {
         MembershipFeeScreen(
+            isConnected = false,
             paymentCountdown = 40,
             phoneNumber = "",
             buttonEnabled = false,

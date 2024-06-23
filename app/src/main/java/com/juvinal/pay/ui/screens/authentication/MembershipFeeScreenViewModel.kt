@@ -1,6 +1,13 @@
 package com.juvinal.pay.ui.screens.authentication
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juvinal.pay.LoadingStatus
@@ -30,6 +37,39 @@ class MembershipFeeScreenViewModel(
 ): ViewModel() {
     private val _uiState = MutableStateFlow(MembershipFeeScreenUiState())
     val uiState: StateFlow<MembershipFeeScreenUiState> = _uiState.asStateFlow()
+
+    private val _isConnected = MutableLiveData<Boolean>()
+    val isConnected: LiveData<Boolean> = _isConnected
+
+
+    var conManager: ConnectivityManager? = null
+    var netCallback: ConnectivityManager.NetworkCallback? = null
+    fun checkConnectivity(context: Context) {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        conManager = connectivityManager
+        val networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                _isConnected.postValue(true)
+            }
+
+            override fun onLost(network: Network) {
+                _isConnected.postValue(false)
+            }
+
+        }
+
+        netCallback = networkCallback
+
+        val networkRequest = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        conManager!!.unregisterNetworkCallback(netCallback!!)
+    }
 
     fun loadUserData() {
         viewModelScope.launch {

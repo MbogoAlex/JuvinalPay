@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -22,6 +23,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,6 +58,10 @@ fun DepositMoneyScreenComposable(
     val context = LocalContext.current
     val viewModel: DepositMoneyScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
+
+    val isConnected by viewModel.isConnected.observeAsState(false)
+
+    viewModel.checkConnectivity(context)
 
     viewModel.checkIfFieldsAreValid()
 
@@ -115,8 +122,12 @@ fun DepositMoneyScreenComposable(
         )
     }
 
-    Box {
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
         DepositMoneyScreen(
+            isConnected = isConnected,
             countdown = countdown,
             saccoBalance = 0.0,
             amount = uiState.amount,
@@ -142,6 +153,7 @@ fun DepositMoneyScreenComposable(
 
 @Composable
 fun DepositMoneyScreen(
+    isConnected: Boolean,
     countdown: Int,
     saccoBalance: Double,
     amount: String,
@@ -257,8 +269,16 @@ fun DepositMoneyScreen(
             Text(text = formatMoneyValue(saccoBalance))
         }
         Spacer(modifier = Modifier.weight(1f))
+        if(!isConnected) {
+            Text(
+                text = "Connect to the internet",
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
         Button(
-            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
+            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING && isConnected,
             onClick = onDeposit,
             modifier = Modifier
                 .fillMaxWidth()
@@ -266,11 +286,11 @@ fun DepositMoneyScreen(
             if(loadingStatus == LoadingStatus.LOADING) {
                 Text(text = "Processing in $countdown seconds")
             } else {
-                Text(text = "Confirm Deposit")
+                Text(text = "Pay now")
             }
 
         }
-        if(statusCheckMessage == "Payment not successful") {
+        if(statusCheckMessage == "Payment not successful" && isConnected) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -346,6 +366,7 @@ fun DepositSuccessDialog(
 fun DepositMoneyScreenPreview() {
     JuvinalPayTheme {
         DepositMoneyScreen(
+            isConnected = false,
             saccoBalance = 0.0,
             amount = "",
             phoneNumber = "0987678900",
