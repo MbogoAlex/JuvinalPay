@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -242,74 +244,79 @@ fun InAppNavScreen(
                     Spacer(modifier = Modifier.height(15.dp))
                     Divider()
                     Spacer(modifier = Modifier.height(15.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                    Column(
                         modifier = Modifier
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.dashboard),
-                            contentDescription = "Dashboard"
-                        )
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Text(
-                            text = "Dashboard",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    for(menuItem in dashboardMenuItems) {
-                        NavigationDrawerItem(
-                            label = {
-                                Row {
-                                    Text(text = "-")
-                                    Spacer(modifier = Modifier.width(5.dp))
-                                    Text(text = menuItem.name)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.dashboard),
+                                contentDescription = "Dashboard"
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                text = "Dashboard",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        for(menuItem in dashboardMenuItems) {
+                            NavigationDrawerItem(
+                                label = {
+                                    Row {
+                                        Text(text = "-")
+                                        Spacer(modifier = Modifier.width(5.dp))
+                                        Text(text = menuItem.name)
+                                    }
+                                },
+                                selected = menuItem.screen == currentScreen,
+                                onClick = {
+                                    scope.launch {
+                                        drawerState.close()
+                                        onChangeScreen(menuItem.screen)
+                                    }
                                 }
-                            },
-                            selected = menuItem.screen == currentScreen,
-                            onClick = {
-                                scope.launch {
-                                    drawerState.close()
-                                    onChangeScreen(menuItem.screen)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.receipt),
+                                contentDescription = "Transactions",
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                text = "Transactions",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        for(menuItem in transactionsMenuItems) {
+                            NavigationDrawerItem(
+                                label = {
+                                    Row {
+                                        Text(text = "-")
+                                        Spacer(modifier = Modifier.width(5.dp))
+                                        Text(text = menuItem.name)
+                                    }
+                                },
+                                selected = menuItem.screen == currentScreen,
+                                onClick = {
+                                    scope.launch {
+                                        drawerState.close()
+                                        onChangeScreen(menuItem.screen)
+                                    }
                                 }
-                            }
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.receipt),
-                            contentDescription = "Transactions",
-                        )
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Text(
-                            text = "Transactions",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    for(menuItem in transactionsMenuItems) {
-                        NavigationDrawerItem(
-                            label = {
-                                Row {
-                                    Text(text = "-")
-                                    Spacer(modifier = Modifier.width(5.dp))
-                                    Text(text = menuItem.name)
-                                }
-                            },
-                            selected = menuItem.screen == currentScreen,
-                            onClick = {
-                                scope.launch {
-                                    drawerState.close()
-                                    onChangeScreen(menuItem.screen)
-                                }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
 
