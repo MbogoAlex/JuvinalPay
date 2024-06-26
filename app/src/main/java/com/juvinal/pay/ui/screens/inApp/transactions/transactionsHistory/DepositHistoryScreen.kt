@@ -74,6 +74,8 @@ fun TransactionItemCard(
         ),
         modifier = Modifier
             .padding(
+                start = 20.dp,
+                end = 20.dp,
                 bottom = 10.dp
             )
             .fillMaxWidth()

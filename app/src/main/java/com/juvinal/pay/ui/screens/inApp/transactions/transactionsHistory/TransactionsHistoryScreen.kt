@@ -82,16 +82,16 @@ fun TransactionsHistoryScreen(
     ) {
         Column(
             modifier = Modifier
-                .padding(
-                    start = 20.dp,
-                    end = 20.dp,
-                )
                 .fillMaxSize()
         ) {
             Text(
                 text = "Transactions history",
                 fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .padding(
+                        start = 20.dp
+                    )
             )
             Spacer(modifier = Modifier.height(20.dp))
             when(currentTab) {
