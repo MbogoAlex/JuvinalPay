@@ -90,8 +90,8 @@ fun ProfileScreenComposable(
     
     if(showLogoutDialog) {
         LogoutDialog(
+            loggingOut = loggingOut,
             onConfirm = {
-                showLogoutDialog = !showLogoutDialog
                 scope.launch {
                     loggingOut = true
                     delay(2000)
@@ -102,7 +102,9 @@ fun ProfileScreenComposable(
                 }      
             }, 
             onDismiss = {
-                showLogoutDialog = !showLogoutDialog
+                if(!loggingOut) {
+                    showLogoutDialog = !showLogoutDialog
+                }
             }
         )
     }

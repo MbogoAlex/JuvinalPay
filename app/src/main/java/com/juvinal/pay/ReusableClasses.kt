@@ -31,4 +31,17 @@ enum class LoadingStatus {
     FAIL
 }
 
+enum class TransactionsHistoryScreen {
+    DEPOSIT,
+    LOAN
+}
+
+data class TransactionsHistoryMenuItem(
+    val name: String,
+    val screen: TransactionsHistoryScreen,
+    val icon: Int
+)
+
+
+
 

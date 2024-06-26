@@ -1,10 +1,12 @@
 package com.juvinal.pay.network
 
+import com.juvinal.pay.model.DashboardResponseBody
 import com.juvinal.pay.model.DepositRequestBody
 import com.juvinal.pay.model.DepositResponseBody
 import com.juvinal.pay.model.MembershipFeePaymentStatusResponseBody
 import com.juvinal.pay.model.MembershipFeeRequestBody
 import com.juvinal.pay.model.MembershipFeeResponseBody
+import com.juvinal.pay.model.TransactionsHistoryResponseBody
 import com.juvinal.pay.model.UserLoginRequestBody
 import com.juvinal.pay.model.UserLoginResponseBody
 import com.juvinal.pay.model.UserRegistrationRequestBody
@@ -40,4 +42,8 @@ interface ApiService {
     suspend fun initiateDeposit(
         @Body depositRequestBody: DepositRequestBody
     ): Response<DepositResponseBody>
+    @GET("dashboard/{id}")
+    suspend fun getDashboardDetails(@Path("id") id: Int): Response<DashboardResponseBody>
+    @GET("transactionhistory/{id}")
+    suspend fun getTransactionHistory(@Path("id") id: Int): Response<TransactionsHistoryResponseBody>
 }

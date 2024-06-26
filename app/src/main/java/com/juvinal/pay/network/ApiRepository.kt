@@ -1,10 +1,12 @@
 package com.juvinal.pay.network
 
+import com.juvinal.pay.model.DashboardResponseBody
 import com.juvinal.pay.model.DepositRequestBody
 import com.juvinal.pay.model.DepositResponseBody
 import com.juvinal.pay.model.MembershipFeePaymentStatusResponseBody
 import com.juvinal.pay.model.MembershipFeeRequestBody
 import com.juvinal.pay.model.MembershipFeeResponseBody
+import com.juvinal.pay.model.TransactionsHistoryResponseBody
 import com.juvinal.pay.model.UserLoginRequestBody
 import com.juvinal.pay.model.UserLoginResponseBody
 import com.juvinal.pay.model.UserRegistrationRequestBody
@@ -19,6 +21,9 @@ interface ApiRepository {
     suspend fun checkPaymentStatus(paymentReference: String): Response<MembershipFeePaymentStatusResponseBody>
 
     suspend fun initiateDeposit(depositRequestBody: DepositRequestBody): Response<DepositResponseBody>
+    suspend fun getDashboardDetails(id: Int): Response<DashboardResponseBody>
+
+    suspend fun getTransactionHistory(id: Int): Response<TransactionsHistoryResponseBody>
 }
 
 class ApiRepositoryImpl(private val apiService: ApiService) : ApiRepository {
@@ -40,5 +45,13 @@ class ApiRepositoryImpl(private val apiService: ApiService) : ApiRepository {
 
     override suspend fun initiateDeposit(depositRequestBody: DepositRequestBody): Response<DepositResponseBody> = apiService.initiateDeposit(
         depositRequestBody = depositRequestBody
+    )
+
+    override suspend fun getDashboardDetails(id: Int): Response<DashboardResponseBody> = apiService.getDashboardDetails(
+        id = id
+    )
+
+    override suspend fun getTransactionHistory(id: Int): Response<TransactionsHistoryResponseBody> = apiService.getTransactionHistory(
+        id = id
     )
 }

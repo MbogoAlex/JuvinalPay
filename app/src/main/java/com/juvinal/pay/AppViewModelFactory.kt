@@ -15,6 +15,7 @@ import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ChangePasswordScreenVi
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PersonalDetailsScreenViewModel
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenViewModel
 import com.juvinal.pay.ui.screens.inApp.transactions.DepositMoneyScreenViewModel
+import com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory.DepositHistoryScreenViewModel
 
 object AppViewModelFactory {
     val Factory = viewModelFactory {
@@ -63,8 +64,10 @@ object AppViewModelFactory {
 
         // initialize InAppNavScreenViewModel
         initializer {
+            val apiRepository = juvinalPayApplication().container.apiRepository
             val dsRepository = juvinalPayApplication().dsRepository
             InAppNavScreenViewModel(
+                apiRepository = apiRepository,
                 dsRepository = dsRepository,
                 savedStateHandle = this.createSavedStateHandle()
             )
@@ -115,6 +118,16 @@ object AppViewModelFactory {
             val apiRepository = juvinalPayApplication().container.apiRepository
             val dsRepository = juvinalPayApplication().dsRepository
             DepositMoneyScreenViewModel(
+                apiRepository = apiRepository,
+                dsRepository = dsRepository
+            )
+        }
+
+        // initialize TransactionHistoryViewModel
+        initializer {
+            val apiRepository = juvinalPayApplication().container.apiRepository
+            val dsRepository = juvinalPayApplication().dsRepository
+            DepositHistoryScreenViewModel(
                 apiRepository = apiRepository,
                 dsRepository = dsRepository
             )

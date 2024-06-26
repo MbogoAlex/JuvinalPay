@@ -54,12 +54,13 @@ import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.DashboardMenuItem
 import com.juvinal.pay.HomeScreenSideBarMenuScreen
 import com.juvinal.pay.R
+import com.juvinal.pay.resusableFunctions.formatMoneyValue
 import com.juvinal.pay.reusableComposables.LogoutDialog
 import com.juvinal.pay.ui.screens.inApp.dashboard.HomeScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.DepositMoneyScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.RequestLoanScreenComposable
-import com.juvinal.pay.ui.screens.inApp.transactions.TransactionsHistoryScreenComposable
+import com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory.TransactionsHistoryScreenComposable
 import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 import kotlinx.coroutines.delay
@@ -135,8 +136,9 @@ fun InAppNavScreenComposable(
 
     if(showLogoutDialog) {
         LogoutDialog(
+            loggingOut = loggingOut,
             onConfirm = {
-                showLogoutDialog = !showLogoutDialog
+//                showLogoutDialog = !showLogoutDialog
                 scope.launch {
                     loggingOut = true
                     delay(2000)
@@ -147,7 +149,10 @@ fun InAppNavScreenComposable(
                 }
             },
             onDismiss = {
-                showLogoutDialog = !showLogoutDialog
+                if(!loggingOut) {
+                    showLogoutDialog = !showLogoutDialog
+                }
+
             }
         )
     }
@@ -162,6 +167,7 @@ fun InAppNavScreenComposable(
     ) {
         InAppNavScreen(
             username = uiState.userDetails.fname,
+            accountSavings = uiState.accountSavings,
             showTopPopup = showTopPopup,
             dashboardMenuItems = dashboardMenuItems,
             transactionsMenuItems = transactionsMenuItems,
@@ -197,6 +203,7 @@ fun InAppNavScreenComposable(
 @Composable
 fun InAppNavScreen(
     username: String,
+    accountSavings: Double,
     showTopPopup: Boolean,
     dashboardMenuItems: List<DashboardMenuItem>,
     transactionsMenuItems: List<DashboardMenuItem>,
@@ -366,9 +373,9 @@ fun InAppNavScreen(
                         onDismissRequest = onDismissRequest
                     ) {
                         Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
-                            ),
+//                            colors = CardDefaults.cardColors(
+//                                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
+//                            ),
                             shape = RoundedCornerShape(0.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -417,10 +424,10 @@ fun InAppNavScreen(
                                     )
                                     Spacer(modifier = Modifier.width(5.dp))
                                     Text(
-                                        text = "Balance:",
+                                        text = "Account Savings:",
                                     )
                                     Text(
-                                        text = "KES 0",
+                                        text = formatMoneyValue(accountSavings),
                                         modifier = Modifier
                                             .padding(10.dp)
                                     )
@@ -518,6 +525,7 @@ fun NavScreenPreview() {
         JuvinalPayTheme {
             InAppNavScreen(
                 username = "Alex",
+                accountSavings = 0.0,
                 showTopPopup = false,
                 dashboardMenuItems = dashboardMenuItems,
                 transactionsMenuItems = transactionsMenuItems,

@@ -46,6 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.R
 import com.juvinal.pay.dateFormatter
+import com.juvinal.pay.resusableFunctions.formatMoneyValue
 import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
 import java.time.LocalDate
@@ -65,7 +66,13 @@ fun HomeScreenComposable(
 
     Box {
         HomeScreen(
-            userName = uiState.userDetails.fname
+            userName = uiState.userDetails.fname,
+            accountSavings = uiState.accountSavings,
+            loanBalance = uiState.loanBalance,
+            guaranteedAmounts = uiState.guaranteedAmounts,
+            netSavings = uiState.netSavings,
+            accountShareCapital = uiState.accountShareCapital,
+            loanAmountQualified = uiState.loanAmountQualified
         )
     }
 }
@@ -74,6 +81,12 @@ fun HomeScreenComposable(
 @Composable
 fun HomeScreen(
     userName: String,
+    accountSavings: Double,
+    loanBalance: Double,
+    guaranteedAmounts: Double,
+    netSavings: Double,
+    accountShareCapital: Double,
+    loanAmountQualified: Double,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -106,11 +119,11 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             AmountCard(
-                title = "Total Deposits",
+                title = "Account savings",
                 amount = "0.00 %",
                 amountColor = Color(0xFF21baa5),
-                balance = "0",
-                icon = R.drawable.loan,
+                balance = formatMoneyValue(accountSavings),
+                icon = R.drawable.account_balance,
                 amountIcon = R.drawable.up_right_arrow,
                 amountIconColor = Color(0xFF5cccbd),
                 iconColor = Color(0xFF0ab39c),
@@ -118,11 +131,11 @@ fun HomeScreen(
             )
             Spacer(modifier = Modifier.height(20.dp))
             AmountCard(
-                title = "Total Share Capital",
+                title = "Loan Balance",
                 amount = "0.00 %",
                 amountColor = Color(0xFFf28069),
-                balance = "0",
-                icon = R.drawable.card_travel,
+                balance = formatMoneyValue(loanBalance),
+                icon = R.drawable.credit_card,
                 amountIcon = R.drawable.down_right_arrow,
                 amountIconColor = Color(0xFFf28069),
                 iconColor = Color(0XFF299cdb),
@@ -130,11 +143,11 @@ fun HomeScreen(
             )
             Spacer(modifier = Modifier.height(20.dp))
             AmountCard(
-                title = "Outstanding Loans",
+                title = "Guaranteed Amounts",
                 amount = "0.00 %",
                 amountColor = Color(0xFF22baa6),
-                balance = "0",
-                icon = R.drawable.person,
+                balance = formatMoneyValue(guaranteedAmounts),
+                icon = R.drawable.shield,
                 amountIcon = R.drawable.up_right_arrow,
                 amountIconColor = Color(0xFF22baa6),
                 iconColor = Color(0xFFf7b84b),
@@ -145,12 +158,36 @@ fun HomeScreen(
                 title = "Net Savings",
                 amount = "0.00 %",
                 amountColor = Color(0xFF9395a3),
-                balance = "0",
-                icon = R.drawable.card,
+                balance = formatMoneyValue(netSavings),
+                icon = R.drawable.upward_chart,
                 amountIcon = R.drawable.plus,
                 amountIconColor = Color(0xFF9395a3),
                 iconColor = Color(0xFF48588d),
                 iconBackgroundColor = Color(0xFFdcdfea)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            AmountCard(
+                title = "Account Share Capital",
+                amount = "0.00 %",
+                amountColor = Color(0xFF9395a3),
+                balance = formatMoneyValue(accountShareCapital),
+                icon = R.drawable.receipt,
+                amountIcon = R.drawable.plus,
+                amountIconColor = Color(0xFF9395a3),
+                iconColor = Color(0xFF0ab39c),
+                iconBackgroundColor = Color(0xFFd2f1ed)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            AmountCard(
+                title = "Loan Amount Qualified",
+                amount = "0.00 %",
+                amountColor = Color(0xFF9395a3),
+                balance = formatMoneyValue(loanAmountQualified),
+                icon = R.drawable.loan,
+                amountIcon = R.drawable.plus,
+                amountIconColor = Color(0xFF9395a3),
+                iconColor = Color(0XFF299cdb),
+                iconBackgroundColor = Color(0xFFd8edf9)
             )
         }
     }
@@ -271,22 +308,22 @@ fun AmountCard(
             }
             Spacer(modifier = Modifier.weight(1f))
             Column {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        tint = amountIconColor,
-                        painter = painterResource(id = amountIcon),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(20.dp)
-                    )
-                    Text(
-                        text = amount,
-                        color = amountColor
-                    )
-                }
-                Spacer(modifier = Modifier.height(20.dp))
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Icon(
+//                        tint = amountIconColor,
+//                        painter = painterResource(id = amountIcon),
+//                        contentDescription = null,
+//                        modifier = Modifier
+//                            .size(20.dp)
+//                    )
+//                    Text(
+//                        text = amount,
+//                        color = amountColor
+//                    )
+//                }
+//                Spacer(modifier = Modifier.height(20.dp))
                 Icon(
                     tint = iconColor,
                     painter = painterResource(id = icon),
@@ -308,7 +345,13 @@ fun AmountCard(
 fun HomeScreenPreview() {
     JuvinalPayTheme {
         HomeScreen(
-            userName = "David"
+            userName = "David",
+            accountSavings = 0.0,
+            loanBalance = 0.0,
+            guaranteedAmounts = 0.0,
+            netSavings = 0.0,
+            accountShareCapital = 0.0,
+            loanAmountQualified = 0.0
         )
     }
 }

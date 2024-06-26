@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun LogoutDialog(
+    loggingOut: Boolean,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -19,13 +20,24 @@ fun LogoutDialog(
         },
         onDismissRequest = onDismiss,
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                enabled = !loggingOut,
+                onClick = onDismiss
+            ) {
                 Text(text = "Cancel")
             }
         },
         confirmButton = {
-            Button(onClick = onConfirm) {
-                Text("Logout")
+            Button(
+                enabled = !loggingOut,
+                onClick = onConfirm
+            ) {
+                if(loggingOut) {
+                    Text(text = "Logging out...")
+                } else {
+                    Text("Logout")
+                }
+
             }
         },
     )
