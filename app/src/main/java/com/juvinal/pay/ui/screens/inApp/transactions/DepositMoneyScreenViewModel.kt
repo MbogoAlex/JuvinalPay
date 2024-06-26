@@ -29,6 +29,7 @@ data class DepositMoneyScreenUiState(
     val depositPaymentReferenceId: String? = "",
     val userDetails: UserDetails = UserDetails(),
     val amount: String = "",
+    val amountDeposited: Double = 0.0,
     val phoneNumber: String = "",
     val statusCheckMessage: String = "",
     val depositButtonEnabled: Boolean = false,
@@ -112,7 +113,8 @@ class DepositMoneyScreenViewModel(
     fun updateAmount(amount: String) {
         _uiState.update {
             it.copy(
-                amount = amount
+                amount = amount,
+                amountDeposited = if(amount.isNotEmpty()) amount.toDouble() else 0.0
             )
         }
     }
@@ -136,12 +138,13 @@ class DepositMoneyScreenViewModel(
                 if(response.isSuccessful) {
                     val paymentDSModel = PaymentReferenceDSModel(
                         memberFeePaymentReference = uiState.value.memberFeeReferenceId,
-                        depositPaymentReference = response.body()?.paymentReference
+                        depositPaymentReference = response.body()?.paymentReference,
                     )
                     dsRepository.savePaymentData(paymentDSModel)
                     _uiState.update {
                         it.copy(
                             depositPaymentReferenceId = response.body()?.paymentReference,
+                            amount = ""
                         )
                     }
                 } else {

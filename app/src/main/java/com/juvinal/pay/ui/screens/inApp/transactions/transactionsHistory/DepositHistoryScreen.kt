@@ -98,11 +98,17 @@ fun TransactionItemCard(
             }
             Spacer(modifier = Modifier.height(10.dp))
 
-
+            Text(
+                text = "Account: ${transaction.acct_no}",
+                color = Color(0xFFaaacb7),
+                modifier = Modifier
+            )
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text =transaction.tranTypeEntry.desc,
                 fontWeight = FontWeight.Bold
             )
+
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = transaction.share_month,
