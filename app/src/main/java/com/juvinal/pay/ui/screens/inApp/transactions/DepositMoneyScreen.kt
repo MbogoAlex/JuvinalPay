@@ -131,7 +131,7 @@ fun DepositMoneyScreenComposable(
         DepositMoneyScreen(
             isConnected = isConnected,
             countdown = countdown,
-            saccoBalance = 0.0,
+            saccoBalance = uiState.accountSavings,
             amount = uiState.amount,
             phoneNumber = uiState.phoneNumber,
             onAmountChange = {

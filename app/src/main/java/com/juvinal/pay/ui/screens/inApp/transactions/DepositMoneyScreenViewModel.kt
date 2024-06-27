@@ -34,6 +34,12 @@ data class DepositMoneyScreenUiState(
     val statusCheckMessage: String = "",
     val depositButtonEnabled: Boolean = false,
     val showSuccessDialog: Boolean = false,
+    val accountSavings: Double = 0.0,
+    val loanBalance: Double = 0.0,
+    val guaranteedAmounts: Double = 0.0,
+    val netSavings: Double = 0.0,
+    val accountShareCapital: Double = 0.0,
+    val loanAmountQualified: Double = 0.0,
     val loadingStatus: LoadingStatus = LoadingStatus.INITIAL
 )
 class DepositMoneyScreenViewModel(
@@ -116,6 +122,31 @@ class DepositMoneyScreenViewModel(
                 amount = amount,
                 amountDeposited = if(amount.isNotEmpty()) amount.toDouble() else 0.0
             )
+        }
+    }
+
+    fun getDashboardDetails() {
+        viewModelScope.launch {
+            try {
+                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.id!!)
+                if(response.isSuccessful) {
+                    _uiState.update {
+                        it.copy(
+                            accountSavings = response.body()?.data?.accountSavings!!.toDouble(),
+                            loanBalance = response.body()?.data?.loanBalance!!,
+                            guaranteedAmounts = response.body()?.data?.guaranteedAmounts!!,
+                            netSavings = response.body()?.data?.netSavings!!,
+                            accountShareCapital = response.body()?.data?.accountShareCapital!!.toDouble(),
+                            loanAmountQualified = response.body()?.data?.loanAmountQualified!!.toDouble(),
+                        )
+                    }
+                } else {
+                    Log.e("DASHBOARD_ERROR_RESPONSE", response.toString())
+                }
+
+            } catch (e: Exception) {
+                Log.e("DASHBOARD_ERROR_EXCEPTION", e.toString())
+            }
         }
     }
 
@@ -235,5 +266,6 @@ class DepositMoneyScreenViewModel(
     init {
         loadUserDetails()
         loadPaymentData()
+        getDashboardDetails()
     }
 }
