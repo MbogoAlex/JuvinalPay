@@ -35,6 +35,7 @@ class DSRepository(
         private val UID = stringPreferencesKey("uid")
         private val MEMBER_FEE_PAYMENT_REFERENCE = stringPreferencesKey("member_fee_payment_reference")
         private val DEPOSIT_PAYMENT_REFERENCE = stringPreferencesKey("deposit_payment_reference")
+        private val LAUNCHED = booleanPreferencesKey("launched")
     }
 
     suspend fun saveUserDetails(
@@ -65,6 +66,12 @@ class DSRepository(
         dataStore.edit { preferences ->
             preferences[MEMBER_FEE_PAYMENT_REFERENCE] = paymentReferenceDSModel.memberFeePaymentReference ?: ""
             preferences[DEPOSIT_PAYMENT_REFERENCE] = paymentReferenceDSModel.depositPaymentReference ?: ""
+        }
+    }
+
+    suspend fun saveLaunchState(appLaunchState: AppLaunchState) {
+        dataStore.edit { preferences ->
+            preferences[LAUNCHED] = appLaunchState.launched
         }
     }
 
@@ -112,9 +119,25 @@ class DSRepository(
             it.toPaymentReferenceDSModel()
         }
 
+    val launchState: Flow<AppLaunchState> = dataStore.data
+        .catch {
+            if(it is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw it
+            }
+        }
+        .map {
+            it.toLaunchState()
+        }
+
     private fun Preferences.toPaymentReferenceDSModel(): PaymentReferenceDSModel = PaymentReferenceDSModel(
         memberFeePaymentReference = this[MEMBER_FEE_PAYMENT_REFERENCE],
         depositPaymentReference = this[DEPOSIT_PAYMENT_REFERENCE]
+    )
+
+    private fun Preferences.toLaunchState(): AppLaunchState = AppLaunchState(
+        launched = this[LAUNCHED] ?: false
     )
 
     suspend fun clear() {

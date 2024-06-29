@@ -228,7 +228,7 @@ fun RequestLoanScreen(
         TextField(
             value = loanReason,
             placeholder = {
-                Text(text = "Reason for your loan")
+                Text(text = "Reason for the loan")
             },
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,

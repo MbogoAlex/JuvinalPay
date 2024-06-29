@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.juvinal.pay.ui.screens.SplashScreenViewModel
+import com.juvinal.pay.ui.screens.WelcomeScreenViewModel
 import com.juvinal.pay.ui.screens.authentication.LoginScreenViewModel
 import com.juvinal.pay.ui.screens.authentication.MembershipFeeScreenViewModel
 import com.juvinal.pay.ui.screens.authentication.RegistrationScreenViewModel
@@ -151,6 +152,14 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             LoanHistoryScreenViewModel(
                 apiRepository = apiRepository,
+                dsRepository = dsRepository
+            )
+        }
+
+        // initialize WelcomeScreenViewModel
+        initializer {
+            val dsRepository = juvinalPayApplication().dsRepository
+            WelcomeScreenViewModel(
                 dsRepository = dsRepository
             )
         }
