@@ -1,6 +1,5 @@
 package com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory
 
-import android.widget.Space
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -102,14 +100,10 @@ fun TransactionsHistoryScreen(
                     )
                 }
                 TransactionsHistoryScreen.LOAN -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
+                    LoanHistoryScreenComposable(
                         modifier = Modifier
-                            .fillMaxSize()
                             .weight(1f)
-                    ) {
-                        Text(text = "Loans history")
-                    }
+                    )
                 }
             }
             TransactionsHistoryScreenBottomBar(

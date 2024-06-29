@@ -3,6 +3,10 @@ package com.juvinal.pay.network
 import com.juvinal.pay.model.DashboardResponseBody
 import com.juvinal.pay.model.DepositRequestBody
 import com.juvinal.pay.model.DepositResponseBody
+import com.juvinal.pay.model.LoanRequestPayload
+import com.juvinal.pay.model.LoanRequestResponseBody
+import com.juvinal.pay.model.LoanTypesResponseBody
+import com.juvinal.pay.model.LoansHistoryResponseBody
 import com.juvinal.pay.model.MembershipFeePaymentStatusResponseBody
 import com.juvinal.pay.model.MembershipFeeRequestBody
 import com.juvinal.pay.model.MembershipFeeResponseBody
@@ -46,4 +50,10 @@ interface ApiService {
     suspend fun getDashboardDetails(@Path("id") id: Int): Response<DashboardResponseBody>
     @GET("transactionhistory/{id}")
     suspend fun getTransactionHistory(@Path("id") id: Int): Response<TransactionsHistoryResponseBody>
+    @GET("loantypes")
+    suspend fun getLoanTypes(): Response<LoanTypesResponseBody>
+    @POST("createloan")
+    suspend fun requestLoan(@Body loanRequestPayload: LoanRequestPayload): Response<LoanRequestResponseBody>
+    @GET("loans/{memNo}")
+    suspend fun getLoansHistory(@Path("memNo") memNo: String): Response<LoansHistoryResponseBody>
 }

@@ -6,6 +6,7 @@ enum class DocumentType {
     ALIEN_ID
 }
 
+
 data class DocumentTypeItem(
     val name: String,
     val documentType: DocumentType
@@ -42,6 +43,14 @@ data class TransactionsHistoryMenuItem(
     val icon: Int
 )
 
+enum class LoanStatus {
+    PENDING,
+    APPROVED,
+    REJECTED
+} enum class LoanPaymentStatus {
+    PAID,
+    UNPAID
+}
 
 
 

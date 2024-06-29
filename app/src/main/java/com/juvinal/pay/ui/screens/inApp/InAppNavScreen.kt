@@ -20,7 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -58,8 +57,8 @@ import com.juvinal.pay.resusableFunctions.formatMoneyValue
 import com.juvinal.pay.reusableComposables.LogoutDialog
 import com.juvinal.pay.ui.screens.inApp.dashboard.HomeScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenComposable
-import com.juvinal.pay.ui.screens.inApp.transactions.DepositMoneyScreenComposable
-import com.juvinal.pay.ui.screens.inApp.transactions.RequestLoanScreenComposable
+import com.juvinal.pay.ui.screens.inApp.transactions.deposit.DepositMoneyScreenComposable
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.RequestLoanScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory.TransactionsHistoryScreenComposable
 import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
@@ -159,6 +158,9 @@ fun InAppNavScreenComposable(
 
     if(uiState.childScreen == "deposit-screen") {
         currentScreen = HomeScreenSideBarMenuScreen.DEPOSIT
+        viewModel.resetChildScreen()
+    } else if(uiState.childScreen == "loan-request-screen") {
+        currentScreen = HomeScreenSideBarMenuScreen.LOAN
         viewModel.resetChildScreen()
     }
 
@@ -480,7 +482,8 @@ fun InAppNavScreen(
                 }
                 HomeScreenSideBarMenuScreen.LOAN -> {
                     RequestLoanScreenComposable(
-                        navigateToInAppNavigationScreen = navigateToInAppNavigationScreen
+                        navigateToInAppNavigationScreen = navigateToInAppNavigationScreen,
+                        navigateToInAppNavigationScreenWithArgs = navigateToInAppNavigationScreenWithArgs
                     )
                 }
                 HomeScreenSideBarMenuScreen.TRANSACTIONS_HISTORY -> {

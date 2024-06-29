@@ -3,6 +3,10 @@ package com.juvinal.pay.network
 import com.juvinal.pay.model.DashboardResponseBody
 import com.juvinal.pay.model.DepositRequestBody
 import com.juvinal.pay.model.DepositResponseBody
+import com.juvinal.pay.model.LoanRequestPayload
+import com.juvinal.pay.model.LoanRequestResponseBody
+import com.juvinal.pay.model.LoanTypesResponseBody
+import com.juvinal.pay.model.LoansHistoryResponseBody
 import com.juvinal.pay.model.MembershipFeePaymentStatusResponseBody
 import com.juvinal.pay.model.MembershipFeeRequestBody
 import com.juvinal.pay.model.MembershipFeeResponseBody
@@ -24,6 +28,16 @@ interface ApiRepository {
     suspend fun getDashboardDetails(id: Int): Response<DashboardResponseBody>
 
     suspend fun getTransactionHistory(id: Int): Response<TransactionsHistoryResponseBody>
+
+    suspend fun getLoanTypes(): Response<LoanTypesResponseBody>
+
+    suspend fun requestLoan(
+        loanRequestPayload: LoanRequestPayload
+    ): Response<LoanRequestResponseBody>
+
+    suspend fun getLoansHistory(
+        memNo: String
+    ): Response<LoansHistoryResponseBody>
 }
 
 class ApiRepositoryImpl(private val apiService: ApiService) : ApiRepository {
@@ -53,5 +67,16 @@ class ApiRepositoryImpl(private val apiService: ApiService) : ApiRepository {
 
     override suspend fun getTransactionHistory(id: Int): Response<TransactionsHistoryResponseBody> = apiService.getTransactionHistory(
         id = id
+    )
+
+    override suspend fun getLoanTypes(): Response<LoanTypesResponseBody> = apiService.getLoanTypes()
+    override suspend fun requestLoan(
+        loanRequestPayload: LoanRequestPayload
+    ): Response<LoanRequestResponseBody> = apiService.requestLoan(
+        loanRequestPayload = loanRequestPayload
+    )
+
+    override suspend fun getLoansHistory(memNo: String): Response<LoansHistoryResponseBody> = apiService.getLoansHistory(
+        memNo = memNo
     )
 }
