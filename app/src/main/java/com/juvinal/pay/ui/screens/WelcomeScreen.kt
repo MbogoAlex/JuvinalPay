@@ -155,7 +155,7 @@ fun WelcomeScreen(
                 items = items
             )
             if(currentIndex > 0) {
-                IconButton(
+                Button(
                     onClick = {
                         if(currentIndex != 0) {
                             currentIndex--
@@ -163,7 +163,7 @@ fun WelcomeScreen(
                     },
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(Color.Black)
+//                        .background(Color.Blue)
                 ) {
                     Icon(
                         tint = Color.White,
@@ -173,7 +173,7 @@ fun WelcomeScreen(
                 }
             }
             if(currentIndex != 2) {
-                IconButton(
+                Button(
                     onClick = {
                         if(currentIndex != 2) {
                             currentIndex++
@@ -181,7 +181,7 @@ fun WelcomeScreen(
                     },
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(Color.Black)
+//                        .background(Color.Blue)
                 ) {
                     Icon(
                         tint = Color.White,

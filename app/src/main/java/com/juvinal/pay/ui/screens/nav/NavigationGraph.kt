@@ -11,6 +11,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.juvinal.pay.ui.screens.SplashScreenComposable
 import com.juvinal.pay.ui.screens.SplashScreenDestination
+import com.juvinal.pay.ui.screens.WelcomeScreenComposable
+import com.juvinal.pay.ui.screens.WelcomeScreenDestination
 import com.juvinal.pay.ui.screens.authentication.LoginScreenComposable
 import com.juvinal.pay.ui.screens.authentication.LoginScreenDestination
 import com.juvinal.pay.ui.screens.authentication.MembershipFeeScreenComposable
@@ -49,6 +51,17 @@ fun NavigationGraph(
                 },
                 navigateToMembershipFeePaymentScreen = { 
                     navController.navigate(MembershipFeeScreenDestination.route)
+                },
+                navigateToWelcomeScreen = {
+                    navController.navigate(WelcomeScreenDestination.route)
+                }
+            )
+        }
+        // WelcomeScreen
+        composable(WelcomeScreenDestination.route) {
+            WelcomeScreenComposable(
+                navigateToRegistrationPage = {
+                    navController.navigate(RegistrationScreenDestination.route)
                 }
             )
         }

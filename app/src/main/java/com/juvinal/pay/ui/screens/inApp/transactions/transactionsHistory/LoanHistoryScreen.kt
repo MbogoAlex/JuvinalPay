@@ -58,7 +58,7 @@ fun LoanHistoryScreenComposable(
     val uiState by viewModel.uiState.collectAsState()
     Box(modifier = modifier) {
         LoanHistoryScreen(
-            loanHistory = uiState.loanHistory
+//            loanHistory = uiState.loanHistory
         )
     }
 }
@@ -66,7 +66,7 @@ fun LoanHistoryScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LoanHistoryScreen(
-    loanHistory: List<LoanHistoryDt>,
+//    loanHistory: List<LoanHistoryDt>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -201,7 +201,7 @@ fun LoanHistoryCell(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if(loanHistoryDt.loan_outstanding_bal.toDouble() != loanHistoryDt.loan_approved_amount.toDouble() && loanHistoryDt.loan_status.lowercase() != "new") {
+                if(loanHistoryDt.loan_outstanding_bal.toDouble() == loanHistoryDt.loan_approved_amount.toDouble() && loanHistoryDt.loan_status.lowercase() != "news") {
                     Row {
                         Text(
                             text = "Outstanding balance",
@@ -236,7 +236,7 @@ fun LoanHistoryScreenPreview(
 ) {
     JuvinalPayTheme {
         LoanHistoryScreen(
-            loanHistory = loanHistory
+//            loanHistory = loanHistory
         )
     }
 }

@@ -26,6 +26,7 @@ object SplashScreenDestination: AppNavigation{
 }
 @Composable
 fun SplashScreenComposable(
+    navigateToWelcomeScreen: () -> Unit,
     navigateToInAppNavScreen: () -> Unit,
     navigateToRegistrationScreen: () -> Unit,
     navigateToMembershipFeePaymentScreen: () -> Unit,
@@ -37,13 +38,18 @@ fun SplashScreenComposable(
     LaunchedEffect(Unit) {
         delay(2000)
         if(!uiState.navigated) {
-            if(uiState.userDetails.id == null) {
-                navigateToRegistrationScreen()
-            } else if(!uiState.userDetails.mem_registered) {
-                navigateToMembershipFeePaymentScreen()
+            if(uiState.appLaunched) {
+                if(uiState.userDetails.id == null) {
+                    navigateToRegistrationScreen()
+                } else if(!uiState.userDetails.mem_registered) {
+                    navigateToMembershipFeePaymentScreen()
+                } else {
+                    navigateToInAppNavScreen()
+                }
             } else {
-                navigateToInAppNavScreen()
+                navigateToWelcomeScreen()
             }
+
             viewModel.changeNavigationStatus()
         }
     }

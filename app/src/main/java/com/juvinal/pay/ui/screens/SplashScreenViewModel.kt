@@ -8,11 +8,13 @@ import com.juvinal.pay.toUserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class SplashScreenUiState(
     val navigated: Boolean = false,
+    val appLaunched: Boolean = false,
     val userDetails: UserDetails = UserDetails()
 )
 class SplashScreenViewModel(
@@ -32,6 +34,18 @@ class SplashScreenViewModel(
         }
     }
 
+    fun loadLaunchDetails() {
+        viewModelScope.launch {
+            dsRepository.launchState.collect(){launchState->
+                _uiState.update {
+                    it.copy(
+                        appLaunched = launchState.launched
+                    )
+                }
+            }
+        }
+    }
+
     fun changeNavigationStatus() {
         _uiState.update {
             it.copy(
@@ -42,5 +56,6 @@ class SplashScreenViewModel(
 
     init {
         loadUserDetails()
+        loadLaunchDetails()
     }
 }
