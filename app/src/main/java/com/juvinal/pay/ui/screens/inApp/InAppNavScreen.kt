@@ -58,6 +58,7 @@ import com.juvinal.pay.reusableComposables.LogoutDialog
 import com.juvinal.pay.ui.screens.inApp.dashboard.HomeScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.deposit.DepositMoneyScreenComposable
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanPaymentScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.loan.RequestLoanScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory.TransactionsHistoryScreenComposable
 import com.juvinal.pay.ui.screens.nav.AppNavigation
@@ -108,6 +109,10 @@ fun InAppNavScreenComposable(
         DashboardMenuItem(
             name = "Request loan",
             screen = HomeScreenSideBarMenuScreen.LOAN
+        ),
+        DashboardMenuItem(
+            name = "Loan repayment",
+            screen = HomeScreenSideBarMenuScreen.LOAN_REPAYMENT
         ),
         DashboardMenuItem(
             name = "Transactions history",
@@ -484,6 +489,11 @@ fun InAppNavScreen(
                     RequestLoanScreenComposable(
                         navigateToInAppNavigationScreen = navigateToInAppNavigationScreen,
                         navigateToInAppNavigationScreenWithArgs = navigateToInAppNavigationScreenWithArgs
+                    )
+                }
+                HomeScreenSideBarMenuScreen.LOAN_REPAYMENT -> {
+                    LoanPaymentScreenComposable(
+                        navigateToInAppNavigationScreen = navigateToInAppNavigationScreen,
                     )
                 }
                 HomeScreenSideBarMenuScreen.TRANSACTIONS_HISTORY -> {

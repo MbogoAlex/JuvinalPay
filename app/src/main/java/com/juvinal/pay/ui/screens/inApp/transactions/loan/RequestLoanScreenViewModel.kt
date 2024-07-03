@@ -17,6 +17,7 @@ import com.juvinal.pay.loanTypeDt
 import com.juvinal.pay.model.LoanRequestPayload
 import com.juvinal.pay.model.LoanTypeDt
 import com.juvinal.pay.network.ApiRepository
+import com.juvinal.pay.resusableFunctions.formatMoneyValue
 import com.juvinal.pay.toUserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -165,7 +166,7 @@ class RequestLoanScreenViewModel(
     fun requestLoan() {
         _uiState.update {
             it.copy(
-                loadingStatus = LoadingStatus.INITIAL
+                loadingStatus = LoadingStatus.LOADING
             )
         }
         val loanRequestPayload = LoanRequestPayload(
@@ -188,9 +189,18 @@ class RequestLoanScreenViewModel(
                         )
                     }
                 } else {
+                    Log.e("ERROR_MSG", response.toString())
+                    var errMsg = ""
+                    if(uiState.value.amount.toDouble() > uiState.value.loanAmountQualified) {
+                        errMsg = "Your loan limit is ${formatMoneyValue(uiState.value.loanAmountQualified)}"
+                    } else if(uiState.value.loanBalance == 0.00) {
+                        errMsg = "You have an unapproved loan"
+                    } else {
+                        errMsg = "You have an unpaid loan of ${formatMoneyValue(uiState.value.loanBalance)}"
+                    }
                     _uiState.update {
                         it.copy(
-                            requestResponseMessage = response.body()?.message!!,
+                            requestResponseMessage = errMsg,
                             loadingStatus = LoadingStatus.FAIL
                         )
                     }

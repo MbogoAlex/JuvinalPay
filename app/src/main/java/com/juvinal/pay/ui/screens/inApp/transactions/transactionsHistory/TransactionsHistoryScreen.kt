@@ -1,6 +1,8 @@
 package com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory
 
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -66,6 +68,7 @@ fun TransactionsHistoryScreenComposable(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TransactionsHistoryScreen(
     menuItems: List<TransactionsHistoryMenuItem> = listOf(),

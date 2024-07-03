@@ -45,6 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.loanHistory
 import com.juvinal.pay.model.LoanHistoryDt
+import com.juvinal.pay.resusableFunctions.formatDate
 import com.juvinal.pay.resusableFunctions.formatDateTimeValue
 import com.juvinal.pay.resusableFunctions.formatMoneyValue
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
@@ -58,7 +59,7 @@ fun LoanHistoryScreenComposable(
     val uiState by viewModel.uiState.collectAsState()
     Box(modifier = modifier) {
         LoanHistoryScreen(
-//            loanHistory = uiState.loanHistory
+            loanHistory = uiState.loanHistory
         )
     }
 }
@@ -66,7 +67,7 @@ fun LoanHistoryScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LoanHistoryScreen(
-//    loanHistory: List<LoanHistoryDt>,
+    loanHistory: List<LoanHistoryDt>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -103,6 +104,9 @@ fun LoanHistoryCell(
                 bottom = 10.dp
             )
             .fillMaxWidth()
+            .clickable {
+                expandItem = !expandItem
+            }
     ) {
         Column(
             modifier = Modifier
@@ -135,6 +139,12 @@ fun LoanHistoryCell(
                             text = loanHistoryDt.loan_ref,
                             color = Color(0xFFaaacb7),
 //                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = "UNPAID",
+//                            color = Color(0xFFaaacb7),
+                            fontWeight = FontWeight.Bold
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
@@ -192,7 +202,7 @@ fun LoanHistoryCell(
                 if(loanHistoryDt.loan_disbursed_date != null) {
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
-                        text = formatDateTimeValue(loanHistoryDt.loan_disbursed_date),
+                        text = "Disbursed on: ${formatDate(loanHistoryDt.loan_disbursed_date)}",
                         fontWeight = FontWeight.ExtraLight,
                         style = TextStyle(
                             fontStyle = FontStyle.Italic,
@@ -201,15 +211,51 @@ fun LoanHistoryCell(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if(loanHistoryDt.loan_outstanding_bal.toDouble() == loanHistoryDt.loan_approved_amount.toDouble() && loanHistoryDt.loan_status.lowercase() != "news") {
+                if(loanHistoryDt.loan_outstanding_bal.toDouble() != loanHistoryDt.loan_approved_amount.toDouble() && !loanHistoryDt.loan_disbursed_date.isNullOrEmpty()) {
                     Row {
                         Text(
-                            text = "Outstanding balance",
+                            text = "Outstanding balance:",
                             color = Color(0xFFaaacb7),
                         )
                         Spacer(modifier = Modifier.width(5.dp))
                         Text(
                             text = formatMoneyValue(loanHistoryDt.loan_outstanding_bal.toDouble()),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row {
+                        Text(
+                            text = "Loan interest:",
+                            color = Color(0xFFaaacb7),
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(
+                            text = formatMoneyValue(loanHistoryDt.loan_interest.toDouble()),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row {
+                        Text(
+                            text = "Loan outstanding interest:",
+                            color = Color(0xFFaaacb7),
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(
+                            text = formatMoneyValue(loanHistoryDt.loan_outstanding_int.toDouble()),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row {
+                        Text(
+                            text = "Loan total principal:",
+                            color = Color(0xFFaaacb7),
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(
+                            text = formatMoneyValue(loanHistoryDt.loan_total_principal.toDouble()),
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -236,7 +282,7 @@ fun LoanHistoryScreenPreview(
 ) {
     JuvinalPayTheme {
         LoanHistoryScreen(
-//            loanHistory = loanHistory
+            loanHistory = loanHistory
         )
     }
 }

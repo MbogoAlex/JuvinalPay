@@ -216,7 +216,7 @@ fun RequestLoanScreen(
                 unfocusedIndicatorColor = Color.Transparent
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
+                imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Number
             ),
             onValueChange = onAmountChange,
@@ -236,7 +236,7 @@ fun RequestLoanScreen(
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.Text
             ),
             onValueChange = onLoanReasonChange,
             modifier = Modifier

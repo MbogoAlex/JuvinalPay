@@ -16,6 +16,7 @@ enum class HomeScreenSideBarMenuScreen {
     HOME,
     PROFILE,
     LOAN,
+    LOAN_REPAYMENT,
     DEPOSIT,
     TRANSACTIONS_HISTORY,
 }
@@ -47,9 +48,18 @@ enum class LoanStatus {
     PENDING,
     APPROVED,
     REJECTED
-} enum class LoanPaymentStatus {
+}
+
+enum class LoanPaymentStatus {
     PAID,
     UNPAID
+}
+
+enum class LoanProcessingStatus {
+    INITIAL,
+    LOADING,
+    SUCCESS,
+    FAIL
 }
 
 
