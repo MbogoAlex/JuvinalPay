@@ -52,3 +52,17 @@ data class LoanStatusCode(
     val class_code: String,
     val is_loan: Int
 )
+@Serializable
+data class LoanScheduleResponseBody(
+    val message: String,
+    val data: List<LoanScheduleDT>
+)
+
+@Serializable
+data class LoanScheduleDT(
+    val schedule_pay_date: String,
+    val schedule_total: String,
+    val schedule_total_paid: String,
+    val schedule_total_balance: String,
+    val schedule_status: Int
+)

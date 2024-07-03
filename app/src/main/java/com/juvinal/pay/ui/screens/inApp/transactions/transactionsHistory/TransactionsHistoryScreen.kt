@@ -30,9 +30,11 @@ import com.juvinal.pay.R
 import com.juvinal.pay.TransactionsHistoryMenuItem
 import com.juvinal.pay.TransactionsHistoryScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TransactionsHistoryScreenComposable(
     navigateToInAppNavigationScreen: () -> Unit,
+    navigateToLoanScheduleScreen: (loanId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     BackHandler(onBack = navigateToInAppNavigationScreen)
@@ -61,6 +63,7 @@ fun TransactionsHistoryScreenComposable(
         TransactionsHistoryScreen(
             menuItems = transactionsHistoryMenuItems,
             currentTab = currentTab,
+            navigateToLoanScheduleScreen = navigateToLoanScheduleScreen,
             onChangeTab = {
                 currentTab = it
             }
@@ -74,6 +77,7 @@ fun TransactionsHistoryScreen(
     menuItems: List<TransactionsHistoryMenuItem> = listOf(),
     currentTab: TransactionsHistoryScreen,
     onChangeTab: (tab: TransactionsHistoryScreen) -> Unit,
+    navigateToLoanScheduleScreen: (loanId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -104,6 +108,7 @@ fun TransactionsHistoryScreen(
                 }
                 TransactionsHistoryScreen.LOAN -> {
                     LoanHistoryScreenComposable(
+                        navigateToLoanScheduleScreen = navigateToLoanScheduleScreen,
                         modifier = Modifier
                             .weight(1f)
                     )

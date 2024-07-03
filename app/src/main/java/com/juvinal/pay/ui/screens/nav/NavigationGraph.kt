@@ -29,6 +29,8 @@ import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PersonalDetailsScreenC
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PersonalDetailsScreenDestination
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PrivacyPolicyScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PrivacyPolicyScreenDestination
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanScheduleScreenComposable
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanScheduleScreenDestination
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -85,6 +87,9 @@ fun NavigationGraph(
                 },
                 navigateToInAppNavigationScreenWithArgs = {
                     navController.navigate("${InAppNavScreenDestination.route}/${it}")
+                },
+                navigateToLoanScheduleScreen = {
+                    navController.navigate("${LoanScheduleScreenDestination.route}/${it}")
                 }
             )
         }
@@ -115,6 +120,9 @@ fun NavigationGraph(
                 },
                 navigateToInAppNavigationScreenWithArgs = {
                     navController.navigate("${InAppNavScreenDestination.route}/${it}")
+                },
+                navigateToLoanScheduleScreen = {
+                    navController.navigate("${LoanScheduleScreenDestination.route}/${it}")
                 }
             )
         }
@@ -197,6 +205,22 @@ fun NavigationGraph(
         // PrivacyPolicyScreen
         composable(PrivacyPolicyScreenDestination.route) {
             PrivacyPolicyScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
+        // LoanScheduleScreen
+        composable(
+            LoanScheduleScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(LoanScheduleScreenDestination.loanId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            LoanScheduleScreenComposable(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }

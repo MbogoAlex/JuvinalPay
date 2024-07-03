@@ -58,8 +58,8 @@ import com.juvinal.pay.reusableComposables.LogoutDialog
 import com.juvinal.pay.ui.screens.inApp.dashboard.HomeScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.deposit.DepositMoneyScreenComposable
-import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanPaymentScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.loan.RequestLoanScreenComposable
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.UnpaidLoansScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory.TransactionsHistoryScreenComposable
 import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
@@ -81,6 +81,7 @@ fun InAppNavScreenComposable(
     navigateToInAppNavigationScreen: () -> Unit,
     navigateToLoginScreenWithArgs: (documentNo: String, password: String) -> Unit,
     navigateToInAppNavigationScreenWithArgs: (childScreen: String) -> Unit,
+    navigateToLoanScheduleScreen: (loanId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -201,7 +202,8 @@ fun InAppNavScreenComposable(
             onLogout = {
                 showLogoutDialog = !showLogoutDialog
                 showTopPopup = !showTopPopup
-            }
+            },
+            navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
         )
     }
 }
@@ -225,6 +227,7 @@ fun InAppNavScreen(
     navigateToLoginScreenWithArgs: (documentNo: String, password: String) -> Unit,
     navigateToInAppNavigationScreenWithArgs: (childScreen: String) -> Unit,
     navigateToProfileScreen: () -> Unit,
+    navigateToLoanScheduleScreen: (loanId: Int) -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -492,13 +495,15 @@ fun InAppNavScreen(
                     )
                 }
                 HomeScreenSideBarMenuScreen.LOAN_REPAYMENT -> {
-                    LoanPaymentScreenComposable(
+                    UnpaidLoansScreenComposable(
                         navigateToInAppNavigationScreen = navigateToInAppNavigationScreen,
+                        navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
                     )
                 }
                 HomeScreenSideBarMenuScreen.TRANSACTIONS_HISTORY -> {
                     TransactionsHistoryScreenComposable(
-                        navigateToInAppNavigationScreen = navigateToInAppNavigationScreen
+                        navigateToInAppNavigationScreen = navigateToInAppNavigationScreen,
+                        navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
                     )
                 }
             }
@@ -553,7 +558,8 @@ fun NavScreenPreview() {
                 navigateToLoginScreenWithArgs = { documentNo, password -> },
                 navigateToInAppNavigationScreenWithArgs = {},
                 navigateToProfileScreen = {},
-                onLogout = {}
+                onLogout = {},
+                navigateToLoanScheduleScreen = {}
             )
         }
     }

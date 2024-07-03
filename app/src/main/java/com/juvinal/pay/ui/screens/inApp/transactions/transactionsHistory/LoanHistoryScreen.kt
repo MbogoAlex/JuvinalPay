@@ -53,13 +53,15 @@ import com.juvinal.pay.ui.theme.JuvinalPayTheme
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LoanHistoryScreenComposable(
+    navigateToLoanScheduleScreen: (loanId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LoanHistoryScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
     Box(modifier = modifier) {
         LoanHistoryScreen(
-            loanHistory = uiState.loanHistory
+            loanHistory = uiState.loanHistory,
+            navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
         )
     }
 }
@@ -68,6 +70,7 @@ fun LoanHistoryScreenComposable(
 @Composable
 fun LoanHistoryScreen(
     loanHistory: List<LoanHistoryDt>,
+    navigateToLoanScheduleScreen: (loanId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -77,7 +80,8 @@ fun LoanHistoryScreen(
         LazyColumn {
             items(loanHistory) {
                 LoanHistoryCell(
-                    it,
+                    loanHistoryDt = it,
+                    navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
                 )
             }
         }
@@ -88,6 +92,7 @@ fun LoanHistoryScreen(
 @Composable
 fun LoanHistoryCell(
     loanHistoryDt: LoanHistoryDt,
+    navigateToLoanScheduleScreen: (loanId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expandItem by remember {
@@ -261,11 +266,11 @@ fun LoanHistoryCell(
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = { navigateToLoanScheduleScreen(loanHistoryDt.id) },
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        Text(text = "Pay")
+                        Text(text = "Loan schedule")
                     }
 
                 }
@@ -282,7 +287,8 @@ fun LoanHistoryScreenPreview(
 ) {
     JuvinalPayTheme {
         LoanHistoryScreen(
-            loanHistory = loanHistory
+            loanHistory = loanHistory,
+            navigateToLoanScheduleScreen = {}
         )
     }
 }

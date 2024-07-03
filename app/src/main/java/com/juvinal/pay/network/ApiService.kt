@@ -5,6 +5,7 @@ import com.juvinal.pay.model.DepositRequestBody
 import com.juvinal.pay.model.DepositResponseBody
 import com.juvinal.pay.model.LoanRequestPayload
 import com.juvinal.pay.model.LoanRequestResponseBody
+import com.juvinal.pay.model.LoanScheduleResponseBody
 import com.juvinal.pay.model.LoanTypesResponseBody
 import com.juvinal.pay.model.LoansHistoryResponseBody
 import com.juvinal.pay.model.MembershipFeePaymentStatusResponseBody
@@ -56,4 +57,7 @@ interface ApiService {
     suspend fun requestLoan(@Body loanRequestPayload: LoanRequestPayload): Response<LoanRequestResponseBody>
     @GET("loans/{memNo}")
     suspend fun getLoansHistory(@Path("memNo") memNo: String): Response<LoansHistoryResponseBody>
+
+    @GET("loanschedules/{loanId}")
+    suspend fun getLoanSchedule(@Path("loanId") loanId: Int): Response<LoanScheduleResponseBody>
 }

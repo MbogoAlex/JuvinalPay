@@ -5,6 +5,7 @@ import com.juvinal.pay.model.DepositRequestBody
 import com.juvinal.pay.model.DepositResponseBody
 import com.juvinal.pay.model.LoanRequestPayload
 import com.juvinal.pay.model.LoanRequestResponseBody
+import com.juvinal.pay.model.LoanScheduleResponseBody
 import com.juvinal.pay.model.LoanTypesResponseBody
 import com.juvinal.pay.model.LoansHistoryResponseBody
 import com.juvinal.pay.model.MembershipFeePaymentStatusResponseBody
@@ -38,6 +39,10 @@ interface ApiRepository {
     suspend fun getLoansHistory(
         memNo: String
     ): Response<LoansHistoryResponseBody>
+
+    suspend fun getLoanSchedule(
+        loanId: Int
+    ): Response<LoanScheduleResponseBody>
 }
 
 class ApiRepositoryImpl(private val apiService: ApiService) : ApiRepository {
@@ -78,5 +83,9 @@ class ApiRepositoryImpl(private val apiService: ApiService) : ApiRepository {
 
     override suspend fun getLoansHistory(memNo: String): Response<LoansHistoryResponseBody> = apiService.getLoansHistory(
         memNo = memNo
+    )
+
+    override suspend fun getLoanSchedule(loanId: Int): Response<LoanScheduleResponseBody> = apiService.getLoanSchedule(
+        loanId = loanId
     )
 }

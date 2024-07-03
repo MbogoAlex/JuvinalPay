@@ -3,6 +3,7 @@ package com.juvinal.pay
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.juvinal.pay.model.LoanHistoryDt
+import com.juvinal.pay.model.LoanScheduleDT
 import com.juvinal.pay.model.LoanStatusCode
 import com.juvinal.pay.model.LoanTypeDt
 import java.time.format.DateTimeFormatter
@@ -94,6 +95,52 @@ val loanHistory = listOf(
         loan_disbursed_date = "2024-05-22T11:14:57.236022",
         loan_status = "NEW",
         loanStatusCode = loanStatusCode
+    )
+)
+
+val loanSchedule = LoanScheduleDT(
+    schedule_pay_date = "31-Jul-2024",
+    schedule_total = "10.00",
+    schedule_total_paid = "0.00",
+    schedule_total_balance = "10.00",
+    schedule_status = 0
+)
+
+val loanScheduleList = listOf(
+    LoanScheduleDT(
+        schedule_pay_date = "31-Jul-2024",
+        schedule_total = "10.00",
+        schedule_total_paid = "0.00",
+        schedule_total_balance = "10.00",
+        schedule_status = 0
+    ),
+    LoanScheduleDT(
+        schedule_pay_date = "31-Jul-2024",
+        schedule_total = "10.00",
+        schedule_total_paid = "0.00",
+        schedule_total_balance = "10.00",
+        schedule_status = 0
+    ),
+    LoanScheduleDT(
+        schedule_pay_date = "31-Jul-2024",
+        schedule_total = "10.00",
+        schedule_total_paid = "0.00",
+        schedule_total_balance = "10.00",
+        schedule_status = 0
+    ),
+    LoanScheduleDT(
+        schedule_pay_date = "31-Jul-2024",
+        schedule_total = "10.00",
+        schedule_total_paid = "0.00",
+        schedule_total_balance = "10.00",
+        schedule_status = 0
+    ),
+    LoanScheduleDT(
+        schedule_pay_date = "31-Jul-2024",
+        schedule_total = "10.00",
+        schedule_total_paid = "0.00",
+        schedule_total_balance = "10.00",
+        schedule_status = 0
     )
 )
 

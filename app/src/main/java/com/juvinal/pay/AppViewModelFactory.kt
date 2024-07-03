@@ -16,8 +16,9 @@ import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ChangePasswordScreenVi
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PersonalDetailsScreenViewModel
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenViewModel
 import com.juvinal.pay.ui.screens.inApp.transactions.deposit.DepositMoneyScreenViewModel
-import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanPaymentScreenViewModel
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanScheduleScreenViewModel
 import com.juvinal.pay.ui.screens.inApp.transactions.loan.RequestLoanScreenViewModel
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.UnpaidLoansScreenViewModel
 import com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory.DepositHistoryScreenViewModel
 import com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory.LoanHistoryScreenViewModel
 
@@ -165,13 +166,24 @@ object AppViewModelFactory {
             )
         }
 
-        // initialize LoanPaymentScreenViewModel
+        // initialize UnpaidLoansScreenViewModel
         initializer {
             val apiRepository = juvinalPayApplication().container.apiRepository
             val dsRepository = juvinalPayApplication().dsRepository
-            LoanPaymentScreenViewModel(
+            UnpaidLoansScreenViewModel(
                 apiRepository = apiRepository,
                 dsRepository = dsRepository
+            )
+        }
+
+        // initialize LoanScheduleScreenViewModel
+        initializer {
+            val apiRepository = juvinalPayApplication().container.apiRepository
+            val dsRepository = juvinalPayApplication().dsRepository
+            LoanScheduleScreenViewModel(
+                apiRepository = apiRepository,
+                dsRepository = dsRepository,
+                savedStateHandle = this.createSavedStateHandle()
             )
         }
     }
