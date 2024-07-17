@@ -29,6 +29,8 @@ import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PersonalDetailsScreenC
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PersonalDetailsScreenDestination
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PrivacyPolicyScreenComposable
 import com.juvinal.pay.ui.screens.inApp.dashboard.profile.PrivacyPolicyScreenDestination
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanRepaymentScreenComposable
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanRepaymentScreenDestination
 import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanScheduleScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanScheduleScreenDestination
 
@@ -221,6 +223,46 @@ fun NavigationGraph(
             )
         ) {
             LoanScheduleScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                },
+                navigateToLoanPaymentScreen = {loanId, memNo, schedulePayDate, scheduleTotal, scheduleTotalPaid, scheduleTotalBalance ->
+                    navController.navigate("${LoanRepaymentScreenDestination.route}/${loanId}/${memNo}/${schedulePayDate}/${scheduleTotal}/${scheduleTotalPaid}/${scheduleTotalBalance}")
+                }
+            )
+        }
+
+        // LoanRepaymentScreen
+        composable(
+            LoanRepaymentScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(LoanRepaymentScreenDestination.loanId) {
+                    type = NavType.StringType
+                },
+                navArgument(LoanRepaymentScreenDestination.memNo) {
+                    type = NavType.StringType
+                },
+                navArgument(LoanRepaymentScreenDestination.schedulePayDate) {
+                    type = NavType.StringType
+                },
+                navArgument(LoanRepaymentScreenDestination.scheduleTotal) {
+                    type = NavType.StringType
+                },
+                navArgument(LoanRepaymentScreenDestination.scheduleTotalPaid) {
+                    type = NavType.StringType
+                },
+                navArgument(LoanRepaymentScreenDestination.scheduleTotalBalance) {
+                    type = NavType.StringType
+                },
+            )
+        ) {
+            LoanRepaymentScreenComposable(
+                navigateToInAppNavigationScreen = {
+                    navController.navigate(InAppNavScreenDestination.route)
+                },
+                navigateToInAppNavigationScreenWithArgs = {
+                    navController.navigate("${InAppNavScreenDestination.route}/${it}")
+                },
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }

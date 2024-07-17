@@ -60,6 +60,7 @@ import com.juvinal.pay.ui.screens.inApp.dashboard.profile.ProfileScreenComposabl
 import com.juvinal.pay.ui.screens.inApp.transactions.deposit.DepositMoneyScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.loan.RequestLoanScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.loan.UnpaidLoansScreenComposable
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanHistoryScreenComposable
 import com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory.TransactionsHistoryScreenComposable
 import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
@@ -108,16 +109,23 @@ fun InAppNavScreenComposable(
             screen = HomeScreenSideBarMenuScreen.DEPOSIT
         ),
         DashboardMenuItem(
+            name = "Transactions history",
+            screen = HomeScreenSideBarMenuScreen.TRANSACTIONS_HISTORY
+        ),
+    )
+
+    val loansMenuItems = listOf(
+        DashboardMenuItem(
             name = "Request loan",
             screen = HomeScreenSideBarMenuScreen.LOAN
         ),
         DashboardMenuItem(
             name = "Loan repayment",
-            screen = HomeScreenSideBarMenuScreen.LOAN_REPAYMENT
+            screen = HomeScreenSideBarMenuScreen.UNPAID_LOAN
         ),
         DashboardMenuItem(
-            name = "Transactions history",
-            screen = HomeScreenSideBarMenuScreen.TRANSACTIONS_HISTORY
+            name = "Loans history",
+            screen = HomeScreenSideBarMenuScreen.LOAN_HISTORY
         ),
     )
 
@@ -162,12 +170,19 @@ fun InAppNavScreenComposable(
         )
     }
 
-    if(uiState.childScreen == "deposit-screen") {
-        currentScreen = HomeScreenSideBarMenuScreen.DEPOSIT
-        viewModel.resetChildScreen()
-    } else if(uiState.childScreen == "loan-request-screen") {
-        currentScreen = HomeScreenSideBarMenuScreen.LOAN
-        viewModel.resetChildScreen()
+    when (uiState.childScreen) {
+        "deposit-screen" -> {
+            currentScreen = HomeScreenSideBarMenuScreen.DEPOSIT
+            viewModel.resetChildScreen()
+        }
+        "loan-request-screen" -> {
+            currentScreen = HomeScreenSideBarMenuScreen.LOAN
+            viewModel.resetChildScreen()
+        }
+        "unpaid_loan_screen" -> {
+            currentScreen = HomeScreenSideBarMenuScreen.UNPAID_LOAN
+            viewModel.resetChildScreen()
+        }
     }
 
     Box(modifier = Modifier
@@ -179,6 +194,7 @@ fun InAppNavScreenComposable(
             showTopPopup = showTopPopup,
             dashboardMenuItems = dashboardMenuItems,
             transactionsMenuItems = transactionsMenuItems,
+            loansMenuItems = loansMenuItems,
             currentScreen = currentScreen,
             onChangeScreen = {
                 currentScreen = it
@@ -216,6 +232,7 @@ fun InAppNavScreen(
     showTopPopup: Boolean,
     dashboardMenuItems: List<DashboardMenuItem>,
     transactionsMenuItems: List<DashboardMenuItem>,
+    loansMenuItems: List<DashboardMenuItem>,
     currentScreen: HomeScreenSideBarMenuScreen,
     onChangeScreen: (screen: HomeScreenSideBarMenuScreen) -> Unit,
     onDismissRequest: () -> Unit,
@@ -305,7 +322,7 @@ fun InAppNavScreen(
                             modifier = Modifier
                         ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.receipt),
+                                painter = painterResource(id = R.drawable.transactions_2),
                                 contentDescription = "Transactions",
                             )
                             Spacer(modifier = Modifier.width(5.dp))
@@ -317,6 +334,41 @@ fun InAppNavScreen(
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                         for(menuItem in transactionsMenuItems) {
+                            NavigationDrawerItem(
+                                label = {
+                                    Row {
+                                        Text(text = "-")
+                                        Spacer(modifier = Modifier.width(5.dp))
+                                        Text(text = menuItem.name)
+                                    }
+                                },
+                                selected = menuItem.screen == currentScreen,
+                                onClick = {
+                                    scope.launch {
+                                        drawerState.close()
+                                        onChangeScreen(menuItem.screen)
+                                    }
+                                }
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.loan_2),
+                                contentDescription = "Loans"
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                text = "Loans",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        for(menuItem in loansMenuItems) {
                             NavigationDrawerItem(
                                 label = {
                                     Row {
@@ -494,7 +546,7 @@ fun InAppNavScreen(
                         navigateToInAppNavigationScreenWithArgs = navigateToInAppNavigationScreenWithArgs
                     )
                 }
-                HomeScreenSideBarMenuScreen.LOAN_REPAYMENT -> {
+                HomeScreenSideBarMenuScreen.UNPAID_LOAN -> {
                     UnpaidLoansScreenComposable(
                         navigateToInAppNavigationScreen = navigateToInAppNavigationScreen,
                         navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
@@ -503,6 +555,12 @@ fun InAppNavScreen(
                 HomeScreenSideBarMenuScreen.TRANSACTIONS_HISTORY -> {
                     TransactionsHistoryScreenComposable(
                         navigateToInAppNavigationScreen = navigateToInAppNavigationScreen,
+                        navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
+                    )
+                }
+
+                HomeScreenSideBarMenuScreen.LOAN_HISTORY -> {
+                    LoanHistoryScreenComposable(
                         navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
                     )
                 }
@@ -539,6 +597,20 @@ fun NavScreenPreview() {
             screen = HomeScreenSideBarMenuScreen.TRANSACTIONS_HISTORY
         ),
     )
+    val loansMenuItems = listOf(
+        DashboardMenuItem(
+            name = "Request loan",
+            screen = HomeScreenSideBarMenuScreen.LOAN
+        ),
+        DashboardMenuItem(
+            name = "Loan repayment",
+            screen = HomeScreenSideBarMenuScreen.UNPAID_LOAN
+        ),
+        DashboardMenuItem(
+            name = "Loans history",
+            screen = HomeScreenSideBarMenuScreen.LOAN_HISTORY
+        ),
+    )
     JuvinalPayTheme {
         JuvinalPayTheme {
             InAppNavScreen(
@@ -547,6 +619,7 @@ fun NavScreenPreview() {
                 showTopPopup = false,
                 dashboardMenuItems = dashboardMenuItems,
                 transactionsMenuItems = transactionsMenuItems,
+                loansMenuItems = loansMenuItems,
                 currentScreen = HomeScreenSideBarMenuScreen.HOME,
                 onChangeScreen = {},
                 onDismissRequest = {},

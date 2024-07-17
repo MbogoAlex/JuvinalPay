@@ -119,7 +119,7 @@ class DepositMoneyScreenViewModel(
         _uiState.update {
             it.copy(
                 amount = amount,
-                amountDeposited = if(amount.isNotEmpty()) amount.toDouble() else 0.0
+                amountDeposited = if(amount.isNotEmpty()) amount.replace(",", "").toDouble() else 0.0
             )
         }
     }

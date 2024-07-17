@@ -20,7 +20,8 @@ import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanScheduleScreenView
 import com.juvinal.pay.ui.screens.inApp.transactions.loan.RequestLoanScreenViewModel
 import com.juvinal.pay.ui.screens.inApp.transactions.loan.UnpaidLoansScreenViewModel
 import com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory.DepositHistoryScreenViewModel
-import com.juvinal.pay.ui.screens.inApp.transactions.transactionsHistory.LoanHistoryScreenViewModel
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanHistoryScreenViewModel
+import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanRepaymentScreenViewModel
 
 object AppViewModelFactory {
     val Factory = viewModelFactory {
@@ -181,6 +182,17 @@ object AppViewModelFactory {
             val apiRepository = juvinalPayApplication().container.apiRepository
             val dsRepository = juvinalPayApplication().dsRepository
             LoanScheduleScreenViewModel(
+                apiRepository = apiRepository,
+                dsRepository = dsRepository,
+                savedStateHandle = this.createSavedStateHandle()
+            )
+        }
+
+        // initialize LoanRepaymentScreenViewModel
+        initializer {
+            val apiRepository = juvinalPayApplication().container.apiRepository
+            val dsRepository = juvinalPayApplication().dsRepository
+            LoanRepaymentScreenViewModel(
                 apiRepository = apiRepository,
                 dsRepository = dsRepository,
                 savedStateHandle = this.createSavedStateHandle()

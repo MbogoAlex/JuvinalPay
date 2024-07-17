@@ -46,6 +46,7 @@ object LoanScheduleScreenDestination: AppNavigation {
 @Composable
 fun LoanScheduleScreenComposable(
     navigateToPreviousScreen: () -> Unit,
+    navigateToLoanPaymentScreen: (loanId: String, memNo: String, schedulePayDate: String, scheduleTotal: String, scheduleTotalPaid: String, scheduleTotalBalance: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LoanScheduleScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
@@ -57,7 +58,12 @@ fun LoanScheduleScreenComposable(
     ) {
         LoanScheduleScreen(
             loanScheduleList = uiState.loanScheduleList,
-            navigateToPreviousScreen = navigateToPreviousScreen
+            unpaidScheduleList = uiState.unpaidSchedule,
+            paidScheduleList = uiState.paidSchedule,
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            navigateToLoanPaymentScreen = {schedulePayDate, scheduleTotal, scheduleTotalPaid, scheduleTotalBalance ->
+                navigateToLoanPaymentScreen(uiState.loanId, uiState.userDetails.mem_no!!, schedulePayDate, scheduleTotal, scheduleTotalPaid, scheduleTotalBalance)
+            }
         )
 
     }
@@ -66,7 +72,10 @@ fun LoanScheduleScreenComposable(
 @Composable
 fun LoanScheduleScreen(
     loanScheduleList: List<LoanScheduleDT>,
+    unpaidScheduleList: List<LoanScheduleDT>,
+    paidScheduleList: List<LoanScheduleDT>,
     navigateToPreviousScreen: () -> Unit,
+    navigateToLoanPaymentScreen: (schedulePayDate: String, scheduleTotal: String, scheduleTotalPaid: String, scheduleTotalBalance: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -92,7 +101,11 @@ fun LoanScheduleScreen(
         Spacer(modifier = Modifier.height(10.dp))
         LazyColumn {
             items(loanScheduleList) {
-                LoanScheduleCell(loanScheduleDT = it)
+                LoanScheduleCell(
+                    loanScheduleDT = it,
+                    payButtonEnabled = it == unpaidScheduleList[0],
+                    navigateToLoanPaymentScreen = navigateToLoanPaymentScreen
+                )
             }
         }
     }
@@ -101,6 +114,8 @@ fun LoanScheduleScreen(
 @Composable
 fun LoanScheduleCell(
     loanScheduleDT: LoanScheduleDT,
+    payButtonEnabled: Boolean,
+    navigateToLoanPaymentScreen: (schedulePayDate: String, scheduleTotal: String, scheduleTotalPaid: String, scheduleTotalBalance: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -176,6 +191,22 @@ fun LoanScheduleCell(
                         modifier = Modifier
                     )
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+                Button(
+                    enabled = payButtonEnabled,
+                    onClick = {
+                              navigateToLoanPaymentScreen(
+                                  loanScheduleDT.schedule_pay_date,
+                                  loanScheduleDT.schedule_total,
+                                  loanScheduleDT.schedule_total_paid,
+                                  loanScheduleDT.schedule_total_balance,
+                              )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(text = "Pay")
+                }
             }
         }
     }
@@ -187,7 +218,10 @@ fun LoanScheduleScreenPreview() {
     JuvinalPayTheme {
         LoanScheduleScreen(
             navigateToPreviousScreen = {},
-            loanScheduleList = loanScheduleList
+            loanScheduleList = loanScheduleList,
+            unpaidScheduleList = loanScheduleList,
+            paidScheduleList = loanScheduleList,
+            navigateToLoanPaymentScreen = {schedulePayDate, scheduleTotal, scheduleTotalPaid, scheduleTotalBalance ->}
         )
     }
 }

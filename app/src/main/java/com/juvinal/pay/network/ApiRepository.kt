@@ -3,6 +3,8 @@ package com.juvinal.pay.network
 import com.juvinal.pay.model.DashboardResponseBody
 import com.juvinal.pay.model.DepositRequestBody
 import com.juvinal.pay.model.DepositResponseBody
+import com.juvinal.pay.model.LoanRepaymentPayload
+import com.juvinal.pay.model.LoanRepaymentResponseBody
 import com.juvinal.pay.model.LoanRequestPayload
 import com.juvinal.pay.model.LoanRequestResponseBody
 import com.juvinal.pay.model.LoanScheduleResponseBody
@@ -43,6 +45,10 @@ interface ApiRepository {
     suspend fun getLoanSchedule(
         loanId: Int
     ): Response<LoanScheduleResponseBody>
+
+    suspend fun payLoan(
+        loanRepaymentPayload: LoanRepaymentPayload
+    ): Response<LoanRepaymentResponseBody>
 }
 
 class ApiRepositoryImpl(private val apiService: ApiService) : ApiRepository {
@@ -87,5 +93,9 @@ class ApiRepositoryImpl(private val apiService: ApiService) : ApiRepository {
 
     override suspend fun getLoanSchedule(loanId: Int): Response<LoanScheduleResponseBody> = apiService.getLoanSchedule(
         loanId = loanId
+    )
+
+    override suspend fun payLoan(loanRepaymentPayload: LoanRepaymentPayload): Response<LoanRepaymentResponseBody> = apiService.payLoan(
+        loanRepaymentPayload = loanRepaymentPayload
     )
 }

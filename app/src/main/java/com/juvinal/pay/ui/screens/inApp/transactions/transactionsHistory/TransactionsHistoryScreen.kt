@@ -89,36 +89,7 @@ fun TransactionsHistoryScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            Text(
-                text = "Transactions history",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(
-                        start = 20.dp
-                    )
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            when(currentTab) {
-                TransactionsHistoryScreen.DEPOSIT -> {
-                    DepositHistoryScreenComposable(
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                }
-                TransactionsHistoryScreen.LOAN -> {
-                    LoanHistoryScreenComposable(
-                        navigateToLoanScheduleScreen = navigateToLoanScheduleScreen,
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                }
-            }
-            TransactionsHistoryScreenBottomBar(
-                menuItems = menuItems,
-                currentTab = currentTab,
-                onChangeTab = onChangeTab
-            )
+            DepositHistoryScreenComposable()
         }
     }
 }

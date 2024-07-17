@@ -19,6 +19,8 @@ import kotlinx.coroutines.launch
 data class LoanScheduleScreenUiState(
     val userDetails: UserDetails = UserDetails(),
     val loanScheduleList: List<LoanScheduleDT> = emptyList(),
+    val unpaidSchedule: List<LoanScheduleDT> = emptyList(),
+    val paidSchedule: List<LoanScheduleDT> = emptyList(),
     val loanId: String = "",
     val loadingStatus: LoadingStatus = LoadingStatus.INITIAL
 )
@@ -36,7 +38,8 @@ class LoanScheduleScreenViewModel(
             dsRepository.userDSDetails.collect(){dsUserDetails->
                 _uiState.update {
                     it.copy(
-                        userDetails = dsUserDetails.toUserDetails()
+                        userDetails = dsUserDetails.toUserDetails(),
+                        loanId = loanId!!
                     )
                 }
             }
@@ -52,9 +55,21 @@ class LoanScheduleScreenViewModel(
             try {
                 val response = apiRepository.getLoanSchedule(loanId = loanId!!.toInt())
                 if(response.isSuccessful) {
+                    val unpaidSchedule = mutableListOf<LoanScheduleDT>()
+                    val paidSchedule = mutableListOf<LoanScheduleDT>()
+                    for(loanSchedule in response.body()?.data!!) {
+                        if(loanSchedule.schedule_total_balance.toDouble() != 0.0) {
+                            unpaidSchedule.add(loanSchedule)
+                        } else {
+                            paidSchedule.add(loanSchedule)
+                        }
+                    }
+                    Log.i("UNPAID_SCHEDULES", unpaidSchedule[0].toString())
                     _uiState.update {
                         it.copy(
-                            loanScheduleList = response.body()?.data!!
+                            loanScheduleList = response.body()?.data!!,
+                            unpaidSchedule = unpaidSchedule,
+                            paidSchedule = paidSchedule
                         )
                     }
                 } else {

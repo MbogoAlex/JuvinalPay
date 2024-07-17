@@ -3,6 +3,8 @@ package com.juvinal.pay.network
 import com.juvinal.pay.model.DashboardResponseBody
 import com.juvinal.pay.model.DepositRequestBody
 import com.juvinal.pay.model.DepositResponseBody
+import com.juvinal.pay.model.LoanRepaymentPayload
+import com.juvinal.pay.model.LoanRepaymentResponseBody
 import com.juvinal.pay.model.LoanRequestPayload
 import com.juvinal.pay.model.LoanRequestResponseBody
 import com.juvinal.pay.model.LoanScheduleResponseBody
@@ -60,4 +62,9 @@ interface ApiService {
 
     @GET("loanschedules/{loanId}")
     suspend fun getLoanSchedule(@Path("loanId") loanId: Int): Response<LoanScheduleResponseBody>
+
+    @POST("loans/initiateloanrepayment")
+    suspend fun payLoan(@Body loanRepaymentPayload: LoanRepaymentPayload): Response<LoanRepaymentResponseBody>
+
+
 }

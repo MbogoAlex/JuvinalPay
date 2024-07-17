@@ -87,20 +87,32 @@ fun UnpaidLoansScreen(
                 )
         )
         Spacer(modifier = Modifier.height(20.dp))
-        LazyColumn {
-            items(unpaidLoans) {
-                LoanHistoryCell(
-                    loanHistoryDt = it,
-                    navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
+        if(unpaidLoans.isEmpty()) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    text = "No unpaid loan",
                 )
             }
+        } else {
+            LazyColumn {
+                items(unpaidLoans) {
+                    LoanHistoryCell(
+                        loanHistoryDt = it,
+                        navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
+                    )
+                }
+            }
         }
+
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun LoanHistoryCell(
+private fun LoanHistoryCell(
     loanHistoryDt: LoanHistoryDt,
     navigateToLoanScheduleScreen: (loanId: Int) -> Unit,
     modifier: Modifier = Modifier
@@ -260,15 +272,6 @@ fun LoanHistoryCell(
                             text = formatMoneyValue(loanHistoryDt.loan_total_principal.toDouble()),
                             fontWeight = FontWeight.Bold
                         )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Button(
-                        onClick = {  },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(text = "Pay loan")
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     OutlinedButton(

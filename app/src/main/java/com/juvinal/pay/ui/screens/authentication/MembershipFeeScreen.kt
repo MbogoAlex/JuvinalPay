@@ -1,5 +1,6 @@
 package com.juvinal.pay.ui.screens.authentication
 
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -24,6 +25,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -73,9 +75,18 @@ fun MembershipFeeScreenComposable(
 
     val isConnected by viewModel.isConnected.observeAsState(false)
 
-    viewModel.checkConnectivity(context)
 
-    viewModel.checkIfRequiredFieldsAreFilled()
+    LaunchedEffect(Unit) {
+        viewModel.checkIfRequiredFieldsAreFilled()
+        viewModel.checkConnectivity(context)
+        var i = 60;
+        while(i > 0) {
+            viewModel.checkConnectivity(context)
+            delay(10000)
+            i--
+            Log.i("I_VALUE", "$i")
+        }
+    }
 
 
 

@@ -1,5 +1,6 @@
 package com.juvinal.pay.ui.screens.inApp.transactions.loan
 
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -73,7 +75,17 @@ fun RequestLoanScreenComposable(
 
     val isConnected by viewModel.isConnected.observeAsState(false)
 
-    viewModel.checkConnectivity(context)
+
+    LaunchedEffect(Unit) {
+        viewModel.checkConnectivity(context)
+        var i = 60;
+        while(i > 0) {
+            viewModel.checkConnectivity(context)
+            delay(10000)
+            i--
+            Log.i("I_VALUE", "$i")
+        }
+    }
 
 
     var showLoanRequestDialog by remember { mutableStateOf(false) }
@@ -143,8 +155,9 @@ fun RequestLoanScreenComposable(
             loanAmountQualified = uiState.loanAmountQualified,
             amount = uiState.amount,
             loanReason = uiState.loanPurpose,
-            onAmountChange = {
-                viewModel.updateAmount(it)
+            onAmountChange = {newValue->
+                val filteredValue = newValue.filter { it.isDigit() }
+                viewModel.updateAmount(filteredValue)
                 viewModel.checkIfRequiredFieldsAreFilled()
             },
             onLoanReasonChange = {

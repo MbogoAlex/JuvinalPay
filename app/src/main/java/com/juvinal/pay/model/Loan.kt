@@ -66,3 +66,21 @@ data class LoanScheduleDT(
     val schedule_total_balance: String,
     val schedule_status: Int
 )
+
+@Serializable
+data class LoanRepaymentPayload(
+    val uid: String,
+    val msisdn: String,
+    val payment_purpose: String,
+    val mem_no: String,
+    val loan_id: Int,
+    val loan_repayment_amount: Double
+)
+
+@Serializable
+data class LoanRepaymentResponseBody(
+    val paymentReference: String,
+    val gatewayTransactionID: String,
+    val paymentInstructions: String,
+    val statusCode: String
+)
