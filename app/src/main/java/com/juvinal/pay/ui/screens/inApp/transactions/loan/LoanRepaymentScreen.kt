@@ -252,7 +252,7 @@ fun LoanRepaymentScreen(
         ) {
 
             Text(
-                text = "Loan amount",
+                text = "Loan schedule",
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(40.dp))

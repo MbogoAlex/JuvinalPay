@@ -561,7 +561,8 @@ fun InAppNavScreen(
 
                 HomeScreenSideBarMenuScreen.LOAN_HISTORY -> {
                     LoanHistoryScreenComposable(
-                        navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
+                        navigateToLoanScheduleScreen = navigateToLoanScheduleScreen,
+                        navigateToInApNavScreen = navigateToInAppNavigationScreen
                     )
                 }
             }

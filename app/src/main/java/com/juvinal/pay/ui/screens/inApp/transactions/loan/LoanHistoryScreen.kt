@@ -1,6 +1,7 @@
 package com.juvinal.pay.ui.screens.inApp.transactions.loan
 
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -54,8 +55,10 @@ import com.juvinal.pay.ui.theme.JuvinalPayTheme
 @Composable
 fun LoanHistoryScreenComposable(
     navigateToLoanScheduleScreen: (loanId: Int) -> Unit,
+    navigateToInApNavScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    BackHandler(onBack = navigateToInApNavScreen)
     val viewModel: LoanHistoryScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
     Box(modifier = modifier) {
