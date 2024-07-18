@@ -1,0 +1,1 @@
+This is the source code for the JuvinalPay app. JuvinalPay mimics a JuvinalPay sacco group that admits members who are required to pay a membership fee in order to become full members of the sacco. Full members can then make deposits and request for loans through the app. 
