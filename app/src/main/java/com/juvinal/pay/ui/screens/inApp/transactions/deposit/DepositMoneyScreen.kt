@@ -32,6 +32,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,7 +82,19 @@ fun DepositMoneyScreenComposable(
 
     var countdownOn by remember { mutableStateOf(false) }
 
-    var countdown by remember { mutableIntStateOf(40) }
+    var countdown by remember { mutableIntStateOf(60) }
+
+    var confirmationCountdown by rememberSaveable {
+        mutableIntStateOf(5)
+    }
+
+    var confirmationCountdownOn by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var paymentStatusChecked by rememberSaveable {
+        mutableStateOf(false)
+    }
 
 
     val scope = rememberCoroutineScope()
@@ -89,17 +102,18 @@ fun DepositMoneyScreenComposable(
     if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
         countdownOn = false
         viewModel.toggleDepositSuccessDialog(true)
-        countdown = 40
+        countdown = 60
         viewModel.resetLoadingStatus()
     } else if(uiState.loadingStatus == LoadingStatus.FAIL) {
         countdownOn = false
         Toast.makeText(context, "Deposit failed", Toast.LENGTH_SHORT).show()
-        countdown = 40
+        countdown = 60
         viewModel.resetLoadingStatus()
     }
 
-    if(countdown == 0) {
+    if(countdown == 0 && !paymentStatusChecked) {
         viewModel.checkPaymentStatus()
+        paymentStatusChecked = true
     }
 
     if(showDepositDialog) {
@@ -110,10 +124,10 @@ fun DepositMoneyScreenComposable(
                 showDepositDialog = !showDepositDialog
             },
             onConfirm = {
+                viewModel.initiateDeposit()
                 showDepositDialog = !showDepositDialog
                 countdownOn = true
                 scope.launch {
-                    viewModel.initiateDeposit()
                     while(countdown > 0 && countdownOn) {
                         delay(1000)
                         countdown--
@@ -141,6 +155,8 @@ fun DepositMoneyScreenComposable(
         DepositMoneyScreen(
             isConnected = isConnected,
             countdown = countdown,
+            confirmationCountdown = confirmationCountdown,
+            confirmationCountdownOn = confirmationCountdownOn,
             saccoBalance = uiState.accountSavings,
             amount = uiState.amount,
             phoneNumber = uiState.phoneNumber,
@@ -157,7 +173,17 @@ fun DepositMoneyScreenComposable(
             loadingStatus = uiState.loadingStatus,
             onDeposit = {showDepositDialog = !showDepositDialog},
             onCheckPayment = {
-                viewModel.checkPaymentStatus()
+                confirmationCountdown = 5
+                confirmationCountdownOn = true
+                scope.launch {
+                    while (confirmationCountdown > 0 && confirmationCountdownOn) {
+                        delay(1000)
+                        confirmationCountdown--
+                    }
+                    viewModel.checkPaymentStatus()
+                    confirmationCountdownOn = false
+                }
+
             },
             statusCheckMessage = uiState.statusCheckMessage
         )
@@ -168,6 +194,8 @@ fun DepositMoneyScreenComposable(
 fun DepositMoneyScreen(
     isConnected: Boolean,
     countdown: Int,
+    confirmationCountdown: Int,
+    confirmationCountdownOn: Boolean,
     saccoBalance: Double,
     amount: String,
     phoneNumber: String,
@@ -187,139 +215,182 @@ fun DepositMoneyScreen(
                 bottom = 20.dp
             )
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+
     ) {
         Text(
             text = "Deposit to Juvinal SHG",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Deposit Amount",
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(40.dp))
-        Text(
-            text = "Amount",
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        TextField(
-            value = amount,
-            placeholder = {
-                Text(text = "Enter amount")
-            },
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
-            ),
-            onValueChange = onAmountChange,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        Text(
-            text = "Payment method",
-            lineHeight = 23.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .padding(
-                    top = 8.dp,
-                    bottom = 8.dp
-                )
-        )
-        Row(
-            modifier = Modifier
-                .padding(
-                    vertical = 8.dp
-                )
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            Card {
-                Text(
-                    text = "Mpesa",
-                    modifier = Modifier
-                        .padding(
-                            horizontal = 16.dp,
-                            vertical = 8.dp
-                        )
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(40.dp))
-        Text(
-            text = "Phone number",
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        TextField(
-            value = phoneNumber,
-            placeholder = {
-                Text(text = "Enter phone number")
-            },
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
-            ),
-            onValueChange = onPhoneNumberChange,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Text(text = "Sacco Balance")
-            Spacer(modifier = Modifier.weight(1f))
-            Text(text = formatMoneyValue(saccoBalance))
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        if(!isConnected) {
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "Connect to the internet",
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
+                text = "Deposit Amount",
+                fontWeight = FontWeight.Bold
             )
-        }
-        Button(
-            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING && isConnected,
-            onClick = onDeposit,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            if(loadingStatus == LoadingStatus.LOADING) {
-                Text(text = "Processing in $countdown seconds")
-            } else {
-                Text(text = "Pay now")
-            }
-
-        }
-        if(statusCheckMessage == "Payment not successful" && isConnected) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
+            Spacer(modifier = Modifier.height(40.dp))
+            Text(
+                text = "Amount",
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            TextField(
+                value = amount,
+                placeholder = {
+                    Text(text = "Enter amount")
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                onValueChange = onAmountChange,
                 modifier = Modifier
                     .fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "Payment method",
+                lineHeight = 23.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
                     .padding(
-                        vertical = 16.dp
+                        top = 8.dp,
+                        bottom = 8.dp
+                    )
+            )
+            Row(
+                modifier = Modifier
+                    .padding(
+                        vertical = 8.dp
                     )
             ) {
-                Text(text = "I have already paid")
-                TextButton(onClick = onCheckPayment) {
-                    Text(text = "Confirm")
+                Card {
+                    Text(
+                        text = "Mpesa",
+                        modifier = Modifier
+                            .padding(
+                                horizontal = 16.dp,
+                                vertical = 8.dp
+                            )
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(40.dp))
+            Text(
+                text = "Phone number",
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            TextField(
+                value = phoneNumber,
+                placeholder = {
+                    Text(text = "Enter phone number")
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                onValueChange = onPhoneNumberChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(text = "Sacco Balance")
+                Spacer(modifier = Modifier.weight(1f))
+                Text(text = formatMoneyValue(saccoBalance))
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            if(!isConnected) {
+                Text(
+                    text = "Connect to the internet",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+            Button(
+                enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING && isConnected && !confirmationCountdownOn,
+                onClick = onDeposit,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                if(loadingStatus == LoadingStatus.LOADING) {
+                    Text(text = "Processing in $countdown seconds")
+                } else {
+                    Text(text = "Pay now")
+                }
+
+            }
+            if(statusCheckMessage == "Payment not successful" && isConnected) {
+                if(confirmationCountdownOn) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = "Confirm again in $confirmationCountdown seconds",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    )
+                } else {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 16.dp
+                            )
+                    ) {
+                        Text(text = "I have already paid")
+                        TextButton(onClick = onCheckPayment) {
+                            Text(text = "Confirm")
+                        }
+
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .padding(10.dp)
+                    ){
+                        Text(
+                            text = "NOTE:",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                        Text(
+                            text = "If you clicked on the 'Pay now' button, wait for the STK push for a few more seconds before retrying and click on 'Confirm' after paying and you have received the Mpesa message. If you have already paid, don't retry but click on 'Confirm' till success dialog appears.",
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    }
                 }
             }
         }
+
     }
 }
 
@@ -391,7 +462,9 @@ fun DepositMoneyScreenPreview() {
             statusCheckMessage = "",
             onCheckPayment = { /*TODO*/ },
             onDeposit = {},
-            countdown = 40
+            countdown = 60,
+            confirmationCountdown = 5,
+            confirmationCountdownOn = false
         )
     }
 }

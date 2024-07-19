@@ -150,6 +150,7 @@ class DepositMoneyScreenViewModel(
     }
 
     fun initiateDeposit() {
+        Log.i("DEPOSIT", "INITIATING DEPOSIT")
         _uiState.update {
             it.copy(
                 loadingStatus = LoadingStatus.LOADING
@@ -166,15 +167,16 @@ class DepositMoneyScreenViewModel(
                 val response = apiRepository.initiateDeposit(depositRequestBody)
                 Log.i("RESPONSE:", response.body().toString())
                 if(response.isSuccessful) {
-                    val paymentDSModel = PaymentReferenceDSModel(
-                        memberFeePaymentReference = uiState.value.memberFeeReferenceId,
-                        depositPaymentReference = response.body()?.paymentReference,
-                    )
-                    dsRepository.savePaymentData(paymentDSModel)
+//                    val paymentDSModel = PaymentReferenceDSModel(
+//                        memberFeePaymentReference = uiState.value.memberFeeReferenceId,
+//                        depositPaymentReference = response.body()?.paymentReference,
+//                    )
+//                    dsRepository.savePaymentData(paymentDSModel)
                     _uiState.update {
                         it.copy(
                             depositPaymentReferenceId = response.body()?.paymentReference,
-                            amount = ""
+                            amount = "",
+                            phoneNumber = uiState.value.phoneNumber
                         )
                     }
                 } else {

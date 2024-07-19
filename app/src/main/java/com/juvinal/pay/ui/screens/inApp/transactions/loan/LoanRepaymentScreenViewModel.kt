@@ -184,7 +184,7 @@ class LoanRepaymentScreenViewModel(
                                 statusCheckMessage = "Payment not successful"
                             )
                         }
-                        Log.e("PAYMENT_STATUS_CHECK_NOT_SUCCESS", response.body()?.status.toString())
+                        Log.e("PAYMENT_STATUS_CHECK_NOT_SUCCESS", response.toString())
                     }
                 } else {
                     _uiState.update {

@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -100,7 +101,19 @@ fun LoanRepaymentScreenComposable(
 
     var countdownOn by remember { mutableStateOf(false) }
 
-    var countdown by remember { mutableIntStateOf(40) }
+    var countdown by remember { mutableIntStateOf(60) }
+
+    var confirmationCountdown by rememberSaveable {
+        mutableIntStateOf(5)
+    }
+
+    var confirmationCountdownOn by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var paymentStatusChecked by rememberSaveable {
+        mutableStateOf(false)
+    }
 
 
     val scope = rememberCoroutineScope()
@@ -108,17 +121,18 @@ fun LoanRepaymentScreenComposable(
     if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
         countdownOn = false
         viewModel.toggleDepositSuccessDialog(true)
-        countdown = 40
+        countdown = 60
         viewModel.resetLoadingStatus()
     } else if(uiState.loadingStatus == LoadingStatus.FAIL) {
         countdownOn = false
         Toast.makeText(context, "Loan payment failed", Toast.LENGTH_SHORT).show()
-        countdown = 40
+        countdown = 60
         viewModel.resetLoadingStatus()
     }
 
-    if(countdown == 0) {
+    if(countdown == 0 && !paymentStatusChecked) {
         viewModel.checkPaymentStatus()
+        paymentStatusChecked = true
     }
 
     if(showPaymentDialog) {
@@ -129,10 +143,10 @@ fun LoanRepaymentScreenComposable(
                 showPaymentDialog = !showPaymentDialog
             },
             onConfirm = {
+                viewModel.initiatePayment()
                 showPaymentDialog = !showPaymentDialog
                 countdownOn = true
                 scope.launch {
-                    viewModel.initiatePayment()
                     while(countdown > 0 && countdownOn) {
                         delay(1000)
                         countdown--
@@ -171,6 +185,8 @@ fun LoanRepaymentScreenComposable(
             scheduleTotalBalance = uiState.scheduleTotalBalance,
             isConnected = isConnected,
             countdown = countdown,
+            confirmationCountdownOn = confirmationCountdownOn,
+            confirmationCountdown = confirmationCountdown,
             amount = uiState.amount,
             phoneNumber = uiState.phoneNumber,
             onAmountChange = {newValue ->
@@ -186,7 +202,17 @@ fun LoanRepaymentScreenComposable(
             loadingStatus = uiState.loadingStatus,
             onDeposit = {showPaymentDialog = !showPaymentDialog},
             onCheckPayment = {
-                viewModel.checkPaymentStatus()
+                confirmationCountdown = 5
+
+                confirmationCountdownOn = true
+                scope.launch {
+                    while (confirmationCountdown > 0 && confirmationCountdownOn) {
+                        delay(1000)
+                        confirmationCountdown--
+                    }
+                    viewModel.checkPaymentStatus()
+                    confirmationCountdownOn = false
+                }
             },
             statusCheckMessage = uiState.statusCheckMessage,
             navigateToPreviousScreen = navigateToPreviousScreen
@@ -202,6 +228,8 @@ fun LoanRepaymentScreen(
     scheduleTotalBalance: String,
     isConnected: Boolean,
     countdown: Int,
+    confirmationCountdown: Int,
+    confirmationCountdownOn: Boolean,
     amount: String,
     phoneNumber: String,
     onAmountChange: (String) -> Unit,
@@ -379,18 +407,53 @@ fun LoanRepaymentScreen(
             }
 
             if (statusCheckMessage == "Payment not successful" && isConnected) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
+                if(confirmationCountdownOn) {
+                    Text(
+                        text = "Confirm again in $confirmationCountdown seconds",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    )
+                } else {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 16.dp
+                            )
+                    ) {
+                        Text(text = "I have already paid")
+                        TextButton(onClick = onCheckPayment) {
+                            Text(text = "Confirm")
+                        }
+
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            vertical = 16.dp
-                        )
                 ) {
-                    Text(text = "I have already paid")
-                    TextButton(onClick = onCheckPayment) {
-                        Text(text = "Confirm")
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .padding(10.dp)
+                    ){
+                        Text(
+                            text = "NOTE:",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                        Text(
+                            text = "If you clicked on the 'Pay now' button, wait for the STK push for a few more seconds before retrying and click on 'Confirm' after paying and you have received the Mpesa message. If you have already paid, don't retry but click on 'Confirm' till success dialog appears.",
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                        )
                     }
                 }
             }
@@ -469,7 +532,9 @@ fun LoanRepaymentScreenPreview() {
             statusCheckMessage = "",
             onCheckPayment = { /*TODO*/ },
             onDeposit = {},
-            countdown = 40,
+            countdown = 60,
+            confirmationCountdownOn = false,
+            confirmationCountdown = 5,
             navigateToPreviousScreen = {}
         )
     }

@@ -85,7 +85,7 @@ fun RegistrationScreenComposable(
         navigateToMembershipFeeScreen()
         viewModel.resetLoadingStatus()
     } else if(uiState.loadingStatus == LoadingStatus.FAIL) {
-        Toast.makeText(context, "Registration failed", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, uiState.registrationFailureMessage, Toast.LENGTH_LONG).show()
         viewModel.resetLoadingStatus()
     }
 

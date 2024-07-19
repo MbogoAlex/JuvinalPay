@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,11 +100,23 @@ fun MembershipFeeScreenComposable(
         checkIfRequiredFieldsAreFilled = true
     }
 
-    var paymentCountdown by remember {
-        mutableIntStateOf(40)
+    var paymentCountdown by rememberSaveable {
+        mutableIntStateOf(60)
     }
 
-    var countdownOn by remember {
+    var countdownOn by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var confirmationCountdown by rememberSaveable {
+        mutableIntStateOf(5)
+    }
+
+    var confirmationCountdownOn by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var paymentStatusChecked by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -111,19 +124,20 @@ fun MembershipFeeScreenComposable(
 
     if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
         Toast.makeText(context, "Payment successful. You are now a full member of JuvinalPay.", Toast.LENGTH_LONG).show()
-        paymentCountdown = 40
+        paymentCountdown = 60
         navigateToInAppNavigationScreen()
         viewModel.resetLoadingStatus()
     } else if(uiState.loadingStatus == LoadingStatus.FAIL) {
         Toast.makeText(context, "Failed. Check your internet connection and ensure that you have adequate funds in your M-PESA wallet", Toast.LENGTH_LONG).show()
         countdownOn = false
-        paymentCountdown = 40
+        paymentCountdown = 60
         viewModel.resetLoadingStatus()
 
     }
 
-    if(paymentCountdown == 0) {
+    if(paymentCountdown == 0 && !paymentStatusChecked) {
         viewModel.checkPaymentStatus()
+        paymentStatusChecked = true
     }
 
     Box(
@@ -133,6 +147,8 @@ fun MembershipFeeScreenComposable(
         MembershipFeeScreen(
             isConnected = isConnected,
             paymentCountdown = paymentCountdown,
+            confirmationCountdown = confirmationCountdown,
+            confirmationCountdownOn = confirmationCountdownOn,
             phoneNumber = uiState.msisdn,
             buttonEnabled = uiState.paymentButtonEnabled,
             loadingStatus = uiState.loadingStatus,
@@ -140,8 +156,8 @@ fun MembershipFeeScreenComposable(
                 viewModel.updatePhoneNo(it)
             },
             onPay = {
+                viewModel.payMembershipFee()
                 scope.launch {
-                    viewModel.payMembershipFee()
                     countdownOn = true
                     while (paymentCountdown > 0 && countdownOn) {
                         delay(1000)
@@ -152,8 +168,18 @@ fun MembershipFeeScreenComposable(
             },
             showCheckPaymentOption = uiState.paymentReference != null && !countdownOn,
             onCheckPayment = {
-                countdownOn = true
-                viewModel.checkPaymentStatus()
+                confirmationCountdown = 5
+//                countdownOn = true
+                confirmationCountdownOn = true
+
+                scope.launch {
+                    while (confirmationCountdown > 0 && confirmationCountdownOn) {
+                        delay(1000)
+                        confirmationCountdown--
+                    }
+                    viewModel.checkPaymentStatus()
+                    confirmationCountdownOn = false
+                }
             }
         )
     }
@@ -163,6 +189,8 @@ fun MembershipFeeScreenComposable(
 fun MembershipFeeScreen(
     isConnected: Boolean,
     paymentCountdown: Int,
+    confirmationCountdown: Int,
+    confirmationCountdownOn: Boolean,
     phoneNumber: String,
     buttonEnabled: Boolean,
     loadingStatus: LoadingStatus,
@@ -179,7 +207,6 @@ fun MembershipFeeScreen(
 //                top = 30.dp,
 //                bottom = 40.dp
             )
-            .verticalScroll(rememberScrollState())
 
     ) {
         Text(
@@ -195,157 +222,200 @@ fun MembershipFeeScreen(
                     bottom = 8.dp
                 )
         )
-        Image(
-            painter = painterResource(id = R.drawable.membership_fee_banner),
-            contentScale = ContentScale.Crop,
-            contentDescription = null,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-        )
-        Text(
-            text = "Become a full member of JuvinalPay",
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            lineHeight = 30.sp,
-            fontSize = 24.sp,
-            modifier = Modifier
-                .padding(
-                    top = 8.dp,
-                    bottom = 8.dp
-                )
-                .align(Alignment.CenterHorizontally)
-        )
-        Text(
-            text = stringResource(id = R.string.membership_fee_text),
-            textAlign = TextAlign.Center,
-            lineHeight = 24.sp,
-            fontSize = 16.sp,
-            modifier = Modifier
-                .padding(
-                    start = 16.dp,
-                    top = 4.dp,
-                    end = 16.dp,
-                    bottom = 12.dp
-                )
-        )
-        Text(
-            text = "Amount",
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .padding(
-                    start = 16.dp,
-                    top = 8.dp,
-                    end = 16.dp,
-                    bottom = 8.dp
-                )
-        )
-        Row(
-            modifier = Modifier
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 8.dp
-                )
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            Text(
-                text = "Total: ",
-                fontWeight = FontWeight.Bold
-            )
-            Text(text = "ksh1")
-        }
-        Text(
-            text = "Payment method",
-            lineHeight = 23.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .padding(
-                    start = 16.dp,
-                    top = 8.dp,
-                    end = 16.dp,
-                    bottom = 8.dp
-                )
-        )
-        Row(
-            modifier = Modifier
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 8.dp
-                )
-        ) {
-            Card {
-                Text(
-                    text = "Mpesa",
-                    modifier = Modifier
-                        .padding(
-                            horizontal = 16.dp,
-                            vertical = 8.dp
-                        )
-                )
-            }
-        }
-        TextField(
-            label = {
-                    Text(text = "Phone number")
-            },
-            value = phoneNumber,
-            onValueChange = onPhoneNumberChange,
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
-            ),
-            modifier = Modifier
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 8.dp
-                )
-                .fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-        if(!isConnected) {
-            Text(
-                text = "Connect to the internet",
-                textAlign = TextAlign.Center,
+            Image(
+                painter = painterResource(id = R.drawable.membership_fee_banner),
+                contentScale = ContentScale.Crop,
+                contentDescription = null,
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            )
+            Text(
+                text = "Become a full member of JuvinalPay",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 30.sp,
+                fontSize = 24.sp,
+                modifier = Modifier
+                    .padding(
+                        top = 8.dp,
+                        bottom = 8.dp
+                    )
                     .align(Alignment.CenterHorizontally)
             )
-        }
-        Button(
-            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING && isConnected,
-            onClick = onPay,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 12.dp
-                )
-        ) {
-            if(loadingStatus == LoadingStatus.LOADING) {
-                Text(text = "Processing in $paymentCountdown seconds")
-            } else {
-                Text(text = "Pay")
-            }
-        }
-        if(showCheckPaymentOption && isConnected) {
+            Text(
+                text = stringResource(id = R.string.membership_fee_text),
+                textAlign = TextAlign.Center,
+                lineHeight = 24.sp,
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        top = 4.dp,
+                        end = 16.dp,
+                        bottom = 12.dp
+                    )
+            )
+            Text(
+                text = "Amount",
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        top = 8.dp,
+                        end = 16.dp,
+                        bottom = 8.dp
+                    )
+            )
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 8.dp
+                    )
+            ) {
+                Text(
+                    text = "Total: ",
+                    fontWeight = FontWeight.Bold
+                )
+                Text(text = "ksh100")
+            }
+            Text(
+                text = "Payment method",
+                lineHeight = 23.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        top = 8.dp,
+                        end = 16.dp,
+                        bottom = 8.dp
+                    )
+            )
+            Row(
+                modifier = Modifier
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 8.dp
+                    )
+            ) {
+                Card {
+                    Text(
+                        text = "Mpesa",
+                        modifier = Modifier
+                            .padding(
+                                horizontal = 16.dp,
+                                vertical = 8.dp
+                            )
+                    )
+                }
+            }
+            TextField(
+                label = {
+                    Text(text = "Phone number")
+                },
+                value = phoneNumber,
+                onValueChange = onPhoneNumberChange,
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                modifier = Modifier
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 8.dp
+                    )
+                    .fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+            if(!isConnected) {
+                Text(
+                    text = "Connect to the internet",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+            Button(
+                enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING && isConnected,
+                onClick = onPay,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        horizontal = 16.dp
+                        horizontal = 16.dp,
+                        vertical = 12.dp
                     )
             ) {
-                Text(text = "I have already paid")
-                TextButton(onClick = onCheckPayment) {
-                    Text(text = "Confirm")
+                if(loadingStatus == LoadingStatus.LOADING) {
+                    Text(text = "Processing in $paymentCountdown seconds")
+                } else {
+                    Text(text = "Pay")
                 }
             }
-            Spacer(modifier = Modifier.height(10.dp))
+            if(showCheckPaymentOption && isConnected) {
+                if(confirmationCountdownOn) {
+                    Text(
+                        text = "Confirm again in $confirmationCountdown seconds",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    )
+                } else {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 16.dp
+                            )
+                    ) {
+                        Text(text = "I have already paid")
+                        TextButton(onClick = onCheckPayment) {
+                            Text(text = "Confirm")
+                        }
+
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 16.dp
+                        )
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .padding(10.dp)
+                    ){
+                        Text(
+                            text = "NOTE:",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                        Text(
+                            text = "If you clicked on the 'Pay now' button, wait for the STK push for a few more seconds before retrying and click on 'Confirm' after paying and you have received the Mpesa message. If you have already paid, don't retry but click on 'Confirm' till success dialog appears.",
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -356,7 +426,9 @@ fun MembershipFeeScreenPreview() {
     JuvinalPayTheme {
         MembershipFeeScreen(
             isConnected = false,
-            paymentCountdown = 40,
+            paymentCountdown = 60,
+            confirmationCountdown = 5,
+            confirmationCountdownOn = false,
             phoneNumber = "",
             buttonEnabled = false,
             showCheckPaymentOption = false,

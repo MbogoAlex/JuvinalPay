@@ -26,6 +26,7 @@ data class RegistrationScreenUiState (
     val password: String = "",
     val passwordConfirmation: String = "",
     val saveButtonEnabled: Boolean = false,
+    val registrationFailureMessage: String = "",
     val loadingStatus: LoadingStatus = LoadingStatus.INITIAL
 )
 class RegistrationScreenViewModel(
@@ -84,7 +85,8 @@ class RegistrationScreenViewModel(
                 } else {
                     _uiState.update {
                         it.copy(
-                            loadingStatus = LoadingStatus.FAIL
+                            loadingStatus = LoadingStatus.FAIL,
+                            registrationFailureMessage = "User with existing details exists"
                         )
                     }
                     Log.e("USER_REGISTRATION_FAIL_ERROR_RESPONSE", response.toString())
@@ -92,7 +94,8 @@ class RegistrationScreenViewModel(
             }catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        loadingStatus = LoadingStatus.FAIL
+                        loadingStatus = LoadingStatus.FAIL,
+                        registrationFailureMessage = "Check your connection or try again later"
                     )
                 }
                 Log.e("USER_REGISTRATION_FAIL_EXCEPTION", e.toString())
