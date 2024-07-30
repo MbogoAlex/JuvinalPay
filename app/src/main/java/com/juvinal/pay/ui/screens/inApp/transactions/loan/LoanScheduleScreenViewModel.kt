@@ -13,6 +13,7 @@ import com.juvinal.pay.toUserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -35,17 +36,12 @@ class LoanScheduleScreenViewModel(
     private val loanId: String? = savedStateHandle[LoanScheduleScreenDestination.loanId]
     fun loadStartupData() {
         viewModelScope.launch {
-            dsRepository.userDSDetails.collect(){dsUserDetails->
-                _uiState.update {
-                    it.copy(
-                        userDetails = dsUserDetails.toUserDetails(),
-                        loanId = loanId!!
-                    )
-                }
+            _uiState.update {
+                it.copy(
+                    userDetails = dsRepository.userDSDetails.first().toUserDetails(),
+                    loanId = loanId!!
+                )
             }
-        }
-        if(loanId != null) {
-            Log.i("LOAN_SCHEDULE", "Getting loan schedule with ID: $loanId")
             getLoanSchedule()
         }
     }

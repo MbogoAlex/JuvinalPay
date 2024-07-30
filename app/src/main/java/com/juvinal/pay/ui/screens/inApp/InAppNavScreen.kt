@@ -2,6 +2,7 @@ package com.juvinal.pay.ui.screens.inApp
 
 import android.app.Activity
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
@@ -30,6 +31,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -91,6 +93,7 @@ fun InAppNavScreenComposable(
 
     val viewModel: InAppNavScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
+
 
     val dashboardMenuItems = listOf(
         DashboardMenuItem(
@@ -188,6 +191,7 @@ fun InAppNavScreenComposable(
     Box(modifier = Modifier
         .safeDrawingPadding()
     ) {
+
         InAppNavScreen(
             username = uiState.userDetails.fname,
             accountSavings = uiState.accountSavings,

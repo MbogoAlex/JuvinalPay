@@ -142,7 +142,7 @@ fun DepositMoneyScreenComposable(
         DepositSuccessDialog(
             amount = formatMoneyValue(uiState.amountDeposited),
             onDismiss = {
-                navigateToInAppNavigationScreenWithArgs("deposit-screen")
+                navigateToInAppNavigationScreen()
                 viewModel.toggleDepositSuccessDialog(false)
             }
         )

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -39,19 +40,18 @@ class InAppNavScreenViewModel(
 
     fun loadStartupData() {
         viewModelScope.launch {
-            dsRepository.userDSDetails.collect(){dsUserDetails->
-                _uiState.update {
-                    it.copy(
-                        userDetails = dsUserDetails.toUserDetails(),
-                        childScreen = childScreen
-                    )
-                }
+            _uiState.update {
+                it.copy(
+                    userDetails = dsRepository.userDSDetails.first().toUserDetails(),
+                    childScreen = childScreen
+                )
             }
+            getDashboardDetails()
         }
-        getDashboardDetails()
     }
 
     fun getDashboardDetails() {
+        Log.i("DASHBOARD_DETAILS_WITH_USER_ID", uiState.value.userDetails.id.toString())
         _uiState.update {
             it.copy(
                 loadingStatus = LoadingStatus.INITIAL
@@ -61,6 +61,7 @@ class InAppNavScreenViewModel(
             try {
                 val response = apiRepository.getDashboardDetails(uiState.value.userDetails.id!!)
                 if(response.isSuccessful) {
+                    Log.i("DASHBOARD_DETAILS:", "${response.body()?.data?.accountSavings!!.toDouble()}")
                     _uiState.update {
                         it.copy(
                             accountSavings = response.body()?.data?.accountSavings!!.toDouble(),
@@ -72,6 +73,7 @@ class InAppNavScreenViewModel(
                             loadingStatus = LoadingStatus.SUCCESS
                         )
                     }
+                    Log.i("ACCOUNTS_SAVING", uiState.value.accountSavings.toString())
                 } else {
                     _uiState.update {
                         it.copy(

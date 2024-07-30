@@ -12,6 +12,7 @@ import com.juvinal.pay.toUserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -29,15 +30,11 @@ class UnpaidLoansScreenViewModel(
 
     fun loadStartupData() {
         viewModelScope.launch {
-            dsRepository.userDSDetails.collect() {dsUserDetails->
-                _uiState.update {
-                    it.copy(
-                        userDetails = dsUserDetails.toUserDetails()
-                    )
-                }
+            _uiState.update {
+                it.copy(
+                    userDetails = dsRepository.userDSDetails.first().toUserDetails()
+                )
             }
-        }
-        if(uiState.value.userDetails.id != null) {
             getLoanHistory()
         }
     }

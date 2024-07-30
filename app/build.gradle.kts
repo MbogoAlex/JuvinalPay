@@ -49,6 +49,13 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    sourceSets {
+        getByName("main") {
+            assets {
+                srcDirs("src/main/assets")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -70,7 +77,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     //SF
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     //navigation
     implementation("androidx.navigation:navigation-compose:2.6.0")

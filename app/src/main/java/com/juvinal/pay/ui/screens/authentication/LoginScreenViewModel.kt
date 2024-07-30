@@ -95,6 +95,7 @@ class LoginScreenViewModel(
                         created_at = response.body()?.user?.created_at!!,
                         updated_at = response.body()?.user?.updated_at!!
                     )
+                    Log.i("SAVING_USER", dsUserDSModel.toString())
                     dsRepository.saveUserDetails(dsUserDSModel)
                     _uiState.update {
                         it.copy(
