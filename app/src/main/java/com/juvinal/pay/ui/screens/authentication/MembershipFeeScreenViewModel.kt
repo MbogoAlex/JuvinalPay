@@ -21,6 +21,7 @@ import com.juvinal.pay.toUserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -73,25 +74,26 @@ class MembershipFeeScreenViewModel(
 
     fun loadUserData() {
         viewModelScope.launch {
-            dsRepository.userDSDetails.collect(){dsUserDetails->
-                _uiState.update {
-                    it.copy(
-                        userDetails = dsUserDetails.toUserDetails(),
-                        msisdn = dsUserDetails.phone_no
-                    )
-                }
+            _uiState.update {
+                it.copy(
+                    userDetails = dsRepository.userDSDetails.first().toUserDetails(),
+                )
             }
+            _uiState.update {
+                it.copy(
+                    msisdn = uiState.value.userDetails.phone_no
+                )
+            }
+            Log.i("UID", uiState.value.userDetails.uid)
         }
     }
 
     fun loadPaymentData() {
         viewModelScope.launch {
-            dsRepository.paymentDSDetails.collect() {paymentDSDetails->
-                _uiState.update {
-                    it.copy(
-                        paymentReference = paymentDSDetails.memberFeePaymentReference
-                    )
-                }
+            _uiState.update {
+                it.copy(
+                    paymentReference = dsRepository.paymentDSDetails.first().memberFeePaymentReference
+                )
             }
         }
     }
@@ -105,6 +107,7 @@ class MembershipFeeScreenViewModel(
     }
 
     fun payMembershipFee() {
+        Log.i("PAYING_MEMBERSHIP_FEE", "PAYING_MEMBERSHIP_FEE")
         _uiState.update {
             it.copy(
                 loadingStatus = LoadingStatus.LOADING
@@ -172,7 +175,7 @@ class MembershipFeeScreenViewModel(
                            email = uiState.value.userDetails.email,
                            phone_no = uiState.value.userDetails.phone_no,
                            password = uiState.value.userDetails.password,
-                           created_at = uiState.value.userDetails.created_at,
+                           created_at = response.body()?.member?.created_at!!,
                            updated_at = uiState.value.userDetails.updated_at
                        )
                        dsRepository.saveUserDetails(dsUserDSModel)

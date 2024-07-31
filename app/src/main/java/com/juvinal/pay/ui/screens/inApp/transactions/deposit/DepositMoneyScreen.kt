@@ -171,7 +171,14 @@ fun DepositMoneyScreenComposable(
             },
             buttonEnabled = uiState.depositButtonEnabled,
             loadingStatus = uiState.loadingStatus,
-            onDeposit = {showDepositDialog = !showDepositDialog},
+            onDeposit = {
+                if(uiState.amount.toDouble() < 100.0) {
+                    Toast.makeText(context, "Minimum deposit is 100", Toast.LENGTH_SHORT).show()
+                } else {
+                    showDepositDialog = !showDepositDialog
+                }
+
+            },
             onCheckPayment = {
                 confirmationCountdown = 5
                 confirmationCountdownOn = true

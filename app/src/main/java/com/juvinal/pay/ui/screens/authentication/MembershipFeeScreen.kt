@@ -347,7 +347,7 @@ fun MembershipFeeScreen(
                 )
             }
             Button(
-                enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING && isConnected,
+                enabled = phoneNumber.isNotEmpty() && loadingStatus != LoadingStatus.LOADING && isConnected,
                 onClick = onPay,
                 modifier = Modifier
                     .fillMaxWidth()

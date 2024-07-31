@@ -5,6 +5,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -60,6 +63,7 @@ object HomeScreenDestination: AppNavigation {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreenComposable(
+    navigateToDepositScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: HomeScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
@@ -73,7 +77,8 @@ fun HomeScreenComposable(
             guaranteedAmounts = uiState.guaranteedAmounts,
             netSavings = uiState.netSavings,
             accountShareCapital = uiState.accountShareCapital,
-            loanAmountQualified = uiState.loanAmountQualified
+            loanAmountQualified = uiState.loanAmountQualified,
+            navigateToDepositScreen = navigateToDepositScreen
         )
     }
 }
@@ -88,6 +93,7 @@ fun HomeScreen(
     netSavings: Double,
     accountShareCapital: Double,
     loanAmountQualified: Double,
+    navigateToDepositScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -128,7 +134,9 @@ fun HomeScreen(
                 amountIcon = R.drawable.up_right_arrow,
                 amountIconColor = Color(0xFF5cccbd),
                 iconColor = Color(0xFF0ab39c),
-                iconBackgroundColor = Color(0xFFd2f1ed)
+                iconBackgroundColor = Color(0xFFd2f1ed),
+                showAccountSavingsButton = true,
+                navigateToDepositScreen = navigateToDepositScreen
             )
             Spacer(modifier = Modifier.height(20.dp))
             AmountCard(
@@ -140,7 +148,9 @@ fun HomeScreen(
                 amountIcon = R.drawable.down_right_arrow,
                 amountIconColor = Color(0xFFf28069),
                 iconColor = Color(0XFF299cdb),
-                iconBackgroundColor = Color(0xFFd8edf9)
+                iconBackgroundColor = Color(0xFFd8edf9),
+                showAccountSavingsButton = false,
+                navigateToDepositScreen = {}
             )
             Spacer(modifier = Modifier.height(20.dp))
             AmountCard(
@@ -152,7 +162,9 @@ fun HomeScreen(
                 amountIcon = R.drawable.up_right_arrow,
                 amountIconColor = Color(0xFF22baa6),
                 iconColor = Color(0xFFf7b84b),
-                iconBackgroundColor = Color(0xFFfef2de)
+                iconBackgroundColor = Color(0xFFfef2de),
+                showAccountSavingsButton = false,
+                navigateToDepositScreen = {}
             )
             Spacer(modifier = Modifier.height(20.dp))
             AmountCard(
@@ -164,7 +176,9 @@ fun HomeScreen(
                 amountIcon = R.drawable.plus,
                 amountIconColor = Color(0xFF9395a3),
                 iconColor = Color(0xFF48588d),
-                iconBackgroundColor = Color(0xFFdcdfea)
+                iconBackgroundColor = Color(0xFFdcdfea),
+                showAccountSavingsButton = false,
+                navigateToDepositScreen = {}
             )
             Spacer(modifier = Modifier.height(20.dp))
             AmountCard(
@@ -176,7 +190,9 @@ fun HomeScreen(
                 amountIcon = R.drawable.plus,
                 amountIconColor = Color(0xFF9395a3),
                 iconColor = Color(0xFF0ab39c),
-                iconBackgroundColor = Color(0xFFd2f1ed)
+                iconBackgroundColor = Color(0xFFd2f1ed),
+                showAccountSavingsButton = false,
+                navigateToDepositScreen = {}
             )
             Spacer(modifier = Modifier.height(20.dp))
             AmountCard(
@@ -188,7 +204,9 @@ fun HomeScreen(
                 amountIcon = R.drawable.plus,
                 amountIconColor = Color(0xFF9395a3),
                 iconColor = Color(0XFF299cdb),
-                iconBackgroundColor = Color(0xFFd8edf9)
+                iconBackgroundColor = Color(0xFFd8edf9),
+                showAccountSavingsButton = false,
+                navigateToDepositScreen = {}
             )
         }
     }
@@ -280,6 +298,8 @@ fun AmountCard(
     amountIconColor: Color,
     iconColor: Color,
     iconBackgroundColor: Color,
+    showAccountSavingsButton: Boolean,
+    navigateToDepositScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -289,26 +309,30 @@ fun AmountCard(
         modifier = Modifier
             .fillMaxWidth()
     ){
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(30.dp)
         ) {
-            Column {
-                Text(
-                    text = title.uppercase(),
-                    color = Color(0xFFaaacb7),
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = balance,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Column {
+                    Text(
+                        text = title.uppercase(),
+                        color = Color(0xFFaaacb7),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(
+                        text = balance,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Column {
 //                Row(
 //                    verticalAlignment = Alignment.CenterVertically
 //                ) {
@@ -325,15 +349,37 @@ fun AmountCard(
 //                    )
 //                }
 //                Spacer(modifier = Modifier.height(20.dp))
-                Icon(
-                    tint = iconColor,
-                    painter = painterResource(id = icon),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .background(iconBackgroundColor)
-                        .padding(20.dp)
-                )
+                    Icon(
+                        tint = iconColor,
+                        painter = painterResource(id = icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .background(iconBackgroundColor)
+                            .padding(20.dp)
+                    )
 
+                }
+            }
+            if(showAccountSavingsButton) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            navigateToDepositScreen()
+                        }
+                ) {
+                    Text(
+                        text = "Save now",
+                        color = MaterialTheme.colorScheme.surfaceTint
+                    )
+                    Icon(
+                        tint = MaterialTheme.colorScheme.surfaceTint,
+                        imageVector = Icons.Default.KeyboardArrowRight,
+                        contentDescription = "Navigate to accounts savings screen"
+                    )
+                }
             }
         }
     }
@@ -352,7 +398,8 @@ fun HomeScreenPreview() {
             guaranteedAmounts = 0.0,
             netSavings = 0.0,
             accountShareCapital = 0.0,
-            loanAmountQualified = 0.0
+            loanAmountQualified = 0.0,
+            navigateToDepositScreen = {}
         )
     }
 }

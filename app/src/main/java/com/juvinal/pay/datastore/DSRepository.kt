@@ -142,8 +142,25 @@ class DSRepository(
 
     suspend fun clear() {
         dataStore.edit { preferences ->
-            preferences.clear()
+            preferences.remove(ID)
+            preferences.remove(MEMBER_NO)
+            preferences.remove(MEMBER_JOINED_DATE)
+            preferences.remove(MEMBER_STATUS)
+            preferences.remove(MEMBER_REGISTERED)
+            preferences.remove(SURNAME)
+            preferences.remove(FNAME)
+            preferences.remove(LNAME)
+            preferences.remove(DOCUMENT_TYPE)
+            preferences.remove(DOCUMENT_NO)
+            preferences.remove(EMAIL)
+            preferences.remove(PHONE_NO)
+            preferences.remove(CREATED_AT)
+            preferences.remove(UPDATED_AT)
+            preferences.remove(PASSWORD)
+            preferences.remove(NAME)
+            preferences.remove(UID)
         }
     }
+
 
 }

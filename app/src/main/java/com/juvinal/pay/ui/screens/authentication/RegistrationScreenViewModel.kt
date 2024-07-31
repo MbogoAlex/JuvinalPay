@@ -9,6 +9,7 @@ import com.juvinal.pay.datastore.DSRepository
 import com.juvinal.pay.datastore.UserDSModel
 import com.juvinal.pay.model.UserRegistrationRequestBody
 import com.juvinal.pay.network.ApiRepository
+import com.juvinal.pay.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,51 +55,23 @@ class RegistrationScreenViewModel(
             password_confirmation = uiState.value.passwordConfirmation
         )
         viewModelScope.launch {
-            try {
-                val response = apiRepository.registerUser(user)
-                if(response.isSuccessful) {
-                    val dsUserDSModel = UserDSModel(
-                        id = response.body()?.user?.id!!,
-                        name = response.body()?.user?.name!!,
-                        uid = response.body()?.user?.uid!!,
-                        mem_no = null,
-                        mem_joined_date = null,
-                        mem_status = null,
-                        mem_registered = false,
-                        surname = response.body()?.user?.surname!!,
-                        fname = response.body()?.user?.fname!!,
-                        lname = response.body()?.user?.lname!!,
-                        document_type = response.body()?.user?.document_type!!,
-                        document_no = response.body()?.user?.document_no!!,
-                        email = response.body()?.user?.email!!,
-                        phone_no = response.body()?.user?.phone_no!!,
-                        password = uiState.value.password,
-                        created_at = response.body()?.user?.created_at!!,
-                        updated_at = response.body()?.user?.updated_at!!
-                    )
-                    dsRepository.saveUserDetails(dsUserDSModel)
+            val response = apiRepository.registerUser(uiState.value.password, user)
+            when(response) {
+                is Resource.Success -> {
                     _uiState.update {
                         it.copy(
                             loadingStatus = LoadingStatus.SUCCESS
                         )
                     }
-                } else {
+                }
+                is Resource.Error -> {}
+                is Resource.Loading -> {
                     _uiState.update {
                         it.copy(
-                            loadingStatus = LoadingStatus.FAIL,
-                            registrationFailureMessage = "User with existing details exists"
+                            loadingStatus = LoadingStatus.LOADING
                         )
                     }
-                    Log.e("USER_REGISTRATION_FAIL_ERROR_RESPONSE", response.toString())
                 }
-            }catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        loadingStatus = LoadingStatus.FAIL,
-                        registrationFailureMessage = "Check your connection or try again later"
-                    )
-                }
-                Log.e("USER_REGISTRATION_FAIL_EXCEPTION", e.toString())
             }
         }
     }

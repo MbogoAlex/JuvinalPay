@@ -141,6 +141,8 @@ fun RequestLoanScreenComposable(
             .safeDrawingPadding()
     ) {
         RequestLoanScreen(
+            eligibility = uiState.eligible,
+            daysRemaining = uiState.daysRemaining,
             loanType = uiState.type,
             onExpand = {
                 loanSelectionExpanded = !loanSelectionExpanded
@@ -173,6 +175,8 @@ fun RequestLoanScreenComposable(
 
 @Composable
 fun RequestLoanScreen(
+    eligibility: Boolean,
+    daysRemaining: Int,
     loanType: LoanTypeDt,
     loanTypes: List<LoanTypeDt>,
     onSelectLoanType: (loanTye: LoanTypeDt) -> Unit,
@@ -265,6 +269,13 @@ fun RequestLoanScreen(
             Text(text = formatMoneyValue(loanAmountQualified))
         }
         Spacer(modifier = Modifier.weight(1f))
+        if(!eligibility) {
+            Text(
+                text = "You must be a member for six months in order to qualify for a loan. $daysRemaining days remaining",
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+        }
         if(!isConnected) {
             Text(
                 text = "Connect to the internet",
@@ -274,7 +285,7 @@ fun RequestLoanScreen(
             )
         }
         Button(
-            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING && isConnected,
+            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING && isConnected && eligibility,
             onClick = onDeposit,
             modifier = Modifier
                 .fillMaxWidth()
@@ -346,6 +357,8 @@ fun RequestSuccessDialog(
 fun RequestLoanScreenPreview() {
     JuvinalPayTheme {
         RequestLoanScreen(
+            eligibility = false,
+            daysRemaining = 5,
             loanType = loanTypeDt,
             onExpand = {},
             loanTypes = loanTypes,

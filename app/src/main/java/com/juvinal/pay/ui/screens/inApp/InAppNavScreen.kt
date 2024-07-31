@@ -223,7 +223,10 @@ fun InAppNavScreenComposable(
                 showLogoutDialog = !showLogoutDialog
                 showTopPopup = !showTopPopup
             },
-            navigateToLoanScheduleScreen = navigateToLoanScheduleScreen
+            navigateToLoanScheduleScreen = navigateToLoanScheduleScreen,
+            navigateToDepositScreen = {
+                currentScreen = HomeScreenSideBarMenuScreen.DEPOSIT
+            }
         )
     }
 }
@@ -249,6 +252,7 @@ fun InAppNavScreen(
     navigateToInAppNavigationScreenWithArgs: (childScreen: String) -> Unit,
     navigateToProfileScreen: () -> Unit,
     navigateToLoanScheduleScreen: (loanId: Int) -> Unit,
+    navigateToDepositScreen: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -527,7 +531,9 @@ fun InAppNavScreen(
 
             when(currentScreen) {
                 HomeScreenSideBarMenuScreen.HOME -> {
-                    HomeScreenComposable()
+                    HomeScreenComposable(
+                        navigateToDepositScreen = navigateToDepositScreen
+                    )
                 }
                 HomeScreenSideBarMenuScreen.PROFILE -> {
                     ProfileScreenComposable(
@@ -637,7 +643,8 @@ fun NavScreenPreview() {
                 navigateToInAppNavigationScreenWithArgs = {},
                 navigateToProfileScreen = {},
                 onLogout = {},
-                navigateToLoanScheduleScreen = {}
+                navigateToLoanScheduleScreen = {},
+                navigateToDepositScreen = {}
             )
         }
     }

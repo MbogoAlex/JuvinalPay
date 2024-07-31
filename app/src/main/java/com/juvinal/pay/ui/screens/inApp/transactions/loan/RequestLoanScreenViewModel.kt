@@ -5,7 +5,9 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,6 +27,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 data class RequestLoanScreenUiState(
     val userDetails: UserDetails = UserDetails(),
@@ -41,8 +47,11 @@ data class RequestLoanScreenUiState(
     val loanAmountQualified: Double = 0.0,
     val requestButtonEnabled: Boolean = false,
     val requestResponseMessage: String = "",
+    val daysRemaining: Int = 0,
+    val eligible: Boolean = false,
     val loadingStatus: LoadingStatus = LoadingStatus.INITIAL
 )
+@RequiresApi(Build.VERSION_CODES.O)
 class RequestLoanScreenViewModel(
     private val apiRepository: ApiRepository,
     private val dsRepository: DSRepository
@@ -78,16 +87,42 @@ class RequestLoanScreenViewModel(
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun loadStartupData(){
+        // Parse the created_at field as OffsetDateTime, then convert to LocalDateTime if needed
+
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    userDetails = dsRepository.userDSDetails.first().toUserDetails()
+                    userDetails = dsRepository.userDSDetails.first().toUserDetails(),
+
+                )
+            }
+
+            val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+            val createdAt = OffsetDateTime.parse(uiState.value.userDetails.created_at, formatter)
+            val localCreatedAt = createdAt.toLocalDateTime()
+
+            val sixMonthsLater = localCreatedAt.plusMonths(6)
+            val now = LocalDateTime.now()
+
+            val monthsRemaining = ChronoUnit.MONTHS.between(now, sixMonthsLater)
+            val daysRemaining = ChronoUnit.DAYS.between(now, sixMonthsLater)
+
+            _uiState.update {
+                it.copy(
+                    daysRemaining = daysRemaining.toInt(),
+                    eligible = daysRemaining < 1
                 )
             }
 
             getDashboardDetails()
             getLoanTypes()
+
+
+
+            Log.d("MONTHS_REMAINING", monthsRemaining.toString())
+            Log.d("DAYS_REMAINING", daysRemaining.toString())
         }
 
 
