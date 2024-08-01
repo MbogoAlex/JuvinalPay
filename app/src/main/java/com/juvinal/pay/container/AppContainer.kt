@@ -23,7 +23,7 @@ class AppContainerImpl(context: Context): AppContainer {
         ignoreUnknownKeys = true
         coerceInputValues = true
     }
-    private val baseUrl = "http://172.105.90.112/juvinal-backend/public/api/"
+    private val baseUrl = "https://juvinalpay.co.ke/juvinalpay/public/api/"
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)

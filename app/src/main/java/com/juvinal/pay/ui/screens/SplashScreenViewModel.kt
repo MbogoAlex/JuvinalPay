@@ -28,12 +28,18 @@ class SplashScreenViewModel(
     val uiState: StateFlow<SplashScreenUiState> = _uiState.asStateFlow()
     fun loadUserDetails(userId: Int) {
         viewModelScope.launch {
+            val user = dbRepository.getUser(userId).first()
+            val member = dbRepository.getMember(userId).first()
+            val userDetails = UserDetails(
+                user = user,
+                member = member
+            )
             _uiState.update {
                 it.copy(
-                    userDetails = dbRepository.getUserDetails(userId).first()
+                    userDetails = userDetails
                 )
             }
-
+            Log.d("USER_FETCHED:", userDetails.toString())
         }
 
     }

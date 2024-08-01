@@ -44,7 +44,7 @@ class UnpaidLoansScreenViewModel(
     fun getLoanHistory() {
         viewModelScope.launch {
             try {
-                val response = apiRepository.getLoansHistory(uiState.value.userDetails.member.mem_no!!)
+                val response = apiRepository.getLoansHistory(uiState.value.userDetails.member?.mem_no!!)
                 if(response.isSuccessful) {
                     val unpaidLoans = mutableListOf<LoanHistoryDt>()
                     for(loan in response.body()?.data!!) {

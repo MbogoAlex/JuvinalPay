@@ -1,7 +1,10 @@
 package com.juvinal.pay.ui.screens.authentication
 
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,6 +48,9 @@ class LoginScreenViewModel(
     private val members = mutableStateListOf<Member>()
     private var loginSuccess = false
 
+    private var user by mutableStateOf<User?>(null)
+    private var member by mutableStateOf<Member?>(null)
+
     fun loadStartUpData() {
         if(documentNo != null && password != null) {
             _uiState.update {
@@ -73,7 +79,6 @@ class LoginScreenViewModel(
     }
 
     fun login() {
-        var user: UserDetails
         _uiState.update {
             it.copy(
                 loadingStatus = LoadingStatus.LOADING
@@ -87,25 +92,28 @@ class LoginScreenViewModel(
             try {
                 val response = apiRepository.loginUser(uiState.value.password, userLoginRequestBody)
                 if(response.isSuccessful) {
-                    val id = response.body()?.user?.id!!
-                    user = dbRepository.getUserDetails(id).first()
+                    val userId = response.body()?.user?.id!!
+
+                    user = dbRepository.getUser(userId).first()
+                    member = dbRepository.getMember(userId).first()
 
                     Log.d("USER_DETAILS", user.toString())
 
-                    when(user.user.user_id !=0 && !loginSuccess) {
+                    when(user != null && !loginSuccess) {
                         true -> {
                             loginSuccess = true
                             _uiState.update {
                                 it.copy(
                                     loadingStatus = LoadingStatus.SUCCESS,
-                                    userRegistered = user.member.mem_no != null
+                                    userRegistered = member?.mem_no != null
                                 )
                             }
                         }
                         false -> {
                             delay(2000L)
-                            users.addAll(dbRepository.getUsers().first())
-                            members.addAll(dbRepository.getMembers().first())
+                            user = dbRepository.getUser(userId).first()
+                            member = dbRepository.getMember(userId).first()
+
                         }
                     }
                 } else {

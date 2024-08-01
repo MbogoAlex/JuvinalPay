@@ -79,13 +79,18 @@ class MembershipFeeScreenViewModel(
 
     fun loadUserData() {
         viewModelScope.launch {
-            val id = dbRepository.getAppLaunchState(1).user_id
-            if(id != null) {
-                val user = dbRepository.getUserDetails(id).first()
+            val userId = dbRepository.getAppLaunchState(1).user_id
+            if(userId != null) {
+                val user = dbRepository.getUser(userId).first()
+                val member = dbRepository.getMember(userId).first()
+                val userDetails = UserDetails(
+                    user = user,
+                    member = member
+                )
                 _uiState.update {
                     it.copy(
-                        userDetails = user,
-                        msisdn = user.user.phone_no
+                        userDetails = userDetails,
+                        msisdn = user.phone_no
                     )
                 }
             }
@@ -119,7 +124,7 @@ class MembershipFeeScreenViewModel(
             )
         }
         val membershipFeeRequestBody = MembershipFeeRequestBody(
-            uid = uiState.value.userDetails.user.uid,
+            uid = uiState.value.userDetails.user!!.uid,
             msisdn = if(uiState.value.msisdn.startsWith("254")) uiState.value.msisdn.replace("254", "0") else uiState.value.msisdn,
             payment_purpose = "MEMBER_REGISTRATION_FEE"
         )

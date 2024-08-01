@@ -56,7 +56,7 @@ class DepositHistoryScreenViewModel(
         }
         viewModelScope.launch {
             try {
-                val response = apiRepository.getTransactionHistory(uiState.value.userDetails.user.user_id)
+                val response = apiRepository.getTransactionHistory(uiState.value.userDetails.user!!.user_id)
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(

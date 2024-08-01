@@ -31,13 +31,15 @@ interface AppDao {
    @Query("SELECT * FROM member")
    fun getMembers(): Flow<List<Member>>
 
-    @Query("SELECT * FROM user INNER JOIN member ON user.user_id = member.user_id WHERE user.user_id = :userId")
+    @Query("SELECT * FROM user LEFT JOIN member ON user.user_id = member.user_id WHERE user.user_id = :userId")
     fun getUserDetails(userId: Int): Flow<UserDetails>
 
 
     @Transaction
     @Query("SELECT * FROM user WHERE user_id = :userId")
     fun getUser(userId: Int): Flow<User>
+    @Query("SELECT * FROM member WHERE user_id = :userId")
+    fun getMember(userId: Int): Flow<Member>
    suspend fun deleteUserDetails(user: User, member: Member) {
        deleteMember(member)
        deleteUser(user)

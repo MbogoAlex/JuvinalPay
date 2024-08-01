@@ -50,14 +50,15 @@ class InAppNavScreenViewModel(
                     childScreen = childScreen
                 )
             }
-            if(uiState.value.userDetails.user.user_id != 0) {
+            Log.d("USER_DATA", uiState.value.userDetails.toString())
+            if(uiState.value.userDetails.user!!.user_id != 0) {
                 getDashboardDetails()
             }
         }
     }
 
     fun getDashboardDetails() {
-        Log.i("DASHBOARD_DETAILS_WITH_USER_ID", uiState.value.userDetails.user.user_id.toString())
+        Log.i("DASHBOARD_DETAILS_WITH_USER_ID", uiState.value.userDetails.user!!.user_id.toString())
         _uiState.update {
             it.copy(
                 loadingStatus = LoadingStatus.INITIAL
@@ -65,7 +66,7 @@ class InAppNavScreenViewModel(
         }
         viewModelScope.launch {
             try {
-                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user.user_id)
+                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user!!.user_id)
                 if(response.isSuccessful) {
                     Log.i("DASHBOARD_DETAILS:", "${response.body()?.data?.accountSavings!!.toDouble()}")
                     _uiState.update {
@@ -103,8 +104,8 @@ class InAppNavScreenViewModel(
     fun logout() {
         viewModelScope.launch {
             dbRepository.deleteUserDetails(
-                user = uiState.value.userDetails.user,
-                member = uiState.value.userDetails.member
+                user = uiState.value.userDetails.user!!,
+                member = uiState.value.userDetails.member!!
             )
             dbRepository.updateAppLaunchState(
                 uiState.value.appLaunchStatus.copy(

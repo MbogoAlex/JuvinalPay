@@ -49,11 +49,11 @@ data class AppLaunchStatus(
 )
 
 data class UserDetails(
-    @Embedded val member: Member = Member(0, 0, null, "", 0, "", ""),
+    @Embedded val member: Member? = Member(0, 0, null, "", 0, "", ""),
     @Relation(
         parentColumn = "user_id",
         entityColumn = "user_id"
     )
-    val user: User = User(0, 0, "", "", "", "", "", "", "", "", 0, "", "", "", ""),
+    val user: User? = User(0, 0, "", "", "", "", "", "", "", "", 0, "", "", "", ""),
 )
 

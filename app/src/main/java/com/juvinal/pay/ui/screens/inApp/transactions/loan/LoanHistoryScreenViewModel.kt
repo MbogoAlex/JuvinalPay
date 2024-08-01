@@ -45,7 +45,7 @@ class LoanHistoryScreenViewModel(
     fun getLoanHistory() {
         viewModelScope.launch {
             try {
-                val response = apiRepository.getLoansHistory(uiState.value.userDetails.member.mem_no!!)
+                val response = apiRepository.getLoansHistory(uiState.value.userDetails.member?.mem_no!!)
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(

@@ -107,7 +107,7 @@ class LoanRepaymentScreenViewModel(
             _uiState.update {
                 it.copy(
                     userDetails = user,
-                    phoneNumber = user.user.phone_no,
+                    phoneNumber = user.user!!.phone_no,
                     loanId = savedStateHandle[LoanRepaymentScreenDestination.loanId] ?: "",
                     memNo = savedStateHandle[LoanRepaymentScreenDestination.memNo] ?: "",
                     schedulePayDate = savedStateHandle[LoanRepaymentScreenDestination.schedulePayDate] ?: "",
@@ -128,7 +128,7 @@ class LoanRepaymentScreenViewModel(
         val loanRepaymentPayload = LoanRepaymentPayload(
             loan_id = uiState.value.loanId.toInt(),
             mem_no = uiState.value.memNo,
-            uid = uiState.value.userDetails.user.uid,
+            uid = uiState.value.userDetails.user!!.uid,
             msisdn = uiState.value.phoneNumber,
             payment_purpose = "LOAN_REPAYMENT",
             loan_repayment_amount = uiState.value.amount.toDouble(),

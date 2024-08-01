@@ -40,7 +40,7 @@ class HomeScreenViewModel(
                     userDetails = dbRepository.getUserDetails(appLaunchStatus.user_id!!).first()
                 )
             }
-            if(uiState.value.userDetails.user.user_id != 0) {
+            if(uiState.value.userDetails.user!!.user_id != 0) {
                 getDashboardDetails()
             }
         }
@@ -55,7 +55,7 @@ class HomeScreenViewModel(
         }
         viewModelScope.launch {
             try {
-                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user.user_id)
+                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user!!.user_id)
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(

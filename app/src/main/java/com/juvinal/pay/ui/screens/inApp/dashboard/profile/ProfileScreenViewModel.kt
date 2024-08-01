@@ -40,8 +40,8 @@ class ProfileScreenViewModel(
     fun logout() {
         viewModelScope.launch {
             dbRepository.deleteUserDetails(
-                user = uiState.value.userDetails.user,
-                member = uiState.value.userDetails.member
+                user = uiState.value.userDetails.user!!,
+                member = uiState.value.userDetails.member!!
             )
             dbRepository.updateAppLaunchState(
                 uiState.value.appLaunchStatus.copy(

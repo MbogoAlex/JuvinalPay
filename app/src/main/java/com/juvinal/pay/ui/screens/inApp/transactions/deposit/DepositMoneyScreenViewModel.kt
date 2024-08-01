@@ -89,7 +89,7 @@ class DepositMoneyScreenViewModel(
             _uiState.update {
                 it.copy(
                     userDetails = user,
-                    phoneNumber = user.user.phone_no
+                    phoneNumber = user.user!!.phone_no
                 )
             }
         }
@@ -127,7 +127,7 @@ class DepositMoneyScreenViewModel(
     fun getDashboardDetails() {
         viewModelScope.launch {
             try {
-                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user.user_id!!)
+                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user!!.user_id!!)
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
@@ -157,7 +157,7 @@ class DepositMoneyScreenViewModel(
             )
         }
         val depositRequestBody = DepositRequestBody(
-            uid = uiState.value.userDetails.user.uid,
+            uid = uiState.value.userDetails.user!!.uid,
             msisdn = uiState.value.phoneNumber,
             payment_purpose = "MEMBER_DEPOSIT",
             amount = uiState.value.amount.toDouble()

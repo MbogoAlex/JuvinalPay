@@ -27,6 +27,7 @@ interface DBRepository {
 
     fun getUsers(): Flow<List<User>>
     fun getMembers(): Flow<List<Member>>
+    fun getMember(userId: Int): Flow<Member>
 }
 
 class DBRepositoryImpl(private val appDao: AppDao): DBRepository{
@@ -60,5 +61,6 @@ class DBRepositoryImpl(private val appDao: AppDao): DBRepository{
     override fun getUsers(): Flow<List<User>> = appDao.getUsers()
 
     override fun getMembers(): Flow<List<Member>> = appDao.getMembers()
+    override fun getMember(userId: Int): Flow<Member> = appDao.getMember(userId)
 
 }

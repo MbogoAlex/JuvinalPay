@@ -44,7 +44,7 @@ fun SplashScreenComposable(
             if(uiState.appLaunched) {
                 if(uiState.appLaunchStatus.user_id == null) {
                     navigateToRegistrationScreen()
-                } else if(uiState.userDetails.member.mem_no == null) {
+                } else if(uiState.userDetails.member?.mem_no == null) {
                     navigateToMembershipFeePaymentScreen()
                 } else {
                     navigateToInAppNavScreen()

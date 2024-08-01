@@ -102,7 +102,7 @@ class RequestLoanScreenViewModel(
             }
 
             val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
-            val createdAt = OffsetDateTime.parse(uiState.value.userDetails.member.created_at, formatter)
+            val createdAt = OffsetDateTime.parse(uiState.value.userDetails.member?.created_at, formatter)
             val localCreatedAt = createdAt.toLocalDateTime()
 
             val sixMonthsLater = localCreatedAt.plusMonths(6)
@@ -158,7 +158,7 @@ class RequestLoanScreenViewModel(
     fun getDashboardDetails() {
         viewModelScope.launch {
             try {
-                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user.user_id!!)
+                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user!!.user_id!!)
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
@@ -206,11 +206,11 @@ class RequestLoanScreenViewModel(
             )
         }
         val loanRequestPayload = LoanRequestPayload(
-            mem_no = uiState.value.userDetails.member.mem_no!!,
+            mem_no = uiState.value.userDetails.member?.mem_no!!,
             loan_type_id = uiState.value.type.id,
             loan_req_amount = uiState.value.amount.toDouble(),
             loan_purpose = uiState.value.loanPurpose,
-            uid = uiState.value.userDetails.user.uid
+            uid = uiState.value.userDetails.user!!.uid
         )
         viewModelScope.launch {
             try {
