@@ -5,14 +5,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juvinal.pay.LoadingStatus
-import com.juvinal.pay.UserDetails
 import com.juvinal.pay.datastore.DSRepository
+import com.juvinal.pay.db.DBRepository
+import com.juvinal.pay.model.dbModel.AppLaunchStatus
+import com.juvinal.pay.model.dbModel.UserDetails
 import com.juvinal.pay.network.ApiRepository
-import com.juvinal.pay.toUserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,11 +26,13 @@ data class InAppNavScreenUiState(
     val netSavings: Double = 0.0,
     val accountShareCapital: Double = 0.0,
     val loanAmountQualified: Double = 0.0,
+    val appLaunchStatus: AppLaunchStatus = AppLaunchStatus(),
     val loadingStatus: LoadingStatus = LoadingStatus.INITIAL
 )
 class InAppNavScreenViewModel(
     private val apiRepository: ApiRepository,
     private val dsRepository: DSRepository,
+    private val dbRepository: DBRepository,
     private val savedStateHandle: SavedStateHandle
 ): ViewModel() {
     private val _uiState = MutableStateFlow(InAppNavScreenUiState())
@@ -40,18 +42,22 @@ class InAppNavScreenViewModel(
 
     fun loadStartupData() {
         viewModelScope.launch {
+            val appLaunchStatus = dbRepository.getAppLaunchState(1)
             _uiState.update {
                 it.copy(
-                    userDetails = dsRepository.userDSDetails.first().toUserDetails(),
+                    userDetails = dbRepository.getUserDetails(appLaunchStatus.user_id!!).first(),
+                    appLaunchStatus = appLaunchStatus,
                     childScreen = childScreen
                 )
             }
-            getDashboardDetails()
+            if(uiState.value.userDetails.user.user_id != 0) {
+                getDashboardDetails()
+            }
         }
     }
 
     fun getDashboardDetails() {
-        Log.i("DASHBOARD_DETAILS_WITH_USER_ID", uiState.value.userDetails.id.toString())
+        Log.i("DASHBOARD_DETAILS_WITH_USER_ID", uiState.value.userDetails.user.user_id.toString())
         _uiState.update {
             it.copy(
                 loadingStatus = LoadingStatus.INITIAL
@@ -59,7 +65,7 @@ class InAppNavScreenViewModel(
         }
         viewModelScope.launch {
             try {
-                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.id!!)
+                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user.user_id)
                 if(response.isSuccessful) {
                     Log.i("DASHBOARD_DETAILS:", "${response.body()?.data?.accountSavings!!.toDouble()}")
                     _uiState.update {
@@ -96,7 +102,15 @@ class InAppNavScreenViewModel(
 
     fun logout() {
         viewModelScope.launch {
-            dsRepository.clear()
+            dbRepository.deleteUserDetails(
+                user = uiState.value.userDetails.user,
+                member = uiState.value.userDetails.member
+            )
+            dbRepository.updateAppLaunchState(
+                uiState.value.appLaunchStatus.copy(
+                    user_id = null
+                )
+            )
         }
     }
 

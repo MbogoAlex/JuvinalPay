@@ -13,14 +13,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juvinal.pay.LoadingStatus
-import com.juvinal.pay.UserDetails
 import com.juvinal.pay.datastore.DSRepository
+import com.juvinal.pay.db.DBRepository
 import com.juvinal.pay.loanTypeDt
 import com.juvinal.pay.model.LoanRequestPayload
 import com.juvinal.pay.model.LoanTypeDt
+import com.juvinal.pay.model.dbModel.UserDetails
 import com.juvinal.pay.network.ApiRepository
 import com.juvinal.pay.resusableFunctions.formatMoneyValue
-import com.juvinal.pay.toUserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,7 +54,8 @@ data class RequestLoanScreenUiState(
 @RequiresApi(Build.VERSION_CODES.O)
 class RequestLoanScreenViewModel(
     private val apiRepository: ApiRepository,
-    private val dsRepository: DSRepository
+    private val dsRepository: DSRepository,
+    private val dbRepository: DBRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(RequestLoanScreenUiState())
     val uiState: StateFlow<RequestLoanScreenUiState> = _uiState.asStateFlow()
@@ -92,15 +93,16 @@ class RequestLoanScreenViewModel(
         // Parse the created_at field as OffsetDateTime, then convert to LocalDateTime if needed
 
         viewModelScope.launch {
+            val appLaunchStatus = dbRepository.getAppLaunchState(1)
             _uiState.update {
                 it.copy(
-                    userDetails = dsRepository.userDSDetails.first().toUserDetails(),
+                    userDetails = dbRepository.getUserDetails(appLaunchStatus.user_id!!).first()
 
                 )
             }
 
             val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
-            val createdAt = OffsetDateTime.parse(uiState.value.userDetails.created_at, formatter)
+            val createdAt = OffsetDateTime.parse(uiState.value.userDetails.member.created_at, formatter)
             val localCreatedAt = createdAt.toLocalDateTime()
 
             val sixMonthsLater = localCreatedAt.plusMonths(6)
@@ -156,7 +158,7 @@ class RequestLoanScreenViewModel(
     fun getDashboardDetails() {
         viewModelScope.launch {
             try {
-                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.id!!)
+                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user.user_id!!)
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
@@ -204,11 +206,11 @@ class RequestLoanScreenViewModel(
             )
         }
         val loanRequestPayload = LoanRequestPayload(
-            mem_no = uiState.value.userDetails.mem_no!!,
+            mem_no = uiState.value.userDetails.member.mem_no!!,
             loan_type_id = uiState.value.type.id,
             loan_req_amount = uiState.value.amount.toDouble(),
             loan_purpose = uiState.value.loanPurpose,
-            uid = uiState.value.userDetails.uid
+            uid = uiState.value.userDetails.user.uid
         )
         viewModelScope.launch {
             try {

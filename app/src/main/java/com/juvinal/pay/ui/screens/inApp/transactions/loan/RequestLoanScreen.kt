@@ -1,8 +1,10 @@
 package com.juvinal.pay.ui.screens.inApp.transactions.loan
 
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,6 +64,7 @@ import kotlinx.coroutines.launch
 
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RequestLoanScreenComposable(
     navigateToInAppNavigationScreen: () -> Unit,

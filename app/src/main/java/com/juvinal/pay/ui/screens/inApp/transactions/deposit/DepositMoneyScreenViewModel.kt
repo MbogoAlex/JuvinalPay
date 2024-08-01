@@ -11,15 +11,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juvinal.pay.LoadingStatus
-import com.juvinal.pay.UserDetails
 import com.juvinal.pay.datastore.DSRepository
-import com.juvinal.pay.datastore.PaymentReferenceDSModel
+import com.juvinal.pay.db.DBRepository
 import com.juvinal.pay.model.DepositRequestBody
+import com.juvinal.pay.model.dbModel.UserDetails
 import com.juvinal.pay.network.ApiRepository
-import com.juvinal.pay.toUserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -43,7 +43,8 @@ data class DepositMoneyScreenUiState(
 )
 class DepositMoneyScreenViewModel(
     private val apiRepository: ApiRepository,
-    private val dsRepository: DSRepository
+    private val dsRepository: DSRepository,
+    private val dbRepository: DBRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(DepositMoneyScreenUiState())
     val uiState: StateFlow<DepositMoneyScreenUiState> = _uiState.asStateFlow()
@@ -83,26 +84,25 @@ class DepositMoneyScreenViewModel(
 
     fun loadUserDetails() {
         viewModelScope.launch {
-            dsRepository.userDSDetails.collect(){dsUserDetails->
-                _uiState.update {
-                    it.copy(
-                        userDetails = dsUserDetails.toUserDetails(),
-                        phoneNumber = dsUserDetails.phone_no
-                    )
-                }
+            val appLaunchStatus = dbRepository.getAppLaunchState(1)
+            val user = dbRepository.getUserDetails(appLaunchStatus.user_id!!).first()
+            _uiState.update {
+                it.copy(
+                    userDetails = user,
+                    phoneNumber = user.user.phone_no
+                )
             }
         }
     }
 
     fun loadPaymentData() {
         viewModelScope.launch {
-            dsRepository.paymentDSDetails.collect(){paymentDsDetails->
-                _uiState.update {
-                    it.copy(
-                        memberFeeReferenceId = paymentDsDetails.memberFeePaymentReference,
-                        depositPaymentReferenceId = paymentDsDetails.depositPaymentReference
-                    )
-                }
+            val paymentDetails = dsRepository.paymentDSDetails.first()
+            _uiState.update {
+                it.copy(
+                    memberFeeReferenceId = paymentDetails.memberFeePaymentReference,
+                    depositPaymentReferenceId = paymentDetails.depositPaymentReference
+                )
             }
         }
     }
@@ -127,7 +127,7 @@ class DepositMoneyScreenViewModel(
     fun getDashboardDetails() {
         viewModelScope.launch {
             try {
-                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.id!!)
+                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user.user_id!!)
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
@@ -157,7 +157,7 @@ class DepositMoneyScreenViewModel(
             )
         }
         val depositRequestBody = DepositRequestBody(
-            uid = uiState.value.userDetails.uid,
+            uid = uiState.value.userDetails.user.uid,
             msisdn = uiState.value.phoneNumber,
             payment_purpose = "MEMBER_DEPOSIT",
             amount = uiState.value.amount.toDouble()

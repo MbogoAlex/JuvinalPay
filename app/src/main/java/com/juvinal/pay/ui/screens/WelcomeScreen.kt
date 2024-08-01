@@ -72,7 +72,6 @@ fun WelcomeScreenComposable(
         WelcomeScreen(
             navigateToRegistrationPage = {
                 navigateToRegistrationPage()
-                viewModel.saveLaunchState()
             }
         )
     }

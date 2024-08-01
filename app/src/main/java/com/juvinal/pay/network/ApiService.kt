@@ -29,7 +29,7 @@ interface ApiService {
     @POST("createuser")
     suspend fun registerUser(
         @Body userRegistrationRequestBody: UserRegistrationRequestBody
-    ): Resource<UserRegistrationResponseBody>
+    ): Response<UserRegistrationResponseBody>
 
     @POST("login")
     suspend fun loginUser(

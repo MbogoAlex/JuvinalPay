@@ -96,7 +96,7 @@ fun ProfileScreenComposable(
                     loggingOut = true
                     delay(2000)
                     viewModel.logout()
-                    navigateToLoginScreenWithArgs(uiState.userDetails.document_no, uiState.userDetails.password)
+                    navigateToLoginScreenWithArgs(uiState.userDetails.user.document_no, uiState.userDetails.user.password)
                     loggingOut = false
                     Toast.makeText(context, "You are logged out", Toast.LENGTH_SHORT).show()
                 }      
@@ -115,7 +115,7 @@ fun ProfileScreenComposable(
     ) {
         ProfileScreen(
             loggingOut = loggingOut,
-            username = uiState.userDetails.name,
+            username = uiState.userDetails.user.name,
             navigateToPersonalDetailsScreen = navigateToPersonalDetailsScreen,
             navigateToChangePasswordScreen = navigateToChangePasswordScreen,
             navigateToPrivacyPolicyScreen = navigateToPrivacyPolicyScreen,

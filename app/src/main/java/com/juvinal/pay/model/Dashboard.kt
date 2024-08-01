@@ -10,7 +10,7 @@ data class DashboardResponseBody(
 
 @Serializable
 data class DashboardDt(
-    val accountSavings: String,
+    val accountSavings: Double,
     val loanBalance: Double,
     val guaranteedAmounts: Double,
     val netSavings: Double,

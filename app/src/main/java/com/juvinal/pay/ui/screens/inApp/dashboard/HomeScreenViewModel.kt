@@ -4,14 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juvinal.pay.LoadingStatus
-import com.juvinal.pay.UserDetails
 import com.juvinal.pay.datastore.DSRepository
+import com.juvinal.pay.db.DBRepository
+import com.juvinal.pay.model.dbModel.UserDetails
 import com.juvinal.pay.network.ApiRepository
-import com.juvinal.pay.toUserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,19 +27,22 @@ data class HomeScreenUiState(
 )
 class HomeScreenViewModel(
     private val apiRepository: ApiRepository,
-    private val dsRepository: DSRepository
+    private val dsRepository: DSRepository,
+    private val dbRepository: DBRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
     fun loadStartupData() {
         viewModelScope.launch {
+            val appLaunchStatus = dbRepository.getAppLaunchState(1)
             _uiState.update {
                 it.copy(
-                    userDetails = dsRepository.userDSDetails.first().toUserDetails()
+                    userDetails = dbRepository.getUserDetails(appLaunchStatus.user_id!!).first()
                 )
             }
-
-            getDashboardDetails()
+            if(uiState.value.userDetails.user.user_id != 0) {
+                getDashboardDetails()
+            }
         }
     }
 
@@ -53,7 +55,7 @@ class HomeScreenViewModel(
         }
         viewModelScope.launch {
             try {
-                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.id!!)
+                val response = apiRepository.getDashboardDetails(uiState.value.userDetails.user.user_id)
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(

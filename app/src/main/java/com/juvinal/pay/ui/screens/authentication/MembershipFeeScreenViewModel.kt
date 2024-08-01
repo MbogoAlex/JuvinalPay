@@ -6,18 +6,20 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juvinal.pay.LoadingStatus
-import com.juvinal.pay.UserDetails
 import com.juvinal.pay.datastore.DSRepository
 import com.juvinal.pay.datastore.PaymentReferenceDSModel
-import com.juvinal.pay.datastore.UserDSModel
+import com.juvinal.pay.db.DBRepository
 import com.juvinal.pay.model.MembershipFeeRequestBody
+import com.juvinal.pay.model.dbModel.Member
+import com.juvinal.pay.model.dbModel.UserDetails
 import com.juvinal.pay.network.ApiRepository
-import com.juvinal.pay.toUserDetails
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,7 +36,8 @@ data class MembershipFeeScreenUiState(
 )
 class MembershipFeeScreenViewModel(
     private val apiRepository: ApiRepository,
-    private val dsRepository: DSRepository
+    private val dsRepository: DSRepository,
+    private val dbRepository: DBRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(MembershipFeeScreenUiState())
     val uiState: StateFlow<MembershipFeeScreenUiState> = _uiState.asStateFlow()
@@ -42,6 +45,8 @@ class MembershipFeeScreenViewModel(
     private val _isConnected = MutableLiveData<Boolean>()
     val isConnected: LiveData<Boolean> = _isConnected
 
+    private val members = mutableStateListOf<Member>()
+    private var paymentSuccess = false
 
     var conManager: ConnectivityManager? = null
     var netCallback: ConnectivityManager.NetworkCallback? = null
@@ -74,17 +79,17 @@ class MembershipFeeScreenViewModel(
 
     fun loadUserData() {
         viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    userDetails = dsRepository.userDSDetails.first().toUserDetails(),
-                )
+            val id = dbRepository.getAppLaunchState(1).user_id
+            if(id != null) {
+                val user = dbRepository.getUserDetails(id).first()
+                _uiState.update {
+                    it.copy(
+                        userDetails = user,
+                        msisdn = user.user.phone_no
+                    )
+                }
             }
-            _uiState.update {
-                it.copy(
-                    msisdn = uiState.value.userDetails.phone_no
-                )
-            }
-            Log.i("UID", uiState.value.userDetails.uid)
+
         }
     }
 
@@ -114,7 +119,7 @@ class MembershipFeeScreenViewModel(
             )
         }
         val membershipFeeRequestBody = MembershipFeeRequestBody(
-            uid = uiState.value.userDetails.uid,
+            uid = uiState.value.userDetails.user.uid,
             msisdn = if(uiState.value.msisdn.startsWith("254")) uiState.value.msisdn.replace("254", "0") else uiState.value.msisdn,
             payment_purpose = "MEMBER_REGISTRATION_FEE"
         )
@@ -155,35 +160,26 @@ class MembershipFeeScreenViewModel(
         Log.i("REFERENCE_ID:", uiState.value.paymentReference!!)
         viewModelScope.launch {
             try {
-               val response = apiRepository.checkPaymentStatus(uiState.value.paymentReference!!)
+               val response = apiRepository.checkMemberShipFeePaymentStatus(uiState.value.paymentReference!!)
                 Log.i("RESPONSE:", response.toString())
                if(response.isSuccessful) {
                    if(response.body()?.status?.lowercase() == "successful") {
-                       val dsUserDSModel = UserDSModel(
-                           id = uiState.value.userDetails.id,
-                           name = uiState.value.userDetails.name,
-                           uid = uiState.value.userDetails.uid,
-                           mem_no = response.body()?.member?.mem_no,
-                           mem_joined_date = response.body()?.member?.mem_joined_date,
-                           mem_status = response.body()?.member?.mem_status,
-                           mem_registered = response.body()?.member != null,
-                           surname = uiState.value.userDetails.surname,
-                           fname = uiState.value.userDetails.fname,
-                           lname = uiState.value.userDetails.lname,
-                           document_type = uiState.value.userDetails.document_type,
-                           document_no = uiState.value.userDetails.document_no,
-                           email = uiState.value.userDetails.email,
-                           phone_no = uiState.value.userDetails.phone_no,
-                           password = uiState.value.userDetails.password,
-                           created_at = response.body()?.member?.created_at!!,
-                           updated_at = uiState.value.userDetails.updated_at
-                       )
-                       dsRepository.saveUserDetails(dsUserDSModel)
-                       _uiState.update {
-                           it.copy(
-                               loadingStatus = LoadingStatus.SUCCESS
-                           )
+                       members.addAll(dbRepository.getMembers().first())
+                       when(members.isNotEmpty() && !paymentSuccess) {
+                           true -> {
+                               paymentSuccess = true
+                               _uiState.update {
+                                   it.copy(
+                                       loadingStatus = LoadingStatus.SUCCESS
+                                   )
+                               }
+                           }
+                           false -> {
+                               delay(2000L)
+                               members.addAll(dbRepository.getMembers().first())
+                           }
                        }
+
                    } else {
                        _uiState.update {
                            it.copy(

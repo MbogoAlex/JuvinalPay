@@ -27,7 +27,7 @@ class AppContainerImpl(context: Context): AppContainer {
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
-        .addConverterFactory(MoshiConverterFactory.create())
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
 
     private val retrofitService: ApiService by lazy {

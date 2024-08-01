@@ -17,11 +17,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -43,11 +43,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.juvinal.pay.AppViewModelFactory
 import com.juvinal.pay.DocumentType
-import com.juvinal.pay.documentTypes
 import com.juvinal.pay.reusableComposables.AuthInputField
 import com.juvinal.pay.reusableComposables.DocumentTypeSelection
 import com.juvinal.pay.ui.screens.nav.AppNavigation
 import com.juvinal.pay.ui.theme.JuvinalPayTheme
+
 object PersonalDetailsScreenDestination: AppNavigation {
     override val title: String = "Personal details screen"
     override val route: String = "personal-details-screen"
@@ -104,19 +104,19 @@ fun PersonalDetailsScreen(
             )
         }
         FilledPersonalDetailsTextFields(
-            surname = uiState.userDetails.surname,
+            surname = uiState.userDetails.user.surname,
             onChangeSurname = {},
-            fname = uiState.userDetails.fname,
+            fname = uiState.userDetails.user.fname,
             onChangeFName = {},
-            lname = uiState.userDetails.lname,
+            lname = uiState.userDetails.user.lname,
             onChangeLName = {},
-            documentType = if(uiState.userDetails.document_type == "NATIONAL_ID") DocumentType.NATIONAL_ID else if(uiState.userDetails.document_type == "PASSPORT") DocumentType.PASSPORT else DocumentType.ALIEN_ID,
+            documentType = if(uiState.userDetails.user.document_type == "NATIONAL_ID") DocumentType.NATIONAL_ID else if(uiState.userDetails.user.document_type == "PASSPORT") DocumentType.PASSPORT else DocumentType.ALIEN_ID,
             onChangeDocumentType = {},
             onExpand = { /*TODO*/ },
-            joiningDate = uiState.userDetails.mem_joined_date ?: "",
-            email = uiState.userDetails.email,
+            joiningDate = uiState.userDetails.member.mem_joined_date ?: "",
+            email = uiState.userDetails.user.email,
             onChangeEmail = {},
-            phoneNo = uiState.userDetails.phone_no,
+            phoneNo = uiState.userDetails.user.phone_no,
             onChangePhoneNo = {},
             city = "",
             onChangeCity = {},

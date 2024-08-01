@@ -12,16 +12,15 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juvinal.pay.LoadingStatus
-import com.juvinal.pay.UserDetails
 import com.juvinal.pay.datastore.DSRepository
-import com.juvinal.pay.datastore.PaymentReferenceDSModel
-import com.juvinal.pay.model.DepositRequestBody
+import com.juvinal.pay.db.DBRepository
 import com.juvinal.pay.model.LoanRepaymentPayload
+import com.juvinal.pay.model.dbModel.UserDetails
 import com.juvinal.pay.network.ApiRepository
-import com.juvinal.pay.toUserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -45,7 +44,8 @@ data class LoanRepaymentScreenUiState(
 class LoanRepaymentScreenViewModel(
     private val apiRepository: ApiRepository,
     private val dsRepository: DSRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val dbRepository: DBRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(LoanRepaymentScreenUiState())
     val uiState: StateFlow<LoanRepaymentScreenUiState> = _uiState.asStateFlow()
@@ -102,19 +102,19 @@ class LoanRepaymentScreenViewModel(
 
     fun loadStartupDetails() {
         viewModelScope.launch {
-            dsRepository.userDSDetails.collect() {dsUserDetails->
-                _uiState.update {
-                    it.copy(
-                        userDetails = dsUserDetails.toUserDetails(),
-                        phoneNumber = dsUserDetails.phone_no,
-                        loanId = savedStateHandle[LoanRepaymentScreenDestination.loanId] ?: "",
-                        memNo = savedStateHandle[LoanRepaymentScreenDestination.memNo] ?: "",
-                        schedulePayDate = savedStateHandle[LoanRepaymentScreenDestination.schedulePayDate] ?: "",
-                        scheduleTotal = savedStateHandle[LoanRepaymentScreenDestination.scheduleTotal] ?: "",
-                        scheduleTotalPaid = savedStateHandle[LoanRepaymentScreenDestination.scheduleTotalPaid] ?: "",
-                        scheduleTotalBalance = savedStateHandle[LoanRepaymentScreenDestination.scheduleTotalBalance] ?: "",
-                    )
-                }
+            val appLaunchStatus = dbRepository.getAppLaunchState(1)
+            val user = dbRepository.getUserDetails(appLaunchStatus.user_id!!).first()
+            _uiState.update {
+                it.copy(
+                    userDetails = user,
+                    phoneNumber = user.user.phone_no,
+                    loanId = savedStateHandle[LoanRepaymentScreenDestination.loanId] ?: "",
+                    memNo = savedStateHandle[LoanRepaymentScreenDestination.memNo] ?: "",
+                    schedulePayDate = savedStateHandle[LoanRepaymentScreenDestination.schedulePayDate] ?: "",
+                    scheduleTotal = savedStateHandle[LoanRepaymentScreenDestination.scheduleTotal] ?: "",
+                    scheduleTotalPaid = savedStateHandle[LoanRepaymentScreenDestination.scheduleTotalPaid] ?: "",
+                    scheduleTotalBalance = savedStateHandle[LoanRepaymentScreenDestination.scheduleTotalBalance] ?: "",
+                )
             }
         }
     }
@@ -128,7 +128,7 @@ class LoanRepaymentScreenViewModel(
         val loanRepaymentPayload = LoanRepaymentPayload(
             loan_id = uiState.value.loanId.toInt(),
             mem_no = uiState.value.memNo,
-            uid = uiState.value.userDetails.uid,
+            uid = uiState.value.userDetails.user.uid,
             msisdn = uiState.value.phoneNumber,
             payment_purpose = "LOAN_REPAYMENT",
             loan_repayment_amount = uiState.value.amount.toDouble(),

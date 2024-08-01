@@ -62,7 +62,7 @@ fun LoanScheduleScreenComposable(
             paidScheduleList = uiState.paidSchedule,
             navigateToPreviousScreen = navigateToPreviousScreen,
             navigateToLoanPaymentScreen = {schedulePayDate, scheduleTotal, scheduleTotalPaid, scheduleTotalBalance ->
-                navigateToLoanPaymentScreen(uiState.loanId, uiState.userDetails.mem_no!!, schedulePayDate, scheduleTotal, scheduleTotalPaid, scheduleTotalBalance)
+                navigateToLoanPaymentScreen(uiState.loanId, uiState.userDetails.member.mem_no!!, schedulePayDate, scheduleTotal, scheduleTotalPaid, scheduleTotalBalance)
             }
         )
 

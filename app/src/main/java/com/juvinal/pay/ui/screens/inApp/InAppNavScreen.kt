@@ -159,7 +159,7 @@ fun InAppNavScreenComposable(
                     loggingOut = true
                     delay(2000)
                     viewModel.logout()
-                    navigateToLoginScreenWithArgs(uiState.userDetails.document_no, uiState.userDetails.password)
+                    navigateToLoginScreenWithArgs(uiState.userDetails.user.document_no, uiState.userDetails.user.password)
                     loggingOut = false
                     Toast.makeText(context, "You are logged out", Toast.LENGTH_SHORT).show()
                 }
@@ -193,7 +193,7 @@ fun InAppNavScreenComposable(
     ) {
 
         InAppNavScreen(
-            username = uiState.userDetails.fname,
+            username = uiState.userDetails.user.fname,
             accountSavings = uiState.accountSavings,
             showTopPopup = showTopPopup,
             dashboardMenuItems = dashboardMenuItems,

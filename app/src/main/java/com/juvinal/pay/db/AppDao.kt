@@ -25,9 +25,15 @@ interface AppDao {
        member: Member
    )
 
-   @Transaction
-   @Query("SELECT * FROM user WHERE user_id = :userId")
-   fun getUserDetails(userId: Int): Flow<UserDetails>
+   @Query("SELECT * FROM user")
+   fun getUsers(): Flow<List<User>>
+
+   @Query("SELECT * FROM member")
+   fun getMembers(): Flow<List<Member>>
+
+    @Query("SELECT * FROM user INNER JOIN member ON user.user_id = member.user_id WHERE user.user_id = :userId")
+    fun getUserDetails(userId: Int): Flow<UserDetails>
+
 
     @Transaction
     @Query("SELECT * FROM user WHERE user_id = :userId")

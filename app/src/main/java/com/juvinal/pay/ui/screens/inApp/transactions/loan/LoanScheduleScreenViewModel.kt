@@ -5,11 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juvinal.pay.LoadingStatus
-import com.juvinal.pay.UserDetails
 import com.juvinal.pay.datastore.DSRepository
+import com.juvinal.pay.db.DBRepository
 import com.juvinal.pay.model.LoanScheduleDT
+import com.juvinal.pay.model.dbModel.UserDetails
 import com.juvinal.pay.network.ApiRepository
-import com.juvinal.pay.toUserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,7 +28,8 @@ data class LoanScheduleScreenUiState(
 class LoanScheduleScreenViewModel(
     private val apiRepository: ApiRepository,
     private val dsRepository: DSRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val dbRepository: DBRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(value = LoanScheduleScreenUiState())
     val uiState: StateFlow<LoanScheduleScreenUiState> = _uiState.asStateFlow()
@@ -36,9 +37,10 @@ class LoanScheduleScreenViewModel(
     private val loanId: String? = savedStateHandle[LoanScheduleScreenDestination.loanId]
     fun loadStartupData() {
         viewModelScope.launch {
+            val appLaunchStatus = dbRepository.getAppLaunchState(1)
             _uiState.update {
                 it.copy(
-                    userDetails = dsRepository.userDSDetails.first().toUserDetails(),
+                    userDetails = dbRepository.getUserDetails(appLaunchStatus.user_id!!).first(),
                     loanId = loanId!!
                 )
             }

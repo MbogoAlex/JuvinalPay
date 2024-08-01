@@ -1,5 +1,7 @@
 package com.juvinal.pay
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -24,6 +26,7 @@ import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanHistoryScreenViewM
 import com.juvinal.pay.ui.screens.inApp.transactions.loan.LoanRepaymentScreenViewModel
 
 object AppViewModelFactory {
+    @RequiresApi(Build.VERSION_CODES.O)
     val Factory = viewModelFactory {
 
         // initialize RegistrationScreenViewModel
@@ -33,7 +36,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             RegistrationScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -45,7 +49,9 @@ object AppViewModelFactory {
             LoginScreenViewModel(
                 apiRepository = apiRepository,
                 dsRepository = dsRepository,
-                savedStateHandle = this.createSavedStateHandle()
+                savedStateHandle = this.createSavedStateHandle(),
+                dbRepository = juvinalPayApplication().container.dbRepository
+
             )
         }
 
@@ -56,7 +62,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             MembershipFeeScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -64,7 +71,8 @@ object AppViewModelFactory {
         initializer {
             val dsRepository = juvinalPayApplication().dsRepository
             SplashScreenViewModel(
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -75,7 +83,8 @@ object AppViewModelFactory {
             InAppNavScreenViewModel(
                 apiRepository = apiRepository,
                 dsRepository = dsRepository,
-                savedStateHandle = this.createSavedStateHandle()
+                savedStateHandle = this.createSavedStateHandle(),
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -85,7 +94,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             HomeScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -95,7 +105,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             ProfileScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -105,7 +116,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             PersonalDetailsScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -115,7 +127,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             ChangePasswordScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -125,7 +138,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             DepositMoneyScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -135,7 +149,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             DepositHistoryScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -145,7 +160,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             RequestLoanScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository,
             )
         }
 
@@ -155,7 +171,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             LoanHistoryScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -163,7 +180,7 @@ object AppViewModelFactory {
         initializer {
             val dsRepository = juvinalPayApplication().dsRepository
             WelcomeScreenViewModel(
-                dsRepository = dsRepository
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -173,7 +190,8 @@ object AppViewModelFactory {
             val dsRepository = juvinalPayApplication().dsRepository
             UnpaidLoansScreenViewModel(
                 apiRepository = apiRepository,
-                dsRepository = dsRepository
+                dsRepository = dsRepository,
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -184,7 +202,8 @@ object AppViewModelFactory {
             LoanScheduleScreenViewModel(
                 apiRepository = apiRepository,
                 dsRepository = dsRepository,
-                savedStateHandle = this.createSavedStateHandle()
+                savedStateHandle = this.createSavedStateHandle(),
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
 
@@ -195,7 +214,8 @@ object AppViewModelFactory {
             LoanRepaymentScreenViewModel(
                 apiRepository = apiRepository,
                 dsRepository = dsRepository,
-                savedStateHandle = this.createSavedStateHandle()
+                savedStateHandle = this.createSavedStateHandle(),
+                dbRepository = juvinalPayApplication().container.dbRepository
             )
         }
     }

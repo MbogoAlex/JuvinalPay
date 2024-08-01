@@ -1,5 +1,7 @@
 package com.juvinal.pay.ui.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +26,7 @@ object SplashScreenDestination: AppNavigation{
     override val title: String = "Splash screen"
     override val route: String = "splash-screen"
 }
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SplashScreenComposable(
     navigateToWelcomeScreen: () -> Unit,
@@ -39,9 +42,9 @@ fun SplashScreenComposable(
         delay(2000)
         if(!uiState.navigated) {
             if(uiState.appLaunched) {
-                if(uiState.userDetails.id == null) {
+                if(uiState.appLaunchStatus.user_id == null) {
                     navigateToRegistrationScreen()
-                } else if(!uiState.userDetails.mem_registered) {
+                } else if(uiState.userDetails.member.mem_no == null) {
                     navigateToMembershipFeePaymentScreen()
                 } else {
                     navigateToInAppNavScreen()

@@ -71,7 +71,7 @@ fun HomeScreenComposable(
 
     Box {
         HomeScreen(
-            userName = uiState.userDetails.fname,
+            userName = uiState.userDetails.user.fname,
             accountSavings = uiState.accountSavings,
             loanBalance = uiState.loanBalance,
             guaranteedAmounts = uiState.guaranteedAmounts,
