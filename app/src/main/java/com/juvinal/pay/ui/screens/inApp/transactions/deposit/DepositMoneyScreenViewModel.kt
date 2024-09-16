@@ -134,7 +134,7 @@ class DepositMoneyScreenViewModel(
                             accountSavings = response.body()?.data?.accountSavings!!.toDouble(),
                             loanBalance = response.body()?.data?.loanBalance!!,
                             guaranteedAmounts = response.body()?.data?.guaranteedAmounts!!,
-                            netSavings = response.body()?.data?.netSavings!!,
+                            netSavings = response.body()?.data?.netSavings!!.toDouble(),
                             accountShareCapital = response.body()?.data?.accountShareCapital!!.toDouble(),
                             loanAmountQualified = response.body()?.data?.loanAmountQualified!!.toDouble(),
                         )

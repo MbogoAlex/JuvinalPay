@@ -413,6 +413,7 @@ fun InAppNavScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
             ) {
+
                 IconButton(onClick = {
                     scope.launch {
                         if(drawerState.isClosed) drawerState.open() else drawerState.close()
