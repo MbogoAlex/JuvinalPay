@@ -82,7 +82,7 @@ data class UserLoginDT(
     val user_city: String?,
     val user_status: Int,
     val sys_user: Int,
-    val user_country: String?,
+    val user_country: Int?,
     val county_id: Int?,
     val sub_county_id: Int?,
     val ward_id: Int?,
